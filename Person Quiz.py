@@ -15,15 +15,31 @@ def load_random_image(directory_path):
         print("디렉토리에 .jpeg 확장자를 가진 이미지 파일이 없습니다.")
         return None
 
-    # 무작위로 이미지를 선택
-    random_image_file = random.choice(image_files)
+    score = 0  # 정답 횟수를 저장하는 변수
 
-    # 선택된 이미지의 전체 경로를 작성함
-    image_path = os.path.join(directory_path, random_image_file)
+    while True:
+        # 무작위로 이미지를 선택
+        random_image_file = random.choice(image_files)
 
-    # Pillow를 사용하여 이미지를 열음
-    image = Image.open(image_path)
-    image.show()
+        # 선택된 이미지의 전체 경로를 작성함
+        image_path = os.path.join(directory_path, random_image_file)
+
+        # Pillow를 사용하여 이미지를 열음
+        image = Image.open(image_path)
+        image.show()
+
+        # 인물의 이름 입력 받기
+        person_name = input("인물의 이름을 입력 : ")
+
+        # 파일명과 입력 받은 이름이 일치하는지 확인
+        if person_name.lower() in random_image_file.lower():
+            print("정답입니다.")
+            score += 1  # 정답일 경우 점수 1점 증가
+        else:
+            print("오답입니다. 정답은 {}입니다.".format(random_image_file))
+            break  # 틀릴 경우 반복 종료
+
+    print("점수: {}".format(score))
 
 # 함수 호출
 load_random_image(directory_path)
