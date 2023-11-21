@@ -8,6 +8,12 @@ def load_quiz_data():
     with open("4letteranswer.txt", "r") as file:
         answer_data = [line.strip() for line in file.readlines()]
     return quiz_data, answer_data
+    
+def shuffle_quiz_data(quiz_data,answer_data):
+    combined_data = list(zip(quiz_data, answer_data))
+    random.shuffle(combined_data)
+    shuffled_quiz_data, shuffled_answer_data = zip(*combined_data)
+    return list(shuffled_quiz_data), list(shuffled_answer_data)
 
 def get_user_input(timeout, default=None):
     result = [default]
@@ -24,6 +30,7 @@ def get_user_input(timeout, default=None):
 
 def play_quiz():
     quiz_data, answer_data = load_quiz_data()
+    quiz_data, answer_data = shuffle_quiz_data(quiz_data, answer_data)
     total_score = 0
 
     for index in range(len(quiz_data)):
@@ -51,6 +58,5 @@ def play_quiz():
             if restart.lower() != "yes":
                 print(f"종료! 총 점수: {total_score}")
                 break
-
 if __name__ == "__main__":
     play_quiz()
