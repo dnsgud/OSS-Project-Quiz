@@ -18,7 +18,7 @@ def get_user_input(timeout, default=None):
     thread.join(timeout)
 
     if thread.is_alive():   #시간 초과시 오답 처리
-        print("\n시간이 초과되었습니다. 정답은 {}입니다.".format(random_image_file.replace(".jpeg", "").replace(",", " ")))
+        print("\n시간이 초과되었습니다.")
         return None
     else:
         return result[0]
@@ -51,6 +51,7 @@ def load_random_image(directory_path):
         person_name = get_user_input(time_limit)
 
         if person_name is None:
+            print("정답은 {}입니다.".format(random_image_file.replace(".jpeg", "").replace(",", " ")))
             break  # 시간 초과로 게임 종료
 
         # 파일명과 입력 받은 이름이 정답들 중 하나와 일치하는지 확인
