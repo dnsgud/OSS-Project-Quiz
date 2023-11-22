@@ -8,8 +8,8 @@ def load_quiz_data():
     with open("4letteranswer.txt", "r") as file:
         answer_data = [line.strip() for line in file.readlines()]
     return quiz_data, answer_data
-    
-def shuffle_quiz_data(quiz_data,answer_data):
+
+def shuffle_quiz_data(quiz_data, answer_data):
     combined_data = list(zip(quiz_data, answer_data))
     random.shuffle(combined_data)
     shuffled_quiz_data, shuffled_answer_data = zip(*combined_data)
@@ -46,17 +46,20 @@ def play_quiz():
             print(f"종료! 총 점수: {total_score}")
             break
 
-        if user_answer == answer:
+        if user_answer == answer[2:]:
             total_score += 1
             print(f"정답입니다! 현재 점수: {total_score}\n")
         else:
             if user_answer == "timeout":
                 print("시간 초과! 오답으로 처리합니다.\n")
+                print("정답:"+answer)
             else:
                 print(f"오답입니다. 현재 점수: {total_score}\n")
-            restart = input("다시 시작하시겠습니까? (yes/no): ")
-            if restart.lower() != "yes":
+                print("정답:"+answer)
+            restart = input("다시 시작하시겠습니까? (예/아니오): ")
+            if restart.lower() != "예":
                 print(f"종료! 총 점수: {total_score}")
                 break
+
 if __name__ == "__main__":
     play_quiz()
