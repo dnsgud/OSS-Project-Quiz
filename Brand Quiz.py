@@ -30,6 +30,9 @@ class BrandLogoQuiz:
         # Tkinter PhotoImage 객체로 변환
         self.tk_cropped_image = ImageTk.PhotoImage(self.cropped_image)
 
+        # 원본 로고 이미지 Tkinter PhotoImage 객체로 변환
+        self.tk_original_image = ImageTk.PhotoImage(self.logo_image.resize(self.cropped_image.size))
+
         # 로고 이미지 표시 레이블
         self.logo_label = tk.Label(root, image=self.tk_cropped_image)
         self.logo_label.grid(row=0, column=0, columnspan=2, pady=10)
@@ -84,13 +87,13 @@ class BrandLogoQuiz:
         if user_input == correct_answer:
             result_text = "정답입니다!"
             self.score += 1  # 정답일 경우 점수 1 증가
+            self.result_label.config(text=result_text)
+            self.score_label.config(text=f"점수: {self.score}")
+            self.next_question()  # 정답을 맞추면 다음 문제로 이동
         else:
             result_text = f"틀렸습니다. 정답은 {correct_answer.capitalize()} 입니다."
-
-        # 결과 표시 및 점수 갱신
-        self.result_label.config(text=result_text)
-        self.score_label.config(text=f"점수: {self.score}")
-        self.next_question()
+            self.result_label.config(text=result_text)
+            self.end_game()  # 정답이 틀리면 게임 종료
 
     def next_question(self):
         # 새로운 로고 퀴즈로 이동
@@ -105,6 +108,13 @@ class BrandLogoQuiz:
         self.tk_cropped_image.paste(self.cropped_image)
 
         self.entry.delete(0, tk.END)  # 텍스트 입력 상자 초기화
+
+    def end_game(self):
+        # 게임 종료 메서드
+        self.logo_label.config(image=self.tk_original_image)  # 원본 이미지로 변경
+        self.logo_label.grid(columnspan=3)  # 이미지 크기에 맞게 열의 span을 조정
+        self.entry.config(state=tk.DISABLED)  # 입력 창 비활성화
+        self.submit_button.config(state=tk.DISABLED)  # 제출 버튼 비활성화
 
 # 특정 디렉토리에서 로고 이미지 파일로 퀴즈 생성
 logo_directory = "image"  # 실제 디렉토리 경로로 대체
