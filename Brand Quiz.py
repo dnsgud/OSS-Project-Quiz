@@ -35,17 +35,22 @@ class BrandLogoQuiz:
         self.logo_label.grid(row=0, column=0, columnspan=2, pady=10)
 
         # 텍스트 입력 상자 추가
-        self.entry = tk.Entry(root)
+        self.entry = tk.Entry(root, font=("Arial", 12))  # 폰트 크기를 동일하게 설정
         self.entry.grid(row=1, column=0, columnspan=2, pady=10)
         self.entry.bind("<Return>", lambda event: self.check_answer())  # 엔터 키에 대한 이벤트 설정
 
         # 제출 버튼 추가
-        self.submit_button = tk.Button(root, text="제출", command=self.check_answer)
-        self.submit_button.grid(row=2, column=0, columnspan=2, pady=10)
+        self.submit_button = tk.Button(root, text=">", command=self.check_answer, font=("Arial", 12))
+        self.submit_button.grid(row=1, column=2, pady=10)  # 텍스트 입력 상자 옆에 배치
 
         # 결과 표시 레이블 추가
         self.result_label = tk.Label(root, text="")
-        self.result_label.grid(row=3, column=0, columnspan=2, pady=10)
+        self.result_label.grid(row=2, column=0, columnspan=2, pady=10)
+
+        # 점수 관련 변수 초기화
+        self.score = 0
+        self.score_label = tk.Label(root, text=f"점수: {self.score}")
+        self.score_label.grid(row=3, column=0, columnspan=2, pady=10)
 
         # 창 가운데에 위치하도록 설정
         self.center_window()
@@ -53,7 +58,7 @@ class BrandLogoQuiz:
     def center_window(self):
         # 창의 크기 및 위치 계산
         window_width = 400
-        window_height = 400
+        window_height = 500
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
 
@@ -78,10 +83,13 @@ class BrandLogoQuiz:
 
         if user_input == correct_answer:
             result_text = "정답입니다!"
+            self.score += 1  # 정답일 경우 점수 1 증가
         else:
             result_text = f"틀렸습니다. 정답은 {correct_answer.capitalize()} 입니다."
 
+        # 결과 표시 및 점수 갱신
         self.result_label.config(text=result_text)
+        self.score_label.config(text=f"점수: {self.score}")
         self.next_question()
 
     def next_question(self):
@@ -96,7 +104,8 @@ class BrandLogoQuiz:
         # Tkinter PhotoImage 객체로 변환
         self.tk_cropped_image.paste(self.cropped_image)
 
-        self.entry.delete(0, tk.END)  # 텍스트 입력 상
+        self.entry.delete(0, tk.END)  # 텍스트 입력 상자 초기화
+
 # 특정 디렉토리에서 로고 이미지 파일로 퀴즈 생성
 logo_directory = "image"  # 실제 디렉토리 경로로 대체
 root = tk.Tk()
