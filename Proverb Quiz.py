@@ -1,46 +1,50 @@
-import linecache
-import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout
-from PyQt5.QtCore import Qt
+import tkinter as tk
+from tkinter import messagebox
 import linecache
 import random
 
-class QuizApp(QWidget):
-    def __init__(self):
-        super().__init__()
+class QuizApp:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Proverb Quiz")
 
         self.total_score = 0
         self.best_score = 0
+        self.time_limit = 7  # 초기 제한 시간 (초)
+        self.timer_id = None
 
-        self.init_ui()
+        # 현재 점수를 표시할 Label 위젯
+        self.score_label = tk.Label(master, text="현재 점수: 0", font=("Helvetica", 12))
+        self.score_label.pack(side=tk.RIGHT, padx=10, pady=10)
 
-    def init_ui(self):
-        self.proverb_label = QLabel("퀴즈 시작 버튼을 눌러주세요.")
-        self.answer_input = QLineEdit()
-        self.submit_button = QPushButton("정답 제출")
-        self.retry_button = QPushButton("다시 시도")
-        self.quit_button = QPushButton("종료")
+        self.label = tk.Label(master, text="", font=("Helvetica", 14))
+        self.label.pack(pady=20)
 
-        layout = QVBoxLayout()
-        layout.addWidget(self.proverb_label)
-        layout.addWidget(self.answer_input)
-        layout.addWidget(self.submit_button)
-        layout.addWidget(self.retry_button)
-        layout.addWidget(self.quit_button)
+        self.entry = tk.Entry(master, font=("Helvetica", 12))
+        self.entry.pack(pady=10)
 
-        self.setLayout(layout)
+        self.button = tk.Button(master, text="제출", command=self.check_answer)
+        self.button.pack(pady=10)
 
-        self.submit_button.clicked.connect(self.check_answer)
-        self.retry_button.clicked.connect(self.retry_quiz)
-        self.quit_button.clicked.connect(self.close_app)
+        # 엔터 키와 'Return' 키를 눌렀을 때 check_answer 메서드를 호출하도록 설정
+        self.master.bind('<Return>', lambda event=None: self.check_answer())
 
-        self.setWindowTitle('속담 퀴즈 앱')
-        self.show()
+        self.generate_quiz()
 
     def generate_quiz(self):
+        # 속담 퀴즈를 생성하고 화면에 표시합니다
+        proverb = self.get_random_proverb()
+        self.quiz, self.answer = self.create_quiz(proverb)
+        self.label.config(text=f"다음 속담을 완성하세요: '{self.quiz}'")
+        self.entry.delete(0, tk.END)  # Entry 위젯의 내용을 지웁니다
+
+        # 초기 시간 설정
+        self.remaining_time = self.time_limit
+        self.update_time()
+
+    def get_random_proverb(self):
         no = random.randint(1, 100)
-        saying = linecache.getline('saying.txt', no).strip()
-        return saying
+        return linecache.getline('saying.txt', no).strip()
 
     def create_quiz(self, saying):
         words = saying.split()
@@ -48,33 +52,56 @@ class QuizApp(QWidget):
         words[-1] = '□' * len(last_word)
         return " ".join(words), last_word
 
-    def start_quiz(self):
-        proverb = self.generate_quiz()
-        self.quiz, self.answer = self.create_quiz(proverb)
-        self.proverb_label.setText(f"현재 점수: {self.total_score}, 최고 점수: {self.best_score}, 다음 속담을 완성하세요: '{self.quiz}' ")
+    def check_answer(self, event=None):
+        user_input = self.entry.get().strip()
+        if self.timer_id:
+            self.master.after_cancel(self.timer_id)  # 정답을 체크할 때 시간 멈춤
+            self.timer_id = None
 
-    def check_answer(self):
-        user_input = self.answer_input.text().strip()
-
-        if len(user_input) == len(self.answer):
-            if user_input.replace(" ", "") == self.answer.replace(" ", ""):
-                self.total_score += 1
-                if self.total_score > self.best_score:
-                    self.best_score = self.total_score
-                self.start_quiz()
-            else:
-                self.proverb_label.setText(f"틀렸습니다. 정답은 '{self.answer}'입니다.")
+        if user_input.replace(" ", "") == self.answer.replace(" ", ""):
+            self.total_score += 1
+            if self.total_score > self.best_score:
+                self.best_score = self.total_score
+            messagebox.showinfo("정답", "정답입니다!")
         else:
-            self.proverb_label.setText("입력한 글자의 개수가 맞지 않습니다. 다시 입력하세요.")
+            retry = messagebox.askquestion("틀림", f"틀렸습니다. 정답은 '{self.answer}'입니다.\n다시 시도하시겠습니까?")
+            if retry == 'no':
+                self.master.destroy()
+            else:
+                self.total_score = 0
+                self.best_score = 0
 
-    def retry_quiz(self):
-        self.total_score = 0
-        self.start_quiz()
+        # 현재 점수를 업데이트하여 표시
+        self.score_label.config(text=f"현재 점수: {self.total_score}")
 
-    def close_app(self):
-        sys.exit()
+        # 퀴즈 생성
+        self.generate_quiz()
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    quiz_app = QuizApp()
-    sys.exit(app.exec_())
+    def update_time(self):
+        if self.remaining_time > 0:
+            # 시간을 1초씩 줄이고 업데이트하는 메서드
+            self.remaining_time -= 1
+            self.label.config(text=f"다음 속담을 완성하세요: '{self.quiz}' (남은 시간: {self.remaining_time}초)")
+            # 1초마다 업데이트
+            self.timer_id = self.master.after(1000, self.update_time)
+        elif self.remaining_time == 0:
+            # 시간 초과 시
+            self.remaining_time = -1
+            if self.timer_id:
+                self.master.after_cancel(self.timer_id)
+
+            retry = messagebox.askquestion("시간 초과", "제한 시간이 초과되었습니다.\n다시 시도하시겠습니까?")
+            if retry == 'no':
+                self.master.destroy()
+            else:
+                self.total_score = 0
+                self.best_score = 0
+                self.generate_quiz()
+        else:
+            # 시간 초과 시에도 퀴즈 생성
+            self.generate_quiz()
+
+# Tkinter 애플리케이션을 시작합니다
+root = tk.Tk()
+app = QuizApp(root)
+root.mainloop() 
