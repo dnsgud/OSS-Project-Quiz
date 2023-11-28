@@ -1,46 +1,80 @@
 import linecache
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout
+from PyQt5.QtCore import Qt
+import linecache
 import random
 
-def generate_quiz():
-    no = random.randint(1, 100)
-    saying = linecache.getline('saying.txt', no).strip()
-    return saying
+class QuizApp(QWidget):
+    def __init__(self):
+        super().__init__()
 
-def create_quiz(saying):
-    words = saying.split()
-    last_word = words[-1]
-    words[-1] = '□' * len(last_word)  
-    return " ".join(words), last_word
+        self.total_score = 0
+        self.best_score = 0
 
-def main():
-    total_score = 0
-    best_score = 0
+        self.init_ui()
 
-    while True:
-        proverb = generate_quiz()
-        quiz, answer = create_quiz(proverb)
+    def init_ui(self):
+        self.proverb_label = QLabel("퀴즈 시작 버튼을 눌러주세요.")
+        self.answer_input = QLineEdit()
+        self.submit_button = QPushButton("정답 제출")
+        self.retry_button = QPushButton("다시 시도")
+        self.quit_button = QPushButton("종료")
 
-        while True:
-            user_input = input(f"현재 총점: {total_score}, 최고 점수: {best_score}, 다음 속담을 완성하세요: '{quiz}' ").strip()
-            if len(user_input) == len(answer):
-                break
+        layout = QVBoxLayout()
+        layout.addWidget(self.proverb_label)
+        layout.addWidget(self.answer_input)
+        layout.addWidget(self.submit_button)
+        layout.addWidget(self.retry_button)
+        layout.addWidget(self.quit_button)
+
+        self.setLayout(layout)
+
+        self.submit_button.clicked.connect(self.check_answer)
+        self.retry_button.clicked.connect(self.retry_quiz)
+        self.quit_button.clicked.connect(self.close_app)
+
+        self.setWindowTitle('속담 퀴즈 앱')
+        self.show()
+
+    def generate_quiz(self):
+        no = random.randint(1, 100)
+        saying = linecache.getline('saying.txt', no).strip()
+        return saying
+
+    def create_quiz(self, saying):
+        words = saying.split()
+        last_word = words[-1]
+        words[-1] = '□' * len(last_word)
+        return " ".join(words), last_word
+
+    def start_quiz(self):
+        proverb = self.generate_quiz()
+        self.quiz, self.answer = self.create_quiz(proverb)
+        self.proverb_label.setText(f"현재 점수: {self.total_score}, 최고 점수: {self.best_score}, 다음 속담을 완성하세요: '{self.quiz}' ")
+
+    def check_answer(self):
+        user_input = self.answer_input.text().strip()
+
+        if len(user_input) == len(self.answer):
+            if user_input.replace(" ", "") == self.answer.replace(" ", ""):
+                self.total_score += 1
+                if self.total_score > self.best_score:
+                    self.best_score = self.total_score
+                self.start_quiz()
             else:
-                print(f"입력한 글자의 개수가 맞지 않습니다. 다시 입력하세요.")
-
-        if user_input.replace(" ", "") == answer.replace(" ", ""):
-            print("정답입니다!")
-            total_score += 1
-            if total_score > best_score:
-                best_score = total_score
+                self.proverb_label.setText(f"틀렸습니다. 정답은 '{self.answer}'입니다.")
         else:
-            print(f"틀렸습니다. 정답은 '{answer}'입니다.")
+            self.proverb_label.setText("입력한 글자의 개수가 맞지 않습니다. 다시 입력하세요.")
 
-        if user_input.replace(" ", "") != answer.replace(" ", ""):
-            retry = input("다시 시도하시려면 'r', 종료하시려면 'q'를 입력하세요: ")
-            if retry.lower() == 'q':
-                break
+    def retry_quiz(self):
+        self.total_score = 0
+        self.start_quiz()
 
-    print(f"퀴즈 종료! 총점: {total_score}, 최고 점수: {best_score}")
+    def close_app(self):
+        sys.exit()
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    quiz_app = QuizApp()
+    sys.exit(app.exec_())
