@@ -70,7 +70,7 @@ class QuizGame(QMainWindow):
 
         if self.current_timer == 0:
             correct_answers_str = ', '.join(self.correct_answers)
-            print("\n시간이 초과되었습니다. 정답은 ( {})입니다.".format(correct_answers_str))
+            print("\n시간이 초과되었습니다. 정답은 ( {})입니다.".format(correct_answers_str.replace(".jpeg", "").replace(",", "")))
             self.show_result()
 
     def check_answer(self):
@@ -83,7 +83,7 @@ class QuizGame(QMainWindow):
             self.load_random_image()
         else:
             correct_answers_str = ', '.join(self.correct_answers)
-            print("오답입니다. 정답은 ( {})입니다.".format(correct_answers_str))
+            print("오답입니다. 정답은 ( {})입니다.".format(correct_answers_str.replace(".jpeg", "").replace(",", "")))
 
             self.show_result()
 
