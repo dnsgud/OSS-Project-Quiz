@@ -21,6 +21,7 @@ class QuizGame(QMainWindow):
         # GUI 초기화
         self.image_label = QLabel(self)
         self.name_input = QLineEdit(self)
+        self.name_input.returnPressed.connect(self.check_answer)  # 엔터키 입력 시 check_answer 호출
 
         self.timer_label = QLabel(f'남은 시간: {self.current_timer}초', self)
 
@@ -70,6 +71,7 @@ class QuizGame(QMainWindow):
         else:
             correct_answers_str = ', '.join(self.correct_answers)
             print("오답입니다. 정답은 ( {})입니다.".format(correct_answers_str))
+
             self.show_result()
 
     def show_result(self):
@@ -82,6 +84,6 @@ class QuizGame(QMainWindow):
 if __name__ == '__main__':
     # 애플리케이션 실행
     app = QApplication(sys.argv)
-    game = QuizGame(r"C:\Users\jung1\Desktop\인물 퀴즈\인물 사진", 10)  # 디렉토리 경로와 시간 제한을 변수로 전달
+    game = QuizGame(r"C:\Users\jung1\Desktop\인물 퀴즈\인물 사진", 10)  # 디렉토리 경로와 시간 제한을 매개변수로 전달
     game.show()
     sys.exit(app.exec_())
