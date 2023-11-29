@@ -58,8 +58,8 @@ class QuizGame(QMainWindow):
         # 정답 목록 설정
         self.correct_answers = [answer.lower() for answer in random_image_file.split(',')]
 
-        # 타이머 초기화 및 타이머 시작
-        
+        # 입력창, 타이머 초기화 및 타이머 시작
+        self.name_input.clear()
         self.current_timer = self.time_limit
         self.timer.start(1000)  # 1초마다 타이머 이벤트 발생
 
