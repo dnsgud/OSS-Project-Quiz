@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QMessageBox
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, Qt
 import linecache
 import random
 
@@ -28,6 +28,9 @@ class QuizApp(QMainWindow):
         self.button = QPushButton("제출", self)
         self.button.setGeometry(10, 130, 75, 30)
         self.button.clicked.connect(self.check_answer)
+
+        # 엔터 키로 제출 기능 추가
+        self.entry.returnPressed.connect(self.button.click)
 
         self.generate_quiz()
 
