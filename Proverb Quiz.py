@@ -14,22 +14,22 @@ class QuizApp(QMainWindow):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_time)
 
-        self.setFixedSize(400, 200)
+        self.setFixedSize(400, 250)  # 높이를 늘림
 
         self.score_label = QLabel("현재 점수: 0", self)
         self.score_label.setGeometry(10, 10, 150, 30)
 
         self.label = QLabel("", self)
-        self.label.setGeometry(10, 50, 400, 30)
+        self.label.setGeometry(10, 50, 400, 50)  # 높이를 늘림
+        self.label.setAlignment(Qt.AlignTop)  # 텍스트를 위쪽으로 정렬
 
         self.entry = QLineEdit(self)
-        self.entry.setGeometry(10, 90, 300, 30)
+        self.entry.setGeometry(10, 110, 300, 30)
 
         self.button = QPushButton("제출", self)
-        self.button.setGeometry(10, 130, 75, 30)
+        self.button.setGeometry(10, 150, 75, 30)
         self.button.clicked.connect(self.check_answer)
 
-        # 엔터 키로 제출 기능 추가
         self.entry.returnPressed.connect(self.button.click)
 
         self.generate_quiz()
@@ -77,7 +77,7 @@ class QuizApp(QMainWindow):
     def update_time(self):
         if self.remaining_time > 0:
             self.remaining_time -= 1
-            self.label.setText(f"다음 속담을 완성하세요: '{self.quiz}' (남은 시간: {self.remaining_time}초)")
+            self.label.setText(f"다음 속담을 완성하세요: '{self.quiz}'\n(남은 시간: {self.remaining_time}초)")
         elif self.remaining_time == 0:
             self.remaining_time = -1
             self.timer.stop()
@@ -98,3 +98,4 @@ if __name__ == "__main__":
     window = QuizApp()
     window.show()
     sys.exit(app.exec_())
+
