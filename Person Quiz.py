@@ -1,68 +1,102 @@
 import os
 import random
 from PIL import Image
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt, QTimer
 import threading
-import time
+import sys
 
-directory_path = r"C:\Users\jung1\Desktop\인물 퀴즈\인물 사진"  # 디렉토리 경로를 지정
-time_limit = 5  # 각 문제의 제한 시간
 
-def get_user_input(timeout, default=None):
-    result = [default]
-    
-    def user_input():
-        result[0] = input("인물의 이름을 입력 : ")  # 답변 입력
+class QuizGame(QMainWindow):
+    def __init__(self, directory_path, time_limit):
+        super(QuizGame, self).__init__()
 
-    thread = threading.Thread(target=user_input)
-    thread.start()
-    thread.join(timeout)
+        # 초기화 작업
+        self.directory_path = directory_path
+        self.time_limit = time_limit
+        self.score = 0
+        self.current_timer = self.time_limit
 
-    if thread.is_alive():   #시간 초과시 오답 처리
-        print("\n시간이 초과되었습니다.")
-        return None
-    else:
-        return result[0]
+        # GUI 초기화
+        self.image_label = QLabel(self)
+        self.name_input = QLineEdit(self)
+        self.name_input.returnPressed.connect(self.check_answer)  # 엔터키 입력 시 check_answer 호출
 
-def load_random_image(directory_path):
-    # 지정된 경로에서 모든 파일 목록을 불러옴
-    file_list = os.listdir(directory_path)
+        self.timer_label = QLabel(f'남은 시간: {self.current_timer}초', self)
 
-    # 확장자가 ‘.jpeg’인 이미지 파일을 불러옴
-    image_files = [file for file in file_list if file.lower().endswith('.jpeg')]
+        # 레이아웃 설정
+        layout = QVBoxLayout()
+        layout.addWidget(self.image_label)
+        layout.addWidget(self.name_input)
+        layout.addWidget(self.timer_label, alignment=Qt.AlignmentFlag.AlignRight)
 
-    if not image_files:
-        print("디렉토리에 .jpeg 확장자를 가진 이미지 파일이 없습니다.")
-        return None
+        central_widget = QWidget(self)
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
 
-    score = 0  # 점수를 저장하는 변수
+        # 타이머 설정
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_timer)
+        self.load_random_image()
 
-    for _ in range(len(image_files)):
-        # 무작위로 이미지를 선택
+    def load_random_image(self):
+        # 디렉토리에서 확장자가 '.jpeg'인 이미지 파일을 무작위로 선택하고 화면에 표시
+        file_list = os.listdir(self.directory_path)
+        image_files = [file for file in file_list if file.lower().endswith('.jpeg')]
+
+        if not image_files:
+            print("디렉토리에 .jpeg 확장자를 가진 이미지 파일이 없습니다.")
+            sys.exit()
+
         random_image_file = random.choice(image_files)
+        image_path = os.path.join(self.directory_path, random_image_file)
 
-        # 선택된 이미지의 전체 경로 작성
-        image_path = os.path.join(directory_path, random_image_file)
+        pixmap = QPixmap(image_path)
+        self.image_label.setPixmap(pixmap.scaledToWidth(400))
 
-        # Pillow를 사용하여 이미지를 열음
-        image = Image.open(image_path)
-        image.show()
+        # 정답 목록 설정
+        self.correct_answers = [answer.lower() for answer in random_image_file.split(',')]
 
-        # 인물의 이름 입력 받기
-        person_name = get_user_input(time_limit)
+        # 입력창, 타이머 초기화 및 타이머 시작
+        self.name_input.clear()
+        self.current_timer = self.time_limit
+        self.timer.start(1000)  # 1초마다 타이머 이벤트 발생
 
-        if person_name is None:
-            print("정답은 {}입니다.".format(random_image_file.replace(".jpeg", "").replace(",", " ")))
-            break  # 시간 초과로 게임 종료
+    def update_timer(self):
+        # 타이머 갱신 및 시간 초과 체크
+        self.current_timer -= 1
+        self.timer_label.setText(f'남은 시간: {self.current_timer}초')
 
-        # 파일명과 입력 받은 이름이 정답들 중 하나와 일치하는지 확인
-        if any(person_name.lower() == answer.lower() for answer in random_image_file.split(',')):
+        if self.current_timer == 0:
+            correct_answers_str = ', '.join(self.correct_answers)
+            print("\n시간이 초과되었습니다. 정답은 ( {})입니다.".format(correct_answers_str.replace(".jpeg", "").replace(",", "")))
+            self.show_result()
+
+    def check_answer(self):
+        # 사용자 입력을 받아 정답과 비교 후 처리
+        entered_name = self.name_input.text().strip().lower()
+
+        if any(entered_name == answer for answer in self.correct_answers):
             print("정답입니다.")
-            score += 1  # 정답일 경우 점수 1점 증가
+            self.score += 1
+            self.load_random_image()
         else:
-            print("오답입니다. 정답은 {}입니다.".format(random_image_file.replace(".jpeg", "").replace(",", " ")))
-            break  # 틀릴 경우 반복 종료
+            correct_answers_str = ', '.join(self.correct_answers)
+            print("오답입니다. 정답은 ( {})입니다.".format(correct_answers_str.replace(".jpeg", "").replace(",", "")))
 
-    print("점수: {}".format(score)) #최종 점수
+            self.show_result()
 
-# 함수 호출
-load_random_image(directory_path)
+    def show_result(self):
+        # 최종 점수 출력 및 게임 종료
+        print("최종 점수: {}".format(self.score))
+        self.timer.stop()
+        sys.exit()
+
+
+if __name__ == '__main__':
+    # 애플리케이션 실행
+    app = QApplication(sys.argv)
+    game = QuizGame(r"C:\Users\jung1\Desktop\인물 퀴즈\인물 사진", 10)  # 디렉토리 경로와 시간 제한을 매개변수로 전달
+    game.show()
+    sys.exit(app.exec_())
