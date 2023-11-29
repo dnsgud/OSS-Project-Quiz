@@ -69,6 +69,7 @@ class QuizGame(QMainWindow):
         self.timer_label.setText(f'남은 시간: {self.current_timer}초')
 
         if self.current_timer == 0:
+            correct_answers_str = ', '.join(self.correct_answers)
             print("\n시간이 초과되었습니다. 정답은 ( {})입니다.".format(correct_answers_str))
             self.show_result()
 
