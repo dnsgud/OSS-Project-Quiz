@@ -25,6 +25,16 @@ class QuizGame(QMainWindow):
 
         self.timer_label = QLabel(f'남은 시간: {self.current_timer}초', self)
 
+        # 레이아웃 설정
+        layout = QVBoxLayout()
+        layout.addWidget(self.image_label)
+        layout.addWidget(self.name_input)
+        layout.addWidget(self.timer_label, alignment=Qt.AlignmentFlag.AlignRight)
+
+        central_widget = QWidget(self)
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
+
         # 타이머 설정
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_timer)
