@@ -58,7 +58,7 @@ class QuizGame(QMainWindow):
         # 정답 목록 설정
         self.correct_answers = [answer.lower() for answer in random_image_file.split(',')]
 
-        # 및 타이머 시작
+        # 타이머 시작
         self.timer.start(1000)  # 1초마다 타이머 이벤트 발생
 
     def update_timer(self):
@@ -67,7 +67,7 @@ class QuizGame(QMainWindow):
         self.timer_label.setText(f'남은 시간: {self.current_timer}초')
 
         if self.current_timer == 0:
-            print("\n시간이 초과되었습니다.")
+            print("\n시간이 초과되었습니다. 정답은 ( {})입니다.".format(correct_answers_str))
             self.show_result()
 
     def check_answer(self):
