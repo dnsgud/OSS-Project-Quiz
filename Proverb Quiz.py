@@ -60,11 +60,13 @@ class QuizApp(QMainWindow):
 
     def create_quiz(self, saying):
         words = saying.split()
-        # 랜덤으로 한 부분 뚫기
-        index_to_hide = random.randint(0, len(words) - 1)
-        hidden_word = words[index_to_hide]
-        words[index_to_hide] = '□' * len(hidden_word)
-        return " ".join(words), hidden_word
+        # 두 연속된 단어 중 하나 선택
+        index_to_hide = random.randint(0, len(words) - 2)
+        hidden_word1 = words[index_to_hide]
+        hidden_word2 = words[index_to_hide + 1]
+        words[index_to_hide] = '□' * len(hidden_word1)
+        words[index_to_hide + 1] = '□' * len(hidden_word2)
+        return " ".join(words), f"{hidden_word1} {hidden_word2}"
 
     def check_answer(self):
         user_input = self.entry.text().strip()
