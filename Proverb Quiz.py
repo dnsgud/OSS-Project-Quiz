@@ -14,14 +14,14 @@ class QuizApp(QMainWindow):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_time)
 
-        self.setFixedSize(400, 250)  # 높이를 늘림
+        self.setFixedSize(500, 350)
 
         self.score_label = QLabel("현재 점수: 0", self)
         self.score_label.setGeometry(10, 10, 150, 30)
 
         self.label = QLabel("", self)
-        self.label.setGeometry(10, 50, 400, 50)  # 높이를 늘림
-        self.label.setAlignment(Qt.AlignTop)  # 텍스트를 위쪽으로 정렬
+        self.label.setGeometry(10, 50, 400, 50)
+        self.label.setAlignment(Qt.AlignTop)
 
         self.entry = QLineEdit(self)
         self.entry.setGeometry(10, 110, 300, 30)
@@ -37,11 +37,13 @@ class QuizApp(QMainWindow):
     def generate_quiz(self):
         proverb = self.get_random_proverb()
         self.quiz, self.answer = self.create_quiz(proverb)
-        self.label.setText(f"다음 속담을 완성하세요: '{self.quiz}'")
+        self.label.setText(f"속담을 완성하세요: '{self.quiz}'")
         self.entry.clear()
 
         self.remaining_time = self.time_limit
         self.update_time()
+        # 타이머 간격 설정
+        self.timer.start(1000)
 
     def get_random_proverb(self):
         no = random.randint(1, 100)
@@ -77,7 +79,7 @@ class QuizApp(QMainWindow):
     def update_time(self):
         if self.remaining_time > 0:
             self.remaining_time -= 1
-            self.label.setText(f"다음 속담을 완성하세요: '{self.quiz}'\n(남은 시간: {self.remaining_time}초)")
+            self.label.setText(f"속담을 완성하세요: '{self.quiz}'\n(남은 시간: {self.remaining_time}초)")
         elif self.remaining_time == 0:
             self.remaining_time = -1
             self.timer.stop()
@@ -98,4 +100,3 @@ if __name__ == "__main__":
     window = QuizApp()
     window.show()
     sys.exit(app.exec_())
-
