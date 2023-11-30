@@ -10,7 +10,7 @@ class QuizApp(QMainWindow):
 
         self.total_score = 0
         self.best_score = 0
-        self.time_limit = 10
+        self.time_limit = 9
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_time)
 
