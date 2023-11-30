@@ -14,7 +14,7 @@ class QuizApp(QMainWindow):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_time)
 
-        self.setFixedSize(500, 300)
+        self.setFixedSize(500, 350)
 
         self.score_label = QLabel("현재 점수: 0", self)
         self.score_label.setGeometry(10, 10, 150, 30)
@@ -32,7 +32,7 @@ class QuizApp(QMainWindow):
 
         self.entry.returnPressed.connect(self.button.click)
 
-        self.used_proverbs = set()  # 사용된 속담을 추적하는 세트
+        self.used_proverbs = set()
 
         self.generate_quiz()
 
@@ -45,12 +45,13 @@ class QuizApp(QMainWindow):
         self.used_proverbs.add(proverb)
 
         self.quiz, self.answer = self.create_quiz(proverb)
-        self.label.setText(f"속담을 완성하세요: '{self.quiz}'")
+        # 작은따옴표(') 제거
+        self.quiz = self.quiz.replace("'", "")
+        self.label.setText(f"속담을 완성하세요: {self.quiz}")
         self.entry.clear()
 
         self.remaining_time = self.time_limit
         self.update_time()
-        # 타이머 간격 설정
         self.timer.start(1000)
 
     def get_random_proverb(self):
@@ -87,7 +88,7 @@ class QuizApp(QMainWindow):
     def update_time(self):
         if self.remaining_time > 0:
             self.remaining_time -= 1
-            self.label.setText(f"속담을 완성하세요: '{self.quiz}'\n(남은 시간: {self.remaining_time}초)")
+            self.label.setText(f"속담을 완성하세요: {self.quiz}\n(남은 시간: {self.remaining_time}초)")
         elif self.remaining_time == 0:
             self.remaining_time = -1
             self.timer.stop()
