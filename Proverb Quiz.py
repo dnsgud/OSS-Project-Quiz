@@ -60,15 +60,17 @@ class QuizApp(QMainWindow):
 
     def create_quiz(self, saying):
         words = saying.split()
-        last_word = words[-1]
-        words[-1] = '□' * len(last_word)
-        return " ".join(words), last_word
+        # 랜덤으로 한 부분 뚫기
+        index_to_hide = random.randint(0, len(words) - 1)
+        hidden_word = words[index_to_hide]
+        words[index_to_hide] = '□' * len(hidden_word)
+        return " ".join(words), hidden_word
 
     def check_answer(self):
         user_input = self.entry.text().strip()
         self.timer.stop()
 
-        if user_input.replace(" ", "") == self.answer.replace(" ", ""):
+        if user_input == self.answer:
             self.total_score += 1
             if self.total_score > self.best_score:
                 self.best_score = self.total_score
