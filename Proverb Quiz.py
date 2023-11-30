@@ -32,10 +32,18 @@ class QuizApp(QMainWindow):
 
         self.entry.returnPressed.connect(self.button.click)
 
+        self.used_proverbs = set()  # 사용된 속담을 추적하는 세트
+
         self.generate_quiz()
 
     def generate_quiz(self):
-        proverb = self.get_random_proverb()
+        while True:
+            proverb = self.get_random_proverb()
+            if proverb not in self.used_proverbs:
+                break
+
+        self.used_proverbs.add(proverb)
+
         self.quiz, self.answer = self.create_quiz(proverb)
         self.label.setText(f"속담을 완성하세요: '{self.quiz}'")
         self.entry.clear()
