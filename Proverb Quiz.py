@@ -14,7 +14,7 @@ class QuizApp(QMainWindow):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_time)
 
-        self.setFixedSize(500, 350)
+        self.setFixedSize(500, 300)
 
         self.score_label = QLabel("현재 점수: 0", self)
         self.score_label.setGeometry(10, 10, 150, 30)
