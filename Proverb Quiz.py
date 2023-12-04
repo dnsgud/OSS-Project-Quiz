@@ -98,9 +98,13 @@ class QuizApp(QMainWindow):
             self.remaining_time = -1
             self.timer.stop()
 
-            QMessageBox.information(self, "시간 초과", f"제한 시간이 초과되었습니다. 정답은 '{self.answer}'입니다.")
-            self.total_score = 0
-            self.generate_quiz()
+            retry = QMessageBox.question(self, "시간 초과", "제한 시간이 초과되었습니다.\n다시 시도하시겠습니까?",
+                                         QMessageBox.Yes | QMessageBox.No)
+            if retry == QMessageBox.Yes:
+                self.total_score = 0
+                self.generate_quiz()
+            else:
+                self.close()
         else:
             self.generate_quiz()
 
