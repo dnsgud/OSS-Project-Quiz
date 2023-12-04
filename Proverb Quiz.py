@@ -19,15 +19,18 @@ class QuizApp(QMainWindow):
         self.score_label = QLabel("현재 점수: 0", self)
         self.score_label.setGeometry(10, 10, 150, 30)
 
+        self.best_score_label = QLabel("최고 점수: 0", self)
+        self.best_score_label.setGeometry(10, 30, 150, 30)
+
         self.label = QLabel("", self)
-        self.label.setGeometry(10, 50, 400, 50)
+        self.label.setGeometry(10, 70, 400, 50)
         self.label.setAlignment(Qt.AlignTop)
 
         self.entry = QLineEdit(self)
-        self.entry.setGeometry(10, 110, 300, 30)
+        self.entry.setGeometry(10, 130, 300, 30)
 
         self.button = QPushButton("제출", self)
-        self.button.setGeometry(10, 150, 75, 30)
+        self.button.setGeometry(10, 170, 75, 30)
         self.button.clicked.connect(self.check_answer)
 
         self.entry.returnPressed.connect(self.button.click)
@@ -45,7 +48,6 @@ class QuizApp(QMainWindow):
         self.used_proverbs.add(proverb)
 
         self.quiz, self.answer = self.create_quiz(proverb)
-        # 작은따옴표(') 제거
         self.quiz = self.quiz.replace("'", "")
         self.label.setText(f"속담을 완성하세요: {self.quiz}")
         self.entry.clear()
@@ -60,7 +62,6 @@ class QuizApp(QMainWindow):
 
     def create_quiz(self, saying):
         words = saying.split()
-        # 두 연속된 단어 중 하나 선택
         index_to_hide = random.randint(0, len(words) - 2)
         hidden_word1 = words[index_to_hide]
         hidden_word2 = words[index_to_hide + 1]
@@ -76,6 +77,7 @@ class QuizApp(QMainWindow):
             self.total_score += 1
             if self.total_score > self.best_score:
                 self.best_score = self.total_score
+                self.best_score_label.setText(f"최고 점수: {self.best_score}")
             QMessageBox.information(self, "정답", "정답입니다!")
         else:
             retry = QMessageBox.question(self, "틀림", f"틀렸습니다. 정답은 '{self.answer}'입니다.\n다시 시도하시겠습니까?",
@@ -84,7 +86,6 @@ class QuizApp(QMainWindow):
                 self.close()
             else:
                 self.total_score = 0
-                self.best_score = 0
 
         self.score_label.setText(f"현재 점수: {self.total_score}")
         self.generate_quiz()
@@ -97,14 +98,9 @@ class QuizApp(QMainWindow):
             self.remaining_time = -1
             self.timer.stop()
 
-            retry = QMessageBox.question(self, "시간 초과", "제한 시간이 초과되었습니다.\n다시 시도하시겠습니까?",
-                                         QMessageBox.Yes | QMessageBox.No)
-            if retry == QMessageBox.No:
-                self.close()
-            else:
-                self.total_score = 0
-                self.best_score = 0
-                self.generate_quiz()
+            QMessageBox.information(self, "시간 초과", f"제한 시간이 초과되었습니다. 정답은 '{self.answer}'입니다.")
+            self.total_score = 0
+            self.generate_quiz()
         else:
             self.generate_quiz()
 
