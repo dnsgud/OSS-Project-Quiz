@@ -150,6 +150,7 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.quiz_game)
         self.stack.setCurrentIndex(1)
 
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = MainWindow()
