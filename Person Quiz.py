@@ -52,49 +52,59 @@ class QuizGame(QMainWindow):
 
         pixmap = QPixmap(image_path)
         self.image_label.setPixmap(pixmap.scaledToWidth(400))
-
-        # 정답 목록 설정
         self.correct_answers = [answer.lower() for answer in random_image_file.split(',')]
 
-        # 입력창, 타이머 초기화 및 타이머 시작
         self.name_input.clear()
         self.current_timer = self.time_limit
-        self.timer.start(1000)  # 1초마다 타이머 이벤트 발생
+        self.timer.start(1000)
 
     def update_timer(self):
-        # 타이머 갱신 및 시간 초과 체크
         self.current_timer -= 1
         self.timer_label.setText(f'남은 시간: {self.current_timer}초')
 
         if self.current_timer == 0:
             correct_answers_str = ', '.join(self.correct_answers)
-            print("\n시간이 초과되었습니다. 정답은 ( {})입니다.".format(correct_answers_str.replace(".jpeg", "").replace(",", "")))
+            correctness_text = "시간이 초과되었습니다. 정답은 ( {})입니다.".format(
+                correct_answers_str.replace(".jpeg", "").replace(",", "")
+            )
+            print(correctness_text)
+            self.correctness_label.setText(correctness_text)
             self.show_result()
 
     def check_answer(self):
-        # 사용자 입력을 받아 정답과 비교 후 처리
         entered_name = self.name_input.text().strip().lower()
 
         if any(entered_name == answer for answer in self.correct_answers):
-            print("정답입니다.")
+            correctness_text = "정답입니다."
+            print(correctness_text)
+            self.correctness_label.setText(correctness_text)
+
             self.score += 1
+            self.score_label.setText(f'현재 점수: {self.score}')
+
             self.load_random_image()
         else:
             correct_answers_str = ', '.join(self.correct_answers)
-            print("오답입니다. 정답은 ( {})입니다.".format(correct_answers_str.replace(".jpeg", "").replace(",", "")))
+            correctness_text = "오답입니다. 정답은 ( {})입니다.".format(
+                correct_answers_str.replace(".jpeg", "").replace(",", "")
+            )
+            print(correctness_text)
+            self.correctness_label.setText(correctness_text)
 
             self.show_result()
 
     def show_result(self):
-        # 최종 점수 출력 및 게임 종료
         print("최종 점수: {}".format(self.score))
         self.timer.stop()
-        sys.exit()
+        
 
+    def start_quiz_game(self):
+        self.quiz_game = QuizGame(self, r"C:\Users\jung1\Desktop\인물 퀴즈\인물 사진", 7)
+        self.stack.addWidget(self.quiz_game)
+        self.stack.setCurrentIndex(1)
 
 if __name__ == '__main__':
-    # 애플리케이션 실행
     app = QApplication(sys.argv)
-    game = QuizGame(r"C:\Users\jung1\Desktop\인물 퀴즈\인물 사진", 10)  # 디렉토리 경로와 시간 제한을 매개변수로 전달
-    game.show()
+    window = MainWindow()
+    window.show()
     sys.exit(app.exec_())
