@@ -35,6 +35,11 @@ class QuizApp(QMainWindow):
 
         self.entry.returnPressed.connect(self.button.click)
 
+        # 힌트 버튼 추가
+        self.hint_button = QPushButton("힌트", self)
+        self.hint_button.setGeometry(90, 170, 75, 30)
+        self.hint_button.clicked.connect(self.show_hint)
+
         self.used_proverbs = set()
 
         self.generate_quiz()
@@ -51,6 +56,9 @@ class QuizApp(QMainWindow):
         self.quiz = self.quiz.replace("'", "")
         self.label.setText(f"속담을 완성하세요: {self.quiz}")
         self.entry.clear()
+
+        # 힌트 초기화
+        self.hint = f"{self.answer.split()[0][0]} {self.answer.split()[1][0]}"
 
         self.remaining_time = self.time_limit
         self.update_time()
@@ -107,6 +115,12 @@ class QuizApp(QMainWindow):
                 self.close()
         else:
             self.generate_quiz()
+
+    def show_hint(self):
+        if self.hint:
+            QMessageBox.information(self, "힌트", f"힌트: {self.hint}")
+        else:
+            QMessageBox.information(self, "힌트", "힌트를 사용할 수 없습니다.")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
