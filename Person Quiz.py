@@ -96,7 +96,24 @@ class QuizGame(QMainWindow):
     def show_result(self):
         print("최종 점수: {}".format(self.score))
         self.timer.stop()
-        
+        self.parent().stack.setCurrentIndex(0)
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super(MainWindow, self).__init__()
+
+        self.setGeometry(0, 0, 725, 600)
+        self.setWindowTitle("MainWindow")
+
+        self.stack = QStackedWidget(self)
+        self.setCentralWidget(self.stack)
+
+        self.main_widget = QWidget()
+        self.stack.addWidget(self.main_widget)
+
+        self.quiz_button = QPushButton("인물 퀴즈", self.main_widget)
+        self.quiz_button.setGeometry(10, 10, 131, 111)
+        self.quiz_button.clicked.connect(self.start_quiz_game)
 
     def start_quiz_game(self):
         self.quiz_game = QuizGame(self, r"C:\Users\jung1\Desktop\인물 퀴즈\인물 사진", 7)
