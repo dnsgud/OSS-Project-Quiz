@@ -1,81 +1,93 @@
-import tkinter as tk
-from PIL import Image, ImageTk
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
+from PyQt5.QtGui import QPixmap, QImage, QFont
+from PyQt5.QtCore import QTimer, Qt
+from PIL import Image
 import os
 import random
 
 class BrandLogoQuiz:
-    def __init__(self, root, logo_directory):
-        self.root = root
-        self.root.title("Brand Logo Quiz")
-
-        # 디렉토리 내 파일 리스트 얻기
+    def __init__(self, logo_directory):
         self.logo_directory = logo_directory
         self.logo_files = [f for f in os.listdir(self.logo_directory) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))]
         if not self.logo_files:
             print("No valid logo image files found in the directory.")
-            return
+            sys.exit()
 
-        # 랜덤하게 로고 파일 선택
+        self.coordinates = (100, 50, 300, 250)
         self.current_logo_file = ""
+        self.score = 0
+        self.countdown = 5
+        self.countdown_timer = QTimer()
+
+        self.app = QApplication(sys.argv)
+        self.root = QWidget()
+        self.root.setWindowTitle("Brand Logo Quiz")
+
+        self.setup_ui()
+
+    def setup_ui(self):
         self.select_next_logo()
 
-        # 로고 이미지 열기
         self.logo_path = os.path.join(self.logo_directory, self.current_logo_file)
         self.logo_image = Image.open(self.logo_path)
-
-        # 로고 이미지에서 자표에 해당하는 부분을 잘라냄
-        self.coordinates = (100, 50, 300, 250)
         self.cropped_image = self.logo_image.crop(self.coordinates)
+        self.q_pixmap = self.pil_to_pixmap(self.cropped_image)
 
-        # Tkinter PhotoImage 객체로 변환
-        self.tk_cropped_image = ImageTk.PhotoImage(self.cropped_image)
+        self.logo_label = QLabel(self.root)
+        self.logo_label.setPixmap(self.q_pixmap)
 
-        # 원본 로고 이미지 Tkinter PhotoImage 객체로 변환
-        self.tk_original_image = ImageTk.PhotoImage(self.logo_image.resize(self.cropped_image.size))
+        self.entry = QLineEdit(self.root)
+        self.entry.returnPressed.connect(self.check_answer)
 
-        # 로고 이미지 표시 레이블
-        self.logo_label = tk.Label(root, image=self.tk_cropped_image)
-        self.logo_label.grid(row=0, column=0, columnspan=3, pady=10)
+        self.submit_button = QPushButton("제출", self.root)
+        self.submit_button.clicked.connect(self.check_answer)
 
-        # 텍스트 입력 상자 추가
-        self.entry = tk.Entry(root, font=("Arial", 12))  # 폰트 크기를 동일하게 설정
-        self.entry.grid(row=1, column=0, columnspan=2, pady=10)
-        self.entry.bind("<Return>", lambda event: self.check_answer())  # 엔터 키에 대한 이벤트 설정
+        self.result_label = QLabel(self.root)
+        self.score_label = QLabel(f"점수: {self.score}", self.root)
+        self.countdown_label = QLabel("", self.root)
 
-        # 제출 버튼 추가
-        self.submit_button = tk.Button(root, text=">", command=self.check_answer, font=("Arial", 12))
-        self.submit_button.grid(row=1, column=2, pady=10)  # 텍스트 입력 상자 옆에 배치
+        # 크기가 큰 폰트로 설정
+        font = QFont()
+        font.setPointSize(16)  # 원하는 폰트 크기로 조절
 
-        # 결과 표시 레이블 추가
-        self.result_label = tk.Label(root, text="")
-        self.result_label.grid(row=2, column=0, columnspan=3, pady=10)
+        self.result_label.setFont(font)
+        self.score_label.setFont(font)
+        self.countdown_label.setFont(font)
 
-        # 점수 관련 변수 초기화
-        self.score = 0
-        self.score_label = tk.Label(root, text=f"점수: {self.score}")
-        self.score_label.grid(row=3, column=0, columnspan=3, pady=10)
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(self.entry)
+        h_layout.addWidget(self.submit_button)
 
-        # 창 가운데에 위치하도록 설정
+        v_layout = QVBoxLayout(self.root)
+        v_layout.addWidget(self.logo_label)
+        v_layout.addLayout(h_layout)
+        v_layout.addWidget(self.result_label)
+        v_layout.addWidget(self.score_label)
+        v_layout.addWidget(self.countdown_label)
+
+        self.root.setLayout(v_layout)
+
         self.center_window()
+        self.root.show()
 
-        # 초기 이미지 표시 후 카운트다운 시작
-        self.root.after(0, self.next_question)
+        self.countdown_timer.timeout.connect(self.update_countdown)
+        self.countdown_timer.start(1000)
+
+        sys.exit(self.app.exec_())
 
     def center_window(self):
-        # 창의 크기 및 위치 계산
         window_width = 400
         window_height = 500
-        screen_width = self.root.winfo_screenwidth()
-        screen_height = self.root.winfo_screenheight()
+        screen_width = self.app.primaryScreen().geometry().width()
+        screen_height = self.app.primaryScreen().geometry().height()
 
         x_position = (screen_width - window_width) // 2
         y_position = (screen_height - window_height) // 2
 
-        # 창을 가운데로 이동
-        self.root.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
+        self.root.setGeometry(x_position, y_position, window_width, window_height)
 
     def select_next_logo(self):
-        # 새로운 로고 퀴즈로 이동
         remaining_logos = [logo for logo in self.logo_files if logo != self.current_logo_file]
         if remaining_logos:
             self.current_logo_file = random.choice(remaining_logos)
@@ -83,57 +95,75 @@ class BrandLogoQuiz:
             print("All logos have been used. Restarting from the beginning.")
             self.current_logo_file = random.choice(self.logo_files)
 
+    def pil_to_pixmap(self, image):
+        # 이미지의 세로와 가로 길이를 변경
+        new_width = 400  # 원하는 가로 길이
+        new_height = 300  # 원하는 세로 길이
+        image = image.resize((new_width, new_height), Image.LANCZOS)
+        image = image.convert("RGBA")
+        width, height = image.size
+        q_image = QImage(image.tobytes("raw", "RGBA"), width, height, QImage.Format_RGBA8888)
+        pixmap = QPixmap.fromImage(q_image)
+        return pixmap
+
     def check_answer(self):
-        user_input = self.entry.get().strip().lower()
+        user_input = self.entry.text().strip().lower()
         correct_answer = os.path.splitext(self.current_logo_file)[0].lower()
 
         if user_input == correct_answer:
             result_text = "정답입니다!"
-            self.score += 1  # 정답일 경우 점수 1 증가
-            self.result_label.config(text=result_text)
-            self.score_label.config(text=f"점수: {self.score}")
-            self.next_question()  # 정답을 맞추면 다음 문제로 이동
+            self.score += 1
+            self.reset_countdown()
         else:
             result_text = f"틀렸습니다. 정답은 {correct_answer.capitalize()} 입니다."
-            self.result_label.config(text=result_text)
-            self.end_game()  # 정답이 틀리면 게임 종료
+            self.countdown_timer.stop()
+            self.entry.setDisabled(True)  # 입력 창 비활성화
+            self.submit_button.setDisabled(True)  # 제출 버튼 비활성화
+
+        self.result_label.setText(result_text)
+        self.score_label.setText(f"점수: {self.score}")
+
+        if user_input == correct_answer:
+            self.next_question()
 
     def next_question(self):
-        # 새로운 로고 퀴즈로 이동
         self.select_next_logo()
+
         self.logo_path = os.path.join(self.logo_directory, self.current_logo_file)
         self.logo_image = Image.open(self.logo_path)
-
-        # 로고 이미지에서 자표에 해당하는 부분을 잘라냄
         self.cropped_image = self.logo_image.crop(self.coordinates)
+        self.q_pixmap = self.pil_to_pixmap(self.cropped_image)
 
-        # Tkinter PhotoImage 객체로 변환
-        self.tk_cropped_image.paste(self.cropped_image)
+        self.logo_label.setPixmap(self.q_pixmap)
 
-        self.entry.delete(0, tk.END)  # 텍스트 입력 상자 초기화
+        self.entry.clear()
+        self.reset_countdown()
+        self.entry.setDisabled(False)  # 입력 창 활성화
+        self.submit_button.setDisabled(False)  # 제출 버튼 활성화
+        self.countdown_timer.start()
 
-        # 7초 카운트 다운 시작
-        self.root.after(0, self.countdown, 7)
+    def update_countdown(self):
+        self.countdown -= 1
+        self.countdown_label.setText(f"남은 시간: {self.countdown}초")
 
-    def countdown(self, seconds):
-        if seconds > 0:
-            self.result_label.config(text=f"{seconds}초 남음")
-            self.root.after(1000, self.countdown, seconds - 1)
-        else:
-            self.end_game()
+        if self.countdown == 0:
+            self.countdown_timer.stop()
+            self.entry.setDisabled(True)  # 입력 창 비활성화
+            self.submit_button.setDisabled(True)  # 제출 버튼 비활성화
+            self.show_game_over()
 
-    def end_game(self):
-        # 게임 종료 메서드
-        self.logo_label.config(image=self.tk_original_image)  # 원본 이미지로 변경
-        self.logo_label.grid(columnspan=3)  # 이미지 크기에 맞게 열의 span을 조정
-        self.entry.config(state=tk.DISABLED)  # 입력 창 비활성화
-        self.submit_button.config(state=tk.DISABLED)  # 제출 버튼 비활성화
-        self.result_label.config(text="게임 종료")
+    def reset_countdown(self):
+        self.countdown = 5
+        self.countdown_label.setText(f"남은 시간: {self.countdown}초")
+        self.countdown_timer.start()
 
-# 특정 디렉토리에서 로고 이미지 파일로 퀴즈 생성
-logo_directory = "image"  # 실제 디렉토리 경로로 대체
-root = tk.Tk()
-quiz_app = BrandLogoQuiz(root, logo_directory)
-root.mainloop()
+    def show_game_over(self):
+        game_over_message = QMessageBox(self.root)
+        game_over_message.setWindowTitle("게임 종료")
+        game_over_message.setText(f"게임 종료! 최종 점수: {self.score}")
+        game_over_message.exec_()
+        self.app.quit()
 
-
+if __name__ == "__main__":
+    logo_directory = "image"  # 실제 디렉토리 경로로 대체
+    quiz_app = BrandLogoQuiz(logo_directory)
