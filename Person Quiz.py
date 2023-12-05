@@ -26,6 +26,13 @@ class QuizGame(QMainWindow):
         self.correctness_label = QLabel("", self)
         self.score_label = QLabel(f'현재 점수: {self.score}', self)
 
+        # 다시하기 버튼과 메인화면 버튼 추가
+        self.retry_button = QPushButton("다시하기", self)
+        self.main_menu_button = QPushButton("메인화면", self)
+
+        self.retry_button.clicked.connect(self.load_random_image)
+        self.main_menu_button.clicked.connect(self.return_to_main_menu)
+
         layout = QVBoxLayout()
         layout.addWidget(self.image_label)
         layout.addWidget(self.name_input)
