@@ -47,18 +47,13 @@ class BrandLogoQuiz:
         self.result_label = tk.Label(root, text="")
         self.result_label.grid(row=3, column=0, columnspan=2, pady=10)
 
-        # 점수 관련 변수 초기화
-        self.score = 0
-        self.score_label = tk.Label(root, text=f"점수: {self.score}")
-        self.score_label.grid(row=4, column=0, columnspan=2, pady=10)
-
         # 창 가운데에 위치하도록 설정
         self.center_window()
 
     def center_window(self):
         # 창의 크기 및 위치 계산
         window_width = 400
-        window_height = 500
+        window_height = 400
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
 
@@ -83,13 +78,10 @@ class BrandLogoQuiz:
 
         if user_input == correct_answer:
             result_text = "정답입니다!"
-            self.score += 1  # 정답일 경우 점수 1 증가
         else:
             result_text = f"틀렸습니다. 정답은 {correct_answer.capitalize()} 입니다."
 
-        # 결과 표시 및 점수 갱신
         self.result_label.config(text=result_text)
-        self.score_label.config(text=f"점수: {self.score}")
         self.next_question()
 
     def next_question(self):
@@ -104,8 +96,7 @@ class BrandLogoQuiz:
         # Tkinter PhotoImage 객체로 변환
         self.tk_cropped_image.paste(self.cropped_image)
 
-        self.entry.delete(0, tk.END)  # 텍스트 입력 상자 초기화
-
+        self.entry.delete(0, tk.END)  # 텍스트 입력 상
 # 특정 디렉토리에서 로고 이미지 파일로 퀴즈 생성
 logo_directory = "image"  # 실제 디렉토리 경로로 대체
 root = tk.Tk()
