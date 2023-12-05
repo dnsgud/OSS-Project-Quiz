@@ -25,3 +25,62 @@ class BrandLogoQuiz:
         self.root.setWindowTitle("Brand Logo Quiz")
 
         self.setup_ui()
+
+    def setup_ui(self):
+        self.select_next_logo()
+
+        self.logo_path = os.path.join(self.logo_directory, self.current_logo_file)
+        self.logo_image = Image.open(self.logo_path)
+        self.cropped_image = self.logo_image.crop(self.coordinates)
+        self.q_pixmap = self.pil_to_pixmap(self.cropped_image)
+
+        self.logo_label = QLabel(self.root)
+        self.logo_label.setPixmap(self.q_pixmap)
+
+        self.entry = QLineEdit(self.root)
+        self.entry.returnPressed.connect(self.check_answer)
+
+        self.submit_button = QPushButton("제출", self.root)
+        self.submit_button.clicked.connect(self.check_answer)
+
+        self.result_label = QLabel(self.root)
+        self.score_label = QLabel(f"점수: {self.score}", self.root)
+        self.countdown_label = QLabel("", self.root)
+
+        # 크기가 큰 폰트로 설정
+        font = QFont()
+        font.setPointSize(16)  # 원하는 폰트 크기로 조절
+
+        self.result_label.setFont(font)
+        self.score_label.setFont(font)
+        self.countdown_label.setFont(font)
+
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(self.entry)
+        h_layout.addWidget(self.submit_button)
+
+        v_layout = QVBoxLayout(self.root)
+        v_layout.addWidget(self.logo_label)
+        v_layout.addLayout(h_layout)
+        v_layout.addWidget(self.result_label)
+        v_layout.addWidget(self.score_label)
+        v_layout.addWidget(self.countdown_label)
+
+        self.root.setLayout(v_layout)
+
+        self.center_window()
+        self.root.show()
+
+        self.countdown_timer.timeout.connect(self.update_countdown)
+        self.countdown_timer.start(1000)
+
+        sys.exit(self.app.exec_())
+
+    def center_window(self):
+        window_width = 400
+        window_height = 500
+        screen_width = self.app.primaryScreen().geometry().width()
+        screen_height = self.app.primaryScreen().geometry().height()
+
+        x_position = (screen_width - window_width) // 2
+        y_position = (screen_height - window_height) // 2
