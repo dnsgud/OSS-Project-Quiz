@@ -35,22 +35,22 @@ class BrandLogoQuiz:
         self.logo_label.grid(row=0, column=0, columnspan=2, pady=10)
 
         # 텍스트 입력 상자 추가
-        self.entry = tk.Entry(root, font=("Arial", 12))  # 폰트 크기를 동일하게 설정
+        self.entry = tk.Entry(root)
         self.entry.grid(row=1, column=0, columnspan=2, pady=10)
         self.entry.bind("<Return>", lambda event: self.check_answer())  # 엔터 키에 대한 이벤트 설정
 
         # 제출 버튼 추가
-        self.submit_button = tk.Button(root, text=">", command=self.check_answer, font=("Arial", 12))
-        self.submit_button.grid(row=1, column=2, pady=10)  # 텍스트 입력 상자 옆에 배치
+        self.submit_button = tk.Button(root, text="제출", command=self.check_answer)
+        self.submit_button.grid(row=2, column=0, columnspan=2, pady=10)
 
         # 결과 표시 레이블 추가
         self.result_label = tk.Label(root, text="")
-        self.result_label.grid(row=2, column=0, columnspan=2, pady=10)
+        self.result_label.grid(row=3, column=0, columnspan=2, pady=10)
 
         # 점수 관련 변수 초기화
         self.score = 0
         self.score_label = tk.Label(root, text=f"점수: {self.score}")
-        self.score_label.grid(row=3, column=0, columnspan=2, pady=10)
+        self.score_label.grid(row=4, column=0, columnspan=2, pady=10)
 
         # 창 가운데에 위치하도록 설정
         self.center_window()
