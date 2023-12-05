@@ -40,6 +40,13 @@ class QuizGame(QMainWindow):
         layout.addWidget(self.correctness_label)
         layout.addWidget(self.score_label)
 
+        # 버튼들을 수평으로 정렬
+        button_layout = QHBoxLayout()
+        button_layout.addWidget(self.retry_button)
+        button_layout.addWidget(self.main_menu_button)
+
+        layout.addLayout(button_layout)
+
         central_widget = QWidget(self)
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
