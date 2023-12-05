@@ -100,12 +100,19 @@ class QuizGame(QMainWindow):
             print(correctness_text)
             self.correctness_label.setText(correctness_text)
 
-            self.show_result()
+            # 오답 시 버튼들을 보이도록 설정
+            self.retry_button.show()
+            self.main_menu_button.show()
+
+            # 퀴즈가 더 진행되지 않도록 타이머를 멈춤
+            self.timer.stop()
 
     def show_result(self):
         print("최종 점수: {}".format(self.score))
-        self.timer.stop()
+
+    def return_to_main_menu(self):
         self.parent().stack.setCurrentIndex(0)
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
