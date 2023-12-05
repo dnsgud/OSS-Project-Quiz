@@ -71,6 +71,10 @@ class QuizGame(QMainWindow):
         self.correct_answers = [answer.lower() for answer in random_image_file.split(',')]
 
         self.name_input.clear()
+        self.correctness_label.clear()
+        self.retry_button.hide()
+        self.main_menu_button.hide()
+
         self.current_timer = self.time_limit
         self.timer.start(1000)
 
