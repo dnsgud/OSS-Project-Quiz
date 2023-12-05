@@ -100,7 +100,6 @@ class QuizGame(QMainWindow):
 
         if any(entered_name == answer for answer in self.correct_answers):
             correctness_text = "정답입니다."
-            print(correctness_text)
             self.correctness_label.setText(correctness_text)
 
             self.score += 1
