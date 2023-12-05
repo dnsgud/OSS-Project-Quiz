@@ -97,6 +97,6 @@ class QuizGame(QMainWindow):
 if __name__ == '__main__':
     # 애플리케이션 실행
     app = QApplication(sys.argv)
-    game = QuizGame(r"C:\Users\jung1\Desktop\인물 퀴즈\인물 사진", 10)  # 디렉토리 경로와 시간 제한을 매개변수로 전달
+    game = QuizGame(r"C:\Users\jung1\Documents\OSS-Project1\인물 퀴즈\인물 사진", 10)  # 디렉토리 경로와 시간 제한을 매개변수로 전달
     game.show()
     sys.exit(app.exec_())
