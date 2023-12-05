@@ -82,7 +82,7 @@ class QuizGame(QMainWindow):
             self.score += 1
             self.score_label.setText(f'현재 점수: {self.score}')
 
-            self.load_/random_image()
+            self.load_random_image()
         else:
             correct_answers_str = ', '.join(self.correct_answers)
             correctness_text = "오답입니다. 정답은 ( {})입니다.".format(
