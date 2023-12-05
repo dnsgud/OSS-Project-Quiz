@@ -1,4 +1,3 @@
-         self.next_question()
 
     def next_question(self):
         self.select_next_logo()
