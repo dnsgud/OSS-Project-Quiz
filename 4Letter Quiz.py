@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox
 from PyQt5.QtCore import QTimer
 import random
+
 class QuizGame(QWidget):
     def __init__(self):
         super().__init__()
@@ -16,13 +17,14 @@ class QuizGame(QWidget):
         self.timer.timeout.connect(self.handle_timeout)
 
         self.init_ui()
+
     def init_ui(self):
         self.layout = QVBoxLayout()
 
         self.quiz_label = QLabel(self)
         self.layout.addWidget(self.quiz_label)
 
-        self.answer_input = QLineEdit(self)
+        self.answer_input = QLineEdit(self) #답 입력 버튼임
         self.answer_input.returnPressed.connect(self.check_answer)  # Enter 키 누를 때 처리
         self.layout.addWidget(self.answer_input)
 
@@ -30,13 +32,21 @@ class QuizGame(QWidget):
 
         self.show_question()
         self.show()
+
     def load_quiz_data(self):
         with open(r"C:\Users\user\PycharmProjects\pycharmhi\4letterquiz.txt", encoding="utf-8") as file:
             quiz_data = [line.strip() for line in file.readlines()]
         with open(r"C:\Users\user\PycharmProjects\pycharmhi\4letteranswer.txt", encoding="utf-8") as file:
             answer_data = [line.strip() for line in file.readlines()]
         return quiz_data, answer_data
-     def show_question(self):
+
+    def shuffle_quiz_data(self, quiz_data, answer_data):
+        combined_data = list(zip(quiz_data, answer_data))
+        random.shuffle(combined_data) #랜덤으로 나와야하니까 문제 섞기기
+        shuffled_quiz_data, shuffled_answer_data = zip(*combined_data)
+        return list(shuffled_quiz_data), list(shuffled_answer_data)
+
+    def show_question(self):
         if self.current_index < len(self.quiz_data):
             selected_quiz, answer = self.quiz_data[self.current_index], self.answer_data[self.current_index]
             two_letter = selected_quiz[:2]
@@ -48,8 +58,9 @@ class QuizGame(QWidget):
     def handle_timeout(self):
         self.timer.stop()
         self.check_answer(timeout=True)
+
     def check_answer(self,timeout=False):
-        if timeout:
+        if timeout: #답 입력 시간초과
             user_input = "timeout"
         else:
             user_input = self.answer_input.text()
@@ -70,6 +81,7 @@ class QuizGame(QWidget):
                 QMessageBox.information(self, '정답', f'정답은 {self.answer_data[self.current_index]} 입니다.', QMessageBox.Ok)
             else:
                 QMessageBox.information(self, '오답', f'틀렸습니다. 정답은 {self.answer_data[self.current_index]} 입니다.', QMessageBox.Ok)
+
             restart = QMessageBox.question(self, '재시작', '다시 시작하시겠습니까?', QMessageBox.Yes | QMessageBox.No)
             if restart == QMessageBox.Yes:
                 self.total_score = 0
@@ -77,12 +89,14 @@ class QuizGame(QWidget):
                 self.show_question()
             else:
                 self.show_end_message()
-     def check_user_answer(self, user_input, correct_answer):
+
+    def check_user_answer(self, user_input, correct_answer):
         # 사용자가 입력한 답이 뒷 두 글자와 일치하고, 앞 두 글자도 일치하는지 확인
         return user_input[-2:] == correct_answer[-2:] and user_input[:2] == self.quiz_data[self.current_index][:2]
     def show_end_message(self):
         QMessageBox.information(self, '종료', f'게임 종료! 총 점수: {self.total_score}', QMessageBox.Ok)
         self.close()
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     game = QuizGame()
