@@ -36,6 +36,18 @@ class QuizGame(QWidget):
         with open(r"C:\Users\user\PycharmProjects\pycharmhi\4letteranswer.txt", encoding="utf-8") as file:
             answer_data = [line.strip() for line in file.readlines()]
         return quiz_data, answer_data
+     def show_question(self):
+        if self.current_index < len(self.quiz_data):
+            selected_quiz, answer = self.quiz_data[self.current_index], self.answer_data[self.current_index]
+            two_letter = selected_quiz[:2]
+            self.quiz_label.setText(f"퀴즈: {two_letter} ?")
+            self.timer.start(6000)  # 6초 타이머 시작
+        else:
+            self.show_end_message()
+
+    def handle_timeout(self):
+        self.timer.stop()
+        self.check_answer(timeout=True)
     def check_answer(self,timeout=False):
         if timeout:
             user_input = "timeout"
@@ -55,3 +67,13 @@ class QuizGame(QWidget):
         else:
             if timeout:
                 QMessageBox.information(self, '시간 초과', '시간 초과! 오답으로 처리합니다.', QMessageBox.Ok)
+                QMessageBox.information(self, '정답', f'정답은 {self.answer_data[self.current_index]} 입니다.', QMessageBox.Ok)
+            else:
+                QMessageBox.information(self, '오답', f'틀렸습니다. 정답은 {self.answer_data[self.current_index]} 입니다.', QMessageBox.Ok)
+            restart = QMessageBox.question(self, '재시작', '다시 시작하시겠습니까?', QMessageBox.Yes | QMessageBox.No)
+            if restart == QMessageBox.Yes:
+                self.total_score = 0
+                self.current_index = 0
+                self.show_question()
+            else:
+                self.show_end_message()
