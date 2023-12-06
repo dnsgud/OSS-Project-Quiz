@@ -35,7 +35,7 @@ class BrandLogoQuiz:
 
         # 로고 이미지 표시 레이블
         self.logo_label = tk.Label(root, image=self.tk_cropped_image)
-        self.logo_label.grid(row=0, column=0, columnspan=2, pady=10)
+        self.logo_label.grid(row=0, column=0, columnspan=3, pady=10)
 
         # 텍스트 입력 상자 추가
         self.entry = tk.Entry(root, font=("Arial", 12))  # 폰트 크기를 동일하게 설정
@@ -48,15 +48,18 @@ class BrandLogoQuiz:
 
         # 결과 표시 레이블 추가
         self.result_label = tk.Label(root, text="")
-        self.result_label.grid(row=2, column=0, columnspan=2, pady=10)
+        self.result_label.grid(row=2, column=0, columnspan=3, pady=10)
 
         # 점수 관련 변수 초기화
         self.score = 0
         self.score_label = tk.Label(root, text=f"점수: {self.score}")
-        self.score_label.grid(row=3, column=0, columnspan=2, pady=10)
+        self.score_label.grid(row=3, column=0, columnspan=3, pady=10)
 
         # 창 가운데에 위치하도록 설정
         self.center_window()
+
+        # 초기 이미지 표시 후 카운트다운 시작
+        self.root.after(0, self.next_question)
 
     def center_window(self):
         # 창의 크기 및 위치 계산
@@ -109,18 +112,26 @@ class BrandLogoQuiz:
 
         self.entry.delete(0, tk.END)  # 텍스트 입력 상자 초기화
 
+        # 7초 카운트 다운 시작
+        self.root.after(0, self.countdown, 7)
+
+    def countdown(self, seconds):
+        if seconds > 0:
+            self.result_label.config(text=f"{seconds}초 남음")
+            self.root.after(1000, self.countdown, seconds - 1)
+        else:
+            self.end_game()
+
     def end_game(self):
         # 게임 종료 메서드
         self.logo_label.config(image=self.tk_original_image)  # 원본 이미지로 변경
         self.logo_label.grid(columnspan=3)  # 이미지 크기에 맞게 열의 span을 조정
         self.entry.config(state=tk.DISABLED)  # 입력 창 비활성화
         self.submit_button.config(state=tk.DISABLED)  # 제출 버튼 비활성화
+        self.result_label.config(text="게임 종료")
 
 # 특정 디렉토리에서 로고 이미지 파일로 퀴즈 생성
 logo_directory = "image"  # 실제 디렉토리 경로로 대체
 root = tk.Tk()
 quiz_app = BrandLogoQuiz(root, logo_directory)
 root.mainloop()
-
-
-
