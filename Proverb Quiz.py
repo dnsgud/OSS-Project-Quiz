@@ -16,6 +16,8 @@ class QuizApp(QMainWindow):
 
         self.setFixedSize(500, 350)
 
+        self.setStyleSheet("background-color: #8FBC8F;")  # 전체 배경 색상 설정
+
         self.score_label = QLabel("현재 점수: 0", self)
         self.score_label.setGeometry(10, 10, 150, 30)
 
