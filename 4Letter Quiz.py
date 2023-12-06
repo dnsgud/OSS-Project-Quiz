@@ -104,37 +104,27 @@ class QuizGame(QWidget):
             QMessageBox.information(self, '시간 초과', '시간 초과! 오답으로 처리합니다.', QMessageBox.Ok)
             QMessageBox.information(self, '정답', f'정답은 {self.answer_data[self.current_index]} 입니다.', QMessageBox.Ok)
         else:
-            QMessageBox.information(self, '오답', f'틀렸습니다. 정답은 {self.answer_data[self.current_index]} 입니다.', QMessageBox.Ok)
+            else:
+            for line in matching_lines:
+                if line[:2] == self.quiz_data[self.current_index][:2]:
+                    self.total_score += 1
+                    self.correct_count += 1  # 정답일 경우 정답 횟수 증가
+                    QMessageBox.information(self, '정답', f'정답입니다! 현재 점수: {self.total_score}', QMessageBox.Ok)
+                    self.current_index += 1
+                    self.show_question()
+                    self.answer_input.clear()
+                    return
 
-        restart = QMessageBox.question(self, '재시작', '다시 시작하시겠습니까?', QMessageBox.Yes | QMessageBox.No)
-        if restart == QMessageBox.Yes:
-            self.total_score = 0
-            self.current_index = 0
-            self.show_question()
-        else:
-            self.show_end_message()
-    else:
-        # 일치하는 답이 여러 개인 경우
-        for line in matching_lines:
-            # 앞 두 글자도 일치하는지 확인
-            if line[:2] == self.quiz_data[self.current_index][:2]:
-                # 정답 처리
-                self.total_score += 1
-                QMessageBox.information(self, '정답', f'정답입니다! 현재 점수: {self.total_score}', QMessageBox.Ok)
-                self.current_index += 1
+            QMessageBox.information(self, '오답', f'틀렸습니다. 정답은 {self.answer_data[self.current_index][2:]} 입니다.', QMessageBox.Ok)
+            restart = QMessageBox.question(self, '재시작', '다시 시작하시겠습니까?', QMessageBox.Yes | QMessageBox.No)
+            if restart == QMessageBox.Yes:
+                self.total_score = 0
+                self.current_index = 0
                 self.show_question()
-                self.answer_input.clear()  # 입력창 비우기
-                return
+            else:
+                self.show_end_message()
 
-        # 모든 일치하는 답이 오답인 경우
-        QMessageBox.information(self, '오답', f'틀렸습니다. 정답은 {self.answer_data[self.current_index]} 입니다.', QMessageBox.Ok)
-        restart = QMessageBox.question(self, '재시작', '다시 시작하시겠습니까?', QMessageBox.Yes | QMessageBox.No)
-        if restart == QMessageBox.Yes:
-            self.total_score = 0
-            self.current_index = 0
-            self.show_question()
-        else:
-            self.show_end_message()
+        
 
 
     def check_user_answer(self, user_input, correct_answer):
