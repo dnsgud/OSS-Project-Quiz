@@ -30,3 +30,28 @@ class QuizGame(QWidget):
 
         self.show_question()
         self.show()
+    def load_quiz_data(self):
+        with open(r"C:\Users\user\PycharmProjects\pycharmhi\4letterquiz.txt", encoding="utf-8") as file:
+            quiz_data = [line.strip() for line in file.readlines()]
+        with open(r"C:\Users\user\PycharmProjects\pycharmhi\4letteranswer.txt", encoding="utf-8") as file:
+            answer_data = [line.strip() for line in file.readlines()]
+        return quiz_data, answer_data
+    def check_answer(self,timeout=False):
+        if timeout:
+            user_input = "timeout"
+        else:
+            user_input = self.answer_input.text()
+
+        correct_answer = self.answer_data[self.current_index][2:]
+
+        if user_input.lower() == "quit":
+            self.show_end_message()
+        elif user_input == self.answer_data[self.current_index][2:]:
+            self.total_score += 1
+            QMessageBox.information(self, '정답', f'정답입니다! 현재 점수: {self.total_score}', QMessageBox.Ok)
+            self.current_index += 1
+            self.show_question()
+            self.answer_input.clear()  # 입력창 비우기
+        else:
+            if timeout:
+                QMessageBox.information(self, '시간 초과', '시간 초과! 오답으로 처리합니다.', QMessageBox.Ok)
