@@ -77,3 +77,13 @@ class QuizGame(QWidget):
                 self.show_question()
             else:
                 self.show_end_message()
+     def check_user_answer(self, user_input, correct_answer):
+        # 사용자가 입력한 답이 뒷 두 글자와 일치하고, 앞 두 글자도 일치하는지 확인
+        return user_input[-2:] == correct_answer[-2:] and user_input[:2] == self.quiz_data[self.current_index][:2]
+    def show_end_message(self):
+        QMessageBox.information(self, '종료', f'게임 종료! 총 점수: {self.total_score}', QMessageBox.Ok)
+        self.close()
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    game = QuizGame()
+    sys.exit(app.exec_())
