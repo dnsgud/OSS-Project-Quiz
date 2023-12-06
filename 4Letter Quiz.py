@@ -1,65 +1,18 @@
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox
+from PyQt5.QtCore import QTimer
 import random
-import threading
-import time
+class QuizGame(QWidget):
+    def __init__(self):
+        super().__init__()
 
-def load_quiz_data():
-    with open("4letterquiz.txt", "r") as file:
-        quiz_data = [line.strip() for line in file.readlines()]
-    with open("4letteranswer.txt", "r") as file:
-        answer_data = [line.strip() for line in file.readlines()]
-    return quiz_data, answer_data
+        self.quiz_data, self.answer_data = self.load_quiz_data()
+        self.quiz_data, self.answer_data = self.shuffle_quiz_data(self.quiz_data, self.answer_data)
 
-def shuffle_quiz_data(quiz_data, answer_data):
-    combined_data = list(zip(quiz_data, answer_data))
-    random.shuffle(combined_data)
-    shuffled_quiz_data, shuffled_answer_data = zip(*combined_data)
-    return list(shuffled_quiz_data), list(shuffled_answer_data)
+        self.total_score = 0
+        self.current_index = 0
 
-def get_user_input(timeout, default=None):
-    result = [default]
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.handle_timeout)
 
-    def user_input():
-        result[0] = input()
-
-    thread = threading.Thread(target=user_input)
-    thread.daemon = True
-    thread.start()
-    thread.join(timeout)
-
-    return result[0]
-
-def play_quiz():
-    quiz_data, answer_data = load_quiz_data()
-    quiz_data, answer_data = shuffle_quiz_data(quiz_data, answer_data)
-    total_score = 0
-
-    for index in range(len(quiz_data)):
-        selected_quiz, answer = quiz_data[index], answer_data[index]
-        twoletter = selected_quiz[:2]  # 앞 두 글자만 제시
-
-        print(f"퀴즈: {twoletter} ?")
-
-        # 6초 동안 사용자 입력 받기
-        user_answer = get_user_input(6, default="timeout")
-
-        if user_answer.lower() == "quit":
-            print(f"종료! 총 점수: {total_score}")
-            break
-
-        if user_answer == answer[2:]:
-            total_score += 1
-            print(f"정답입니다! 현재 점수: {total_score}\n")
-        else:
-            if user_answer == "timeout":
-                print("시간 초과! 오답으로 처리합니다.\n")
-                print("정답:"+answer)
-            else:
-                print(f"오답입니다. 현재 점수: {total_score}\n")
-                print("정답:"+answer)
-            restart = input("다시 시작하시겠습니까? (예/아니오): ")
-            if restart.lower() != "예":
-                print(f"종료! 총 점수: {total_score}")
-                break
-
-if __name__ == "__main__":
-    play_quiz()
+        self.init_ui()
