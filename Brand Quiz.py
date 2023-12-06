@@ -49,7 +49,7 @@ class BrandLogoQuiz:
 
         # 크기가 큰 폰트로 설정
         font = QFont()
-        font.setPointSize(16)  # 원하는 폰트 크기로 조절
+        font.setPointSize(13)  # 원하는 폰트 크기로 조절
 
         self.result_label.setFont(font)
         self.score_label.setFont(font)
@@ -150,18 +150,11 @@ class BrandLogoQuiz:
             self.countdown_timer.stop()
             self.entry.setDisabled(True)  # 입력 창 비활성화
             self.submit_button.setDisabled(True)  # 제출 버튼 비활성화
-
+            self.result_label.setText("시간 초과!")
     def reset_countdown(self):
         self.countdown = 5
         self.countdown_label.setText(f"남은 시간: {self.countdown}초")
         self.countdown_timer.start()
-
-    def show_game_over(self):
-        game_over_message = QMessageBox(self.root)
-        game_over_message.setWindowTitle("게임 종료")
-        game_over_message.setText(f"게임 종료! 최종 점수: {self.score}")
-        game_over_message.exec_()
-        self.app.quit()
 
 if __name__ == "__main__":
     logo_directory = "image"  # 실제 디렉토리 경로로 대체
