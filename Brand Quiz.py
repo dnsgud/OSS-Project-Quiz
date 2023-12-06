@@ -150,7 +150,6 @@ class BrandLogoQuiz:
             self.countdown_timer.stop()
             self.entry.setDisabled(True)  # 입력 창 비활성화
             self.submit_button.setDisabled(True)  # 제출 버튼 비활성화
-            self.show_game_over()
 
     def reset_countdown(self):
         self.countdown = 5
