@@ -16,3 +16,17 @@ class QuizGame(QWidget):
         self.timer.timeout.connect(self.handle_timeout)
 
         self.init_ui()
+    def init_ui(self):
+        self.layout = QVBoxLayout()
+
+        self.quiz_label = QLabel(self)
+        self.layout.addWidget(self.quiz_label)
+
+        self.answer_input = QLineEdit(self)
+        self.answer_input.returnPressed.connect(self.check_answer)  # Enter 키 누를 때 처리
+        self.layout.addWidget(self.answer_input)
+
+        self.setLayout(self.layout)
+
+        self.show_question()
+        self.show()
