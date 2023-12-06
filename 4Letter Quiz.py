@@ -34,15 +34,13 @@ class QuizGame(QWidget):
         self.show()
 
     def load_quiz_data(self):
-        with open(r"C:\Users\user\PycharmProjects\pycharmhi\4letterquiz.txt", encoding="utf-8") as file:
-            quiz_data = [line.strip() for line in file.readlines()]
         with open(r"C:\Users\user\PycharmProjects\pycharmhi\4letteranswer.txt", encoding="utf-8") as file:
             answer_data = [line.strip() for line in file.readlines()]
-        return quiz_data, answer_data
+        return answer_data, answer_data
 
     def shuffle_quiz_data(self, quiz_data, answer_data):
         combined_data = list(zip(quiz_data, answer_data))
-        random.shuffle(combined_data) #랜덤으로 나와야하니까 문제 섞기기
+        random.shuffle(combined_data) #랜덤으로 나와야하니까 문제 섞기
         shuffled_quiz_data, shuffled_answer_data = zip(*combined_data)
         return list(shuffled_quiz_data), list(shuffled_answer_data)
 
