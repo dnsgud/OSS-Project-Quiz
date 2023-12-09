@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QLabel, QLineEdit, QPushButton,
     QMessageBox, QDesktopWidget, QVBoxLayout, QWidget
 )
-from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtCore import QTimer, Qt, QSize
 import linecache
 import random
 
@@ -29,7 +29,9 @@ class QuizApp(QMainWindow):
         self.label = QLabel("", self)
         self.time_label = QLabel("", self)
         self.entry = QLineEdit(self)
+        self.entry.returnPressed.connect(self.check_answer)  # 엔터 키로 제출
         self.button = QPushButton("제출", self)
+        self.button.clicked.connect(self.check_answer)
 
         self.setup_styles()
 
@@ -76,7 +78,7 @@ class QuizApp(QMainWindow):
 
         # QPushButton
         self.button.setStyleSheet(
-            "font-size: 18px; padding: 10px; background-color: #FF595E; color: #FFF; border: none; border-radius: 10px;"
+            "font-size: 18px; padding: 10px; background-color: #FF595E; color: #FFF; border: 2px solid #FF595E; border-radius: 10px;"
         )
 
     def generate_quiz(self):
