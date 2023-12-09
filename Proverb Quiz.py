@@ -30,6 +30,7 @@ class QuizApp(QMainWindow):
         self.label.setStyleSheet("font-size: 24px;")
 
         self.entry = QLineEdit(self)
+        self.entry.returnPressed.connect(self.check_answer)  # 엔터 키로 제출
 
         self.button = QPushButton("제출", self)
         self.button.clicked.connect(self.check_answer)
@@ -63,6 +64,7 @@ class QuizApp(QMainWindow):
         self.label.setFixedSize(label_size)
 
     def generate_quiz(self):
+        self.remaining_time = self.time_limit
         while True:
             proverb = self.get_random_proverb()
             if proverb not in self.used_proverbs:
@@ -75,11 +77,10 @@ class QuizApp(QMainWindow):
         self.label.setText(f"속담을 완성하세요: {self.quiz}\n(남은 시간: {self.remaining_time}초)")
         self.entry.clear()
 
-        self.remaining_time = self.time_limit
+        self.adjust_label_size()  # 라벨 크기 조정
+
         self.update_time()
         self.timer.start(1000)
-
-        self.adjust_label_size()  # 라벨 크기 조정
 
     def get_random_proverb(self):
         no = random.randint(1, 100)
