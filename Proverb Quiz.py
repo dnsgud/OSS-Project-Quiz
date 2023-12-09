@@ -1,33 +1,11 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QMessageBox, QDesktopWidget, QVBoxLayout, QWidget
-from PyQt5.QtGui import QFont, QColor, QPainter, QBrush, QPalette
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QLabel, QLineEdit, QPushButton,
+    QMessageBox, QDesktopWidget, QVBoxLayout, QWidget
+)
 from PyQt5.QtCore import QTimer, Qt
 import linecache
 import random
-
-class ConsoleLabel(QLabel):
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.setFont(self.font())
-        painter.setPen(self.palette().color(QPalette.WindowText))
-        painter.setBrush(QBrush(self.palette().color(QPalette.Window)))
-
-        rect = self.contentsRect()
-        painter.drawRect(rect)
-
-        margin = 10
-        rect.adjust(margin, margin, -margin, -margin)
-
-        option = self.alignment()
-        if option & Qt.AlignHCenter:
-            option |= Qt.TextWordWrap
-
-        metrics = painter.fontMetrics()
-        text = self.text()
-        if option & Qt.TextWordWrap:
-            text = metrics.elidedText(text, Qt.ElideRight, rect.width())
-
-        painter.drawText(rect, option, text)
 
 class QuizApp(QMainWindow):
     def __init__(self):
@@ -40,40 +18,30 @@ class QuizApp(QMainWindow):
         self.timer.timeout.connect(self.update_time)
 
         self.setGeometry(100, 100, 700, 500)
-        self.center_on_screen()  # 창을 화면 가운데로 이동
+        self.center_on_screen()
 
-        self.setStyleSheet("background-color: #F5F5DC; font-size: 18px;")
+        self.setStyleSheet(
+            "background-color: #F9F6F2;"
+        )
 
         self.score_label = QLabel("현재 점수: 0", self)
-        self.score_label.setStyleSheet("font-size: 24px;")
-
         self.best_score_label = QLabel("최고 점수: 0", self)
-        self.best_score_label.setStyleSheet("font-size: 24px;")
-
-        self.label = ConsoleLabel("", self)
-        self.label.setAlignment(Qt.AlignCenter)  # 텍스트를 가운데로 정렬
-        self.label.setStyleSheet("font-size: 24px;")
-        self.label.setWordWrap(True)
-
+        self.label = QLabel("", self)
         self.time_label = QLabel("", self)
-        self.time_label.setAlignment(Qt.AlignCenter)  # 텍스트를 가운데로 정렬
-        self.time_label.setStyleSheet("font-size: 24px;")
-
         self.entry = QLineEdit(self)
-        self.entry.returnPressed.connect(self.check_answer)  # 엔터 키로 제출
-
         self.button = QPushButton("제출", self)
-        self.button.clicked.connect(self.check_answer)
+
+        self.setup_styles()
 
         self.used_proverbs = set()
 
         layout = QVBoxLayout()
-        layout.addWidget(self.score_label)
-        layout.addWidget(self.best_score_label)
-        layout.addWidget(self.label)
-        layout.addWidget(self.time_label)
-        layout.addWidget(self.entry)
-        layout.addWidget(self.button)
+        layout.addWidget(self.score_label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.best_score_label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.time_label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.entry, alignment=Qt.AlignCenter)
+        layout.addWidget(self.button, alignment=Qt.AlignCenter)
 
         central_widget = QWidget()
         central_widget.setLayout(layout)
@@ -82,10 +50,34 @@ class QuizApp(QMainWindow):
         self.generate_quiz()
 
     def center_on_screen(self):
-        # 창을 화면 가운데로 이동
         screen = QDesktopWidget().screenGeometry()
         size = self.geometry()
         self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
+
+    def setup_styles(self):
+        # QLabel
+        self.score_label.setStyleSheet(
+            "font-size: 24px; color: #2E86AB; font-weight: bold; margin-bottom: 10px;"
+        )
+        self.best_score_label.setStyleSheet(
+            "font-size: 24px; color: #2E86AB; font-weight: bold; margin-bottom: 10px;"
+        )
+        self.label.setStyleSheet(
+            "font-size: 24px; color: #2E86AB; background-color: #F9EBB2; padding: 20px; border-radius: 10px; margin-bottom: 20px;"
+        )
+        self.time_label.setStyleSheet(
+            "font-size: 24px; color: #2E86AB; margin-bottom: 20px;"
+        )
+        
+        # QLineEdit
+        self.entry.setStyleSheet(
+            "font-size: 18px; padding: 10px; border: 2px solid #2E86AB; border-radius: 10px; margin-bottom: 20px;"
+        )
+
+        # QPushButton
+        self.button.setStyleSheet(
+            "font-size: 18px; padding: 10px; background-color: #FF595E; color: #FFF; border: none; border-radius: 10px;"
+        )
 
     def generate_quiz(self):
         self.remaining_time = self.time_limit
@@ -100,8 +92,6 @@ class QuizApp(QMainWindow):
         self.quiz = self.quiz.replace("'", "")
         self.label.setText(f"속담을 완성하세요: {self.quiz}")
         self.entry.clear()
-
-        self.adjust_label_size()  # 라벨 크기 조정
 
         self.timer.start(1000)
 
@@ -129,4 +119,37 @@ class QuizApp(QMainWindow):
                 self.best_score_label.setText(f"최고 점수: {self.best_score}")
             QMessageBox.information(self, "정답", "정답입니다!")
         else:
-            retry = QMessageBox.question(self, "틀림", f"틀렸습니다. 정답은 '{self.answer}'입니다.\n다시
+            retry = QMessageBox.question(self, "틀림", f"틀렸습니다. 정답은 '{self.answer}'입니다.\n다시 시도하시겠습니까?",
+                                         QMessageBox.Yes | QMessageBox.No)
+            if retry == QMessageBox.No:
+                self.close()
+            else:
+                self.total_score = 0
+
+        self.score_label.setText(f"현재 점수: {self.total_score}")
+        self.generate_quiz()
+
+    def update_time(self):
+        if self.remaining_time > 0:
+            self.remaining_time -= 1
+            self.time_label.setText(f"남은 시간: {self.remaining_time}초")
+            self.label.setText(f"속담을 완성하세요: {self.quiz}")
+        elif self.remaining_time == 0:
+            self.remaining_time = -1
+            self.timer.stop()
+
+            retry = QMessageBox.question(self, "시간 초과", "제한 시간이 초과되었습니다.\n다시 시도하시겠습니까?",
+                                         QMessageBox.Yes | QMessageBox.No)
+            if retry == QMessageBox.Yes:
+                self.total_score = 0
+                self.generate_quiz()
+            else:
+                self.close()
+        else:
+            self.generate_quiz()
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = QuizApp()
+    window.show()
+    sys.exit(app.exec_())
