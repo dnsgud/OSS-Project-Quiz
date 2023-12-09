@@ -72,7 +72,7 @@ class QuizApp(QMainWindow):
 
         self.quiz, self.answer = self.create_quiz(proverb)
         self.quiz = self.quiz.replace("'", "")
-        self.label.setText(f"속담을 완성하세요: {self.quiz}")
+        self.label.setText(f"속담을 완성하세요: {self.quiz}\n(남은 시간: {self.remaining_time}초)")
         self.entry.clear()
 
         self.remaining_time = self.time_limit
