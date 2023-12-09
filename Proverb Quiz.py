@@ -1,8 +1,33 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QMessageBox, QDesktopWidget, QVBoxLayout, QWidget
+from PyQt5.QtGui import QFont, QColor, QPainter, QBrush, QPalette
 from PyQt5.QtCore import QTimer, Qt
 import linecache
 import random
+
+class ConsoleLabel(QLabel):
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setFont(self.font())
+        painter.setPen(self.palette().color(QPalette.WindowText))
+        painter.setBrush(QBrush(self.palette().color(QPalette.Window)))
+
+        rect = self.contentsRect()
+        painter.drawRect(rect)
+
+        margin = 10
+        rect.adjust(margin, margin, -margin, -margin)
+
+        option = self.alignment()
+        if option & Qt.AlignHCenter:
+            option |= Qt.TextWordWrap
+
+        metrics = painter.fontMetrics()
+        text = self.text()
+        if option & Qt.TextWordWrap:
+            text = metrics.elidedText(text, Qt.ElideRight, rect.width())
+
+        painter.drawText(rect, option, text)
 
 class QuizApp(QMainWindow):
     def __init__(self):
@@ -17,7 +42,7 @@ class QuizApp(QMainWindow):
         self.setGeometry(100, 100, 700, 500)
         self.center_on_screen()  # 창을 화면 가운데로 이동
 
-        self.setStyleSheet("background-color: #8FBC8F; font-size: 18px;")
+        self.setStyleSheet("background-color: #F5F5DC; font-size: 18px;")
 
         self.score_label = QLabel("현재 점수: 0", self)
         self.score_label.setStyleSheet("font-size: 24px;")
@@ -25,9 +50,10 @@ class QuizApp(QMainWindow):
         self.best_score_label = QLabel("최고 점수: 0", self)
         self.best_score_label.setStyleSheet("font-size: 24px;")
 
-        self.label = QLabel("", self)
+        self.label = ConsoleLabel("", self)
         self.label.setAlignment(Qt.AlignCenter)  # 텍스트를 가운데로 정렬
         self.label.setStyleSheet("font-size: 24px;")
+        self.label.setWordWrap(True)
 
         self.time_label = QLabel("", self)
         self.time_label.setAlignment(Qt.AlignCenter)  # 텍스트를 가운데로 정렬
@@ -60,13 +86,6 @@ class QuizApp(QMainWindow):
         screen = QDesktopWidget().screenGeometry()
         size = self.geometry()
         self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
-
-    def adjust_label_size(self):
-        font = self.label.font()
-        metrics = self.label.fontMetrics()
-        rect = metrics.boundingRect(self.label.text())
-        label_size = rect.size()
-        self.label.setFixedSize(label_size)
 
     def generate_quiz(self):
         self.remaining_time = self.time_limit
@@ -110,37 +129,4 @@ class QuizApp(QMainWindow):
                 self.best_score_label.setText(f"최고 점수: {self.best_score}")
             QMessageBox.information(self, "정답", "정답입니다!")
         else:
-            retry = QMessageBox.question(self, "틀림", f"틀렸습니다. 정답은 '{self.answer}'입니다.\n다시 시도하시겠습니까?",
-                                         QMessageBox.Yes | QMessageBox.No)
-            if retry == QMessageBox.No:
-                self.close()
-            else:
-                self.total_score = 0
-
-        self.score_label.setText(f"현재 점수: {self.total_score}")
-        self.generate_quiz()
-
-    def update_time(self):
-        if self.remaining_time > 0:
-            self.remaining_time -= 1
-            self.time_label.setText(f"남은 시간: {self.remaining_time}초")
-            self.label.setText(f"속담을 완성하세요: {self.quiz}")
-        elif self.remaining_time == 0:
-            self.remaining_time = -1
-            self.timer.stop()
-
-            retry = QMessageBox.question(self, "시간 초과", "제한 시간이 초과되었습니다.\n다시 시도하시겠습니까?",
-                                         QMessageBox.Yes | QMessageBox.No)
-            if retry == QMessageBox.Yes:
-                self.total_score = 0
-                self.generate_quiz()
-            else:
-                self.close()
-        else:
-            self.generate_quiz()
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = QuizApp()
-    window.show()
-    sys.exit(app.exec_())
+            retry = QMessageBox.question(self, "틀림", f"틀렸습니다. 정답은 '{self.answer}'입니다.\n다시
