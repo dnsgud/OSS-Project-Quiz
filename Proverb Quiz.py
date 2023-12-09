@@ -73,7 +73,7 @@ class QuizApp(QMainWindow):
         # Set Font
         font = QFont()
         font.setFamily("맑은 고딕")  # Adjust the font family as needed
-        font.setPointSize(20)  # Adjust the font size as needed
+        font.setPointSize(70)  # Adjust the font size as needed
 
         # QLabel
         label_style = (
