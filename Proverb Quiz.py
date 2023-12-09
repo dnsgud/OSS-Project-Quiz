@@ -22,7 +22,7 @@ class QuizApp(QMainWindow):
         self.center_on_screen()
 
         self.setStyleSheet(
-            "background-color: #0E0E0E;"
+            "background-color: #0E0E0E; color: #00FF00;"
         )
 
         self.score_label = QLabel("현재 점수: 0", self)
@@ -59,28 +59,27 @@ class QuizApp(QMainWindow):
 
     def setup_styles(self):
         # QLabel
-        self.score_label.setStyleSheet(
-            "font-size: 24px; color: #00FF00; font-weight: bold; margin-bottom: 10px;"
+        label_style = (
+            "font-size: 24px; background-color: #000000; "
+            "padding: 20px; border-radius: 10px; margin-bottom: 20px;"
         )
-        self.best_score_label.setStyleSheet(
-            "font-size: 24px; color: #00FF00; font-weight: bold; margin-bottom: 10px;"
-        )
-        self.label.setStyleSheet(
-            "font-size: 24px; color: #00FF00; background-color: #000000; padding: 20px; border-radius: 10px; margin-bottom: 20px;"
-        )
-        self.time_label.setStyleSheet(
-            "font-size: 24px; color: #00FF00; margin-bottom: 20px;"
-        )
+        self.score_label.setStyleSheet(label_style)
+        self.best_score_label.setStyleSheet(label_style)
+        self.label.setStyleSheet(label_style)
+        self.time_label.setStyleSheet("font-size: 24px; margin-bottom: 20px;")
 
         # QLineEdit
         self.entry.setStyleSheet(
-            "font-size: 18px; padding: 10px; border: 2px solid #00FF00; border-radius: 10px; margin-bottom: 20px; color: #FFFFFF;"
+            "font-size: 18px; padding: 10px; border: 2px solid #00FF00; "
+            "border-radius: 10px; margin-bottom: 20px; color: #00FF00;"
         )
 
         # QPushButton
-        self.button.setStyleSheet(
-            "font-size: 18px; padding: 10px; background-color: #FF595E; color: #FFF; border: 2px solid #FF595E; border-radius: 10px;"
+        button_style = (
+            "font-size: 18px; padding: 10px; background-color: #00FF00; "
+            "color: #000000; border: 2px solid #00FF00; border-radius: 10px;"
         )
+        self.button.setStyleSheet(button_style)
 
     def generate_quiz(self):
         self.remaining_time = self.time_limit
