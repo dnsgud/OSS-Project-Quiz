@@ -29,6 +29,10 @@ class QuizApp(QMainWindow):
         self.label.setAlignment(Qt.AlignCenter)  # 텍스트를 가운데로 정렬
         self.label.setStyleSheet("font-size: 24px;")
 
+        self.time_label = QLabel("", self)
+        self.time_label.setAlignment(Qt.AlignCenter)  # 텍스트를 가운데로 정렬
+        self.time_label.setStyleSheet("font-size: 24px;")
+
         self.entry = QLineEdit(self)
         self.entry.returnPressed.connect(self.check_answer)  # 엔터 키로 제출
 
@@ -41,6 +45,7 @@ class QuizApp(QMainWindow):
         layout.addWidget(self.score_label)
         layout.addWidget(self.best_score_label)
         layout.addWidget(self.label)
+        layout.addWidget(self.time_label)
         layout.addWidget(self.entry)
         layout.addWidget(self.button)
 
@@ -74,12 +79,11 @@ class QuizApp(QMainWindow):
 
         self.quiz, self.answer = self.create_quiz(proverb)
         self.quiz = self.quiz.replace("'", "")
-        self.label.setText(f"속담을 완성하세요: {self.quiz}\n(남은 시간: {self.remaining_time}초)")
+        self.label.setText(f"속담을 완성하세요: {self.quiz}")
         self.entry.clear()
 
         self.adjust_label_size()  # 라벨 크기 조정
 
-        self.update_time()
         self.timer.start(1000)
 
     def get_random_proverb(self):
@@ -119,7 +123,8 @@ class QuizApp(QMainWindow):
     def update_time(self):
         if self.remaining_time > 0:
             self.remaining_time -= 1
-            self.label.setText(f"속담을 완성하세요: {self.quiz}\n(남은 시간: {self.remaining_time}초)")
+            self.time_label.setText(f"남은 시간: {self.remaining_time}초")
+            self.label.setText(f"속담을 완성하세요: {self.quiz}")
         elif self.remaining_time == 0:
             self.remaining_time = -1
             self.timer.stop()
