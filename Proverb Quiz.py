@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QLabel, QLineEdit, QPushButton,
     QMessageBox, QDesktopWidget, QVBoxLayout, QWidget
 )
-from PyQt5.QtCore import QTimer, Qt, QSize
+from PyQt5.QtCore import QTimer, Qt
 import linecache
 import random
 
@@ -20,30 +20,37 @@ class QuizApp(QMainWindow):
         self.setGeometry(100, 100, 700, 500)
         self.center_on_screen()
 
-        self.setStyleSheet(
-            "background-color: #F9F6F2;"
-        )
+        self.setStyleSheet("background-color: #000000; color: #FFFFFF; font-size: 18px;")
 
         self.score_label = QLabel("현재 점수: 0", self)
+        self.score_label.setStyleSheet("font-size: 24px; color: #00FF00;")
+
         self.best_score_label = QLabel("최고 점수: 0", self)
+        self.best_score_label.setStyleSheet("font-size: 24px; color: #00FF00;")
+
         self.label = QLabel("", self)
+        self.label.setAlignment(Qt.AlignCenter)
+        self.label.setStyleSheet("font-size: 24px; color: #FFFFFF;")
+
         self.time_label = QLabel("", self)
+        self.time_label.setAlignment(Qt.AlignCenter)
+        self.time_label.setStyleSheet("font-size: 24px; color: #00FF00;")
+
         self.entry = QLineEdit(self)
-        self.entry.returnPressed.connect(self.check_answer)  # 엔터 키로 제출
+        self.entry.returnPressed.connect(self.check_answer)
+
         self.button = QPushButton("제출", self)
         self.button.clicked.connect(self.check_answer)
-
-        self.setup_styles()
 
         self.used_proverbs = set()
 
         layout = QVBoxLayout()
-        layout.addWidget(self.score_label, alignment=Qt.AlignCenter)
-        layout.addWidget(self.best_score_label, alignment=Qt.AlignCenter)
-        layout.addWidget(self.label, alignment=Qt.AlignCenter)
-        layout.addWidget(self.time_label, alignment=Qt.AlignCenter)
-        layout.addWidget(self.entry, alignment=Qt.AlignCenter)
-        layout.addWidget(self.button, alignment=Qt.AlignCenter)
+        layout.addWidget(self.score_label)
+        layout.addWidget(self.best_score_label)
+        layout.addWidget(self.label)
+        layout.addWidget(self.time_label)
+        layout.addWidget(self.entry)
+        layout.addWidget(self.button)
 
         central_widget = QWidget()
         central_widget.setLayout(layout)
@@ -55,31 +62,6 @@ class QuizApp(QMainWindow):
         screen = QDesktopWidget().screenGeometry()
         size = self.geometry()
         self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
-
-    def setup_styles(self):
-        # QLabel
-        self.score_label.setStyleSheet(
-            "font-size: 24px; color: #2E86AB; font-weight: bold; margin-bottom: 10px;"
-        )
-        self.best_score_label.setStyleSheet(
-            "font-size: 24px; color: #2E86AB; font-weight: bold; margin-bottom: 10px;"
-        )
-        self.label.setStyleSheet(
-            "font-size: 24px; color: #2E86AB; background-color: #F9EBB2; padding: 20px; border-radius: 10px; margin-bottom: 20px;"
-        )
-        self.time_label.setStyleSheet(
-            "font-size: 24px; color: #2E86AB; margin-bottom: 20px;"
-        )
-        
-        # QLineEdit
-        self.entry.setStyleSheet(
-            "font-size: 18px; padding: 10px; border: 2px solid #2E86AB; border-radius: 10px; margin-bottom: 20px;"
-        )
-
-        # QPushButton
-        self.button.setStyleSheet(
-            "font-size: 18px; padding: 10px; background-color: #FF595E; color: #FFF; border: 2px solid #FF595E; border-radius: 10px;"
-        )
 
     def generate_quiz(self):
         self.remaining_time = self.time_limit
