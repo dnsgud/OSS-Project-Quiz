@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QMessageBox, QDesktopWidget, QVBoxLayout, QWidget
 from PyQt5.QtCore import QTimer, Qt
 import linecache
 import random
@@ -14,32 +14,53 @@ class QuizApp(QMainWindow):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_time)
 
-        self.setFixedSize(500, 350)
+        self.setGeometry(100, 100, 700, 500)
+        self.center_on_screen()  # 창을 화면 가운데로 이동
 
-        self.setStyleSheet("background-color: #8FBC8F;")  # 전체 배경 색상 설정
+        self.setStyleSheet("background-color: #8FBC8F; font-size: 18px;")
 
         self.score_label = QLabel("현재 점수: 0", self)
-        self.score_label.setGeometry(10, 10, 150, 30)
+        self.score_label.setStyleSheet("font-size: 24px;")
 
         self.best_score_label = QLabel("최고 점수: 0", self)
-        self.best_score_label.setGeometry(10, 30, 150, 30)
+        self.best_score_label.setStyleSheet("font-size: 24px;")
 
         self.label = QLabel("", self)
-        self.label.setGeometry(10, 70, 400, 50)
-        self.label.setAlignment(Qt.AlignTop)
+        self.label.setAlignment(Qt.AlignCenter)  # 텍스트를 가운데로 정렬
+        self.label.setStyleSheet("font-size: 24px;")
 
         self.entry = QLineEdit(self)
-        self.entry.setGeometry(10, 130, 300, 30)
 
         self.button = QPushButton("제출", self)
-        self.button.setGeometry(10, 170, 75, 30)
         self.button.clicked.connect(self.check_answer)
-
-        self.entry.returnPressed.connect(self.button.click)
 
         self.used_proverbs = set()
 
+        layout = QVBoxLayout()
+        layout.addWidget(self.score_label)
+        layout.addWidget(self.best_score_label)
+        layout.addWidget(self.label)
+        layout.addWidget(self.entry)
+        layout.addWidget(self.button)
+
+        central_widget = QWidget()
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
+
         self.generate_quiz()
+
+    def center_on_screen(self):
+        # 창을 화면 가운데로 이동
+        screen = QDesktopWidget().screenGeometry()
+        size = self.geometry()
+        self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
+
+    def adjust_label_size(self):
+        font = self.label.font()
+        metrics = self.label.fontMetrics()
+        rect = metrics.boundingRect(self.label.text())
+        label_size = rect.size()
+        self.label.setFixedSize(label_size)
 
     def generate_quiz(self):
         while True:
@@ -57,6 +78,8 @@ class QuizApp(QMainWindow):
         self.remaining_time = self.time_limit
         self.update_time()
         self.timer.start(1000)
+
+        self.adjust_label_size()  # 라벨 크기 조정
 
     def get_random_proverb(self):
         no = random.randint(1, 100)
