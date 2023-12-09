@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QLabel, QLineEdit, QPushButton,
     QMessageBox, QDesktopWidget, QVBoxLayout, QWidget
 )
+from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtCore import QTimer, Qt
 import linecache
 import random
@@ -22,7 +23,7 @@ class QuizApp(QMainWindow):
         self.center_on_screen()
 
         self.setStyleSheet(
-            "background-color: #0E0E0E; color: #00FF00;"
+            "background-color: #282c35; color: #ffffff;"
         )
 
         self.score_label = QLabel("현재 점수: 0", self)
@@ -34,6 +35,10 @@ class QuizApp(QMainWindow):
         self.button = QPushButton("제출", self)
         self.button.clicked.connect(self.check_answer)
 
+        # QLabel for displaying planet/star image
+        self.image_label = QLabel(self)
+        self.setup_image_label()
+
         self.setup_styles()
 
         self.used_proverbs = set()
@@ -41,6 +46,7 @@ class QuizApp(QMainWindow):
         layout = QVBoxLayout()
         layout.addWidget(self.score_label, alignment=Qt.AlignCenter)
         layout.addWidget(self.best_score_label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.image_label, alignment=Qt.AlignCenter)
         layout.addWidget(self.label, alignment=Qt.AlignCenter)
         layout.addWidget(self.time_label, alignment=Qt.AlignCenter)
         layout.addWidget(self.entry, alignment=Qt.AlignCenter)
@@ -57,27 +63,38 @@ class QuizApp(QMainWindow):
         size = self.geometry()
         self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
 
+    def setup_image_label(self):
+        # Load planet/star image
+        pixmap = QPixmap("planet_image.jpg")  # Replace "planet_image.jpg" with your image file
+        self.image_label.setPixmap(pixmap)
+        self.image_label.setAlignment(Qt.AlignCenter)
+
     def setup_styles(self):
+        # Set Font
+        font = QFont()
+        font.setFamily("맑은 고딕")  # Adjust the font family as needed
+        font.setPointSize(20)  # Adjust the font size as needed
+
         # QLabel
         label_style = (
-            "font-size: 24px; background-color: #000000; "
-            "padding: 20px; border-radius: 10px; margin-bottom: 20px;"
+            f"font-size: {font.pointSize()}px; background-color: #282c35; "
+            "padding: 20px; border-radius: 10px; margin-bottom: 20px; color: #ffffff;"
         )
         self.score_label.setStyleSheet(label_style)
         self.best_score_label.setStyleSheet(label_style)
         self.label.setStyleSheet(label_style)
-        self.time_label.setStyleSheet("font-size: 24px; margin-bottom: 20px;")
+        self.time_label.setStyleSheet(f"font-size: {font.pointSize()}px; margin-bottom: 20px; color: #ffffff;")
 
         # QLineEdit
         self.entry.setStyleSheet(
-            "font-size: 18px; padding: 10px; border: 2px solid #00FF00; "
-            "border-radius: 10px; margin-bottom: 20px; color: #00FF00;"
+            f"font-size: {font.pointSize()}px; padding: 10px; border: 2px solid #61afef; "
+            "border-radius: 10px; margin-bottom: 20px; color: #ffffff;"
         )
 
         # QPushButton
         button_style = (
-            "font-size: 18px; padding: 10px; background-color: #00FF00; "
-            "color: #000000; border: 2px solid #00FF00; border-radius: 10px;"
+            f"font-size: {font.pointSize()}px; padding: 10px; background-color: #61afef; "
+            "color: #282c35; border: 2px solid #61afef; border-radius: 10px;"
         )
         self.button.setStyleSheet(button_style)
 
