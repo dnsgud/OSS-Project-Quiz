@@ -38,7 +38,8 @@ class FourletterQuizGame(QWidget):
 
         self.answer_input = QLineEdit(self)
         self.answer_input.returnPressed.connect(self.check_answer)
-        self.layout.addWidget(self.answer_input, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+        self.layout.addWidget(self.answer_input, alignment=Qt.AlignmentFlag.AlignCenter)
+
         self.layout.addSpacing(20)
 
         # 메인 화면으로 돌아가는 버튼 추가
@@ -98,58 +99,30 @@ class FourletterQuizGame(QWidget):
             self.timer.stop()
             self.check_answer(timeout=True)
 
-    # def check_answer(self, timeout=False):
-    # if timeout:
-    #     user_input = "timeout"
-    # else:
-    #     user_input = self.answer_input.text()
-
-    # matching_lines = [line for line in self.answer_data if line.endswith(user_input[-2:])]
-
-    # if not matching_lines:
-    #     if timeout:
-    #         self.timer_label.setText('시간 초과! 오답으로 처리합니다.')
-    #     else:
-    #         self.timer_label.setText(f'틀렸습니다. 정답은 {self.answer_data[self.current_index]} 입니다.')
-    #         self.show_question()  
-    # else:
-    #     for line in matching_lines:
-    #         if line[:2] == self.quiz_data[self.current_index][:2]:
-    #             self.total_score += 1
-    #             self.timer_label.setText(f'정답입니다! 현재 점수: {self.total_score}')
-    #             self.score_label.setText(f'현재 점수: {self.total_score}')
-    #             self.current_index += 1
-    #             self.show_question()
-    #             return
-
-    #     self.timer_label.setText(f'틀렸습니다. 정답은 {self.answer_data[self.current_index]} 입니다.')
-    #     self.show_question()
     def check_answer(self, timeout=False):
-    if timeout:
-        user_input = "timeout"
-    else:
-        user_input = self.answer_input.text()
-
-    matching_lines = [line for line in self.answer_data if line.endswith(user_input[-2:])]
-
-    if not matching_lines:
         if timeout:
-            self.timer_label.setText('시간 초과! 오답으로 처리합니다.')
+            user_input = "timeout"
         else:
-            self.timer_label.setText(f'틀렸습니다. 정답은 {self.answer_data[self.current_index]} 입니다.')
-            self.show_question()  # 틀린 경우에도 다음 문제를 표시하도록 수정
-    else:
-        for line in matching_lines:
-            if line[:2] == self.quiz_data[self.current_index][:2]:
-                self.total_score += 1
-                self.timer_label.setText(f'정답입니다! 현재 점수: {self.total_score}')
-                self.score_label.setText(f'현재 점수: {self.total_score}')
-                self.current_index += 1
-                self.show_question()
-                return
+            user_input = self.answer_input.text()
 
-        self.timer_label.setText(f'틀렸습니다. 정답은 {self.answer_data[self.current_index]} 입니다.')
-        self.show_question()  # 틀린 경우에도 다음 문제를 표시하도록 수정
+        matching_lines = [line for line in self.answer_data if line.endswith(user_input[-2:])]
+
+        if not matching_lines:
+            if timeout:
+                self.timer_label.setText('시간 초과! 오답으로 처리합니다.')
+            else:
+                self.timer_label.setText(f'틀렸습니다. 정답은 {self.answer_data[self.current_index]} 입니다.')
+        else:
+            for line in matching_lines:
+                if line[:2] == self.quiz_data[self.current_index][:2]:
+                    self.total_score += 1
+                    self.timer_label.setText(f'정답입니다! 현재 점수: {self.total_score}')
+                    self.score_label.setText(f'현재 점수: {self.total_score}')
+                    self.current_index += 1
+                    self.show_question()
+                    return
+
+            self.timer_label.setText(f'틀렸습니다. 정답은 {self.answer_data[self.current_index]} 입니다.')
 
     def show_end_message(self):
         QMessageBox.information(self, '종료', f'게임 종료! 총 점수: {self.total_score}', QMessageBox.Ok)
