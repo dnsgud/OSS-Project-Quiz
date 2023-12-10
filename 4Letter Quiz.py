@@ -1,41 +1,35 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, Qt
 import random
 
-class QuizGame(QWidget):
+class FourletterQuizGame(QWidget):
     def __init__(self):
         super().__init__()
 
         self.quiz_data, self.answer_data = self.load_quiz_data()
         self.quiz_data, self.answer_data = self.shuffle_quiz_data(self.quiz_data, self.answer_data)
-
         self.total_score = 0
         self.current_index = 0
-
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.handle_timeout)
-
         self.init_ui()
 
     def init_ui(self):
         self.layout = QVBoxLayout()
 
+        # 시간 표시용
+        self.timer_label = QLabel("", self)
+        self.layout.addWidget(self.timer_label, alignment=Qt.AlignmentFlag.AlignRight)
+        # 점수를 표시
+        self.score_label = QLabel("", self)
+        self.layout.addWidget(self.score_label, alignment=Qt.AlignmentFlag.AlignCenter)
         self.quiz_label = QLabel(self)
-        self.layout.addWidget(self.quiz_label)
-
+        self.layout.addWidget(self.quiz_label, alignment=Qt.AlignmentFlag.AlignCenter)
         self.answer_input = QLineEdit(self)
-        self.answer_input.returnPressed.connect(self.check_answer)  # Enter 키 누를 때 처리
-        self.layout.addWidget(self.answer_input)
-
-        self.setLayout(self.layout)
-
+        self.answer_input.returnPressed.connect(self.check_answer)
+        self.layout.addWidget(self.answer_input, alignment=Qt.AlignmentFlag.AlignCenter)
         self.show_question()
         self.show()
-
     def load_quiz_data(self):
-        # with open(r"C:\Users\user\PycharmProjects\pycharmhi\4letterquiz.txt", encoding="utf-8") as file:
-        #     quiz_data = [line.strip() for line in file.readlines()]
         with open(r"C:\Users\user\PycharmProjects\pycharmhi\4letteranswer.txt", encoding="utf-8") as file:
             answer_data = [line.strip() for line in file.readlines()]
         return answer_data, answer_data
@@ -47,105 +41,24 @@ class QuizGame(QWidget):
         return list(shuffled_quiz_data), list(shuffled_answer_data)
 
     def show_question(self):
+        self.timer.stop()
+        self.timer_label.setText("")
+        self.quiz_label.setText("")
+        self.answer_input.clear()
+
         if self.current_index < len(self.quiz_data):
             selected_quiz, answer = self.quiz_data[self.current_index], self.answer_data[self.current_index]
             two_letter = selected_quiz[:2]
             self.quiz_label.setText(f"퀴즈: {two_letter} ?")
-            self.timer.start(6000)  # 6초 타이머 시작
+
+            self.remaining_time = 6
+            self.timer.start(1000)
         else:
-            self.show_end_message()
+            self.show_main_menu()
 
-    def handle_timeout(self):
-        self.timer.stop()
-        self.check_answer(timeout=True)
 
-    # def check_answer(self,timeout=False):
-    #     if timeout:
-    #         user_input = "timeout"
-    #     else:
-    #         user_input = self.answer_input.text()
-    #
-    #     correct_answer = self.answer_data[self.current_index][2:]
-    #
-    #     if user_input.lower() == "quit":
-    #         self.show_end_message()
-    #     elif user_input == self.answer_data[self.current_index][2:]:
-    #         self.total_score += 1
-    #         QMessageBox.information(self, '정답', f'정답입니다! 현재 점수: {self.total_score}', QMessageBox.Ok)
-    #         self.current_index += 1
-    #         self.show_question()
-    #         self.answer_input.clear()  # 입력창 비우기
-    #     else:
-    #         if timeout:
-    #             QMessageBox.information(self, '시간 초과', '시간 초과! 오답으로 처리합니다.', QMessageBox.Ok)
-    #             QMessageBox.information(self, '정답', f'정답은 {self.answer_data[self.current_index]} 입니다.', QMessageBox.Ok)
-    #         else:
-    #             QMessageBox.information(self, '오답', f'틀렸습니다. 정답은 {self.answer_data[self.current_index]} 입니다.', QMessageBox.Ok)
-    #
-    #         restart = QMessageBox.question(self, '재시작', '다시 시작하시겠습니까?', QMessageBox.Yes | QMessageBox.No)
-    #         if restart == QMessageBox.Yes:
-    #             self.total_score = 0
-    #             self.current_index = 0
-    #             self.show_question()
-    #         else:
-    #             self.show_end_message()
-    def check_answer(self, timeout=False):
-        if timeout:
-            user_input = "timeout"
-        else:
-            user_input = self.answer_input.text()
-
-        # 텍스트 파일에서 뒤 두 글자가 일치하는지 확인
-        matching_lines = [line for line in self.answer_data if line.endswith(user_input[-2:])]
-
-        if not matching_lines:
-            # 오답 처리q
-            if timeout:
-                QMessageBox.information(self, '시간 초과', '시간 초과! 오답으로 처리합니다.', QMessageBox.Ok)
-                QMessageBox.information(self, '정답', f'정답은 {self.answer_data[self.current_index]} 입니다.', QMessageBox.Ok)
-            else:
-                QMessageBox.information(self, '오답', f'틀렸습니다. 정답은 {self.answer_data[self.current_index]} 입니다.',
-                                        QMessageBox.Ok)
-
-            restart = QMessageBox.question(self, '재시작', '다시 시작하시겠습니까?', QMessageBox.Yes | QMessageBox.No)
-            if restart == QMessageBox.Yes:
-                self.total_score = 0
-                self.current_index = 0
-                self.show_question()
-            else:
-                self.show_end_message()
-        else:
-            # 일치하는 답이 여러 개인 경우
-            for line in matching_lines:
-                # 앞 두 글자도 일치하는지 확인
-                if line[:2] == self.quiz_data[self.current_index][:2]:
-                    # 정답 처리
-                    self.total_score += 1
-                    QMessageBox.information(self, '정답', f'정답입니다! 현재 점수: {self.total_score}', QMessageBox.Ok)
-                    self.current_index += 1
-                    self.show_question()
-                    self.answer_input.clear()  # 입력창 비우기
-                    return
-
-            # 모든 일치하는 답이 오답인 경우
-            QMessageBox.information(self, '오답', f'틀렸습니다. 정답은 {self.answer_data[self.current_index]} 입니다.',
-                                    QMessageBox.Ok)
-            restart = QMessageBox.question(self, '재시작', '다시 시작하시겠습니까?', QMessageBox.Yes | QMessageBox.No)
-            if restart == QMessageBox.Yes:
-                self.total_score = 0
-                self.current_index = 0
-                self.show_question()
-            else:
-                self.show_end_message()
-
-    def check_user_answer(self, user_input, correct_answer):
-        # 사용자가 입력한 답이 뒷 두 글자와 일치하고, 앞 두 글자도 일치하는지 확인
-        return user_input[-2:] == correct_answer[-2:] and user_input[:2] == self.quiz_data[self.current_index][:2]
-    def show_end_message(self):
-        QMessageBox.information(self, '종료', f'게임 종료! 총 점수: {self.total_score}', QMessageBox.Ok)
-        self.close()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    game = QuizGame()
+    game = FourletterQuizGame()
     sys.exit(app.exec_())
