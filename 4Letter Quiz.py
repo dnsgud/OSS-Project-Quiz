@@ -102,6 +102,7 @@ class FourletterQuizGame(QWidget):
     def check_answer(self, timeout=False):
         if timeout:
             user_input = "timeout"
+            self.answer_input.setEnabled(False)
         else:
             user_input = self.answer_input.text()
 
