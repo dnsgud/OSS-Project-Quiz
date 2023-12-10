@@ -89,6 +89,7 @@ class FourletterQuizGame(QWidget):
         # 점수 초기화
         self.total_score = 0
         self.score_label.setText(f'현재 점수: {self.total_score}')
+        self.answer_input.setEnabled(True)
         self.show_question()
 
     def handle_timeout(self):
