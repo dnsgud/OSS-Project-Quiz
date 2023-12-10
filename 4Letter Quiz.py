@@ -38,8 +38,7 @@ class FourletterQuizGame(QWidget):
 
         self.answer_input = QLineEdit(self)
         self.answer_input.returnPressed.connect(self.check_answer)
-        self.layout.addWidget(self.answer_input, alignment=Qt.AlignmentFlag.AlignCenter)
-
+        self.layout.addWidget(self.answer_input, alignment=Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
         self.layout.addSpacing(20)
 
         # 메인 화면으로 돌아가는 버튼 추가
