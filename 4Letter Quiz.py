@@ -52,6 +52,8 @@ class FourletterQuizGame(QWidget):
         self.main_button = QPushButton("메인화면", self)
         self.main_button.clicked.connect(self.show_question)
         self.layout.addWidget(self.main_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.setLayout(self.layout)
+
         self.show_question()
         self.show()
     def load_quiz_data(self):
