@@ -82,14 +82,13 @@ class FourletterQuizGame(QWidget):
             self.timer.start(1000)
         else:
             self.show_main_menu()
-
     def show_main_menu(self):
-        # 최종 점수 알림
         QMessageBox.information(self, '최종 점수', f'최종 점수: {self.total_score}', QMessageBox.Ok)
-        # 점수 초기화
         self.total_score = 0
         self.score_label.setText(f'현재 점수: {self.total_score}')
         self.answer_input.setEnabled(True)
+        self.quiz_data, self.answer_data = self.shuffle_quiz_data(self.quiz_data, self.answer_data)  
+        self.current_index = 0
         self.show_question()
 
     def handle_timeout(self):
@@ -113,11 +112,10 @@ class FourletterQuizGame(QWidget):
                 self.timer_label.setText('시간 초과! 오답으로 처리합니다.')
             else:
                 self.timer_label.setText(f'틀렸습니다. 정답은 {self.answer_data[self.current_index]} 입니다.')
-                self.total_score = 0  
-                self.timer.stop()  
-                self.answer_input.setEnabled(False)  # 입력창을 비활성화
-                self.retry_button.setEnabled(True)  
-                self.main_button.setEnabled(True) 
+                self.timer.stop()
+                self.answer_input.setEnabled(False)
+                self.retry_button.setEnabled(True)
+                self.main_button.setEnabled(True)
 
         else:
             for line in matching_lines:
@@ -126,12 +124,13 @@ class FourletterQuizGame(QWidget):
                     self.timer_label.setText(f'정답입니다! 현재 점수: {self.total_score}')
                     self.score_label.setText(f'현재 점수: {self.total_score}')
                     self.current_index += 1
-                    self.show_question()
+                    if self.current_index < len(self.quiz_data):
+                        self.show_question()  
+                    else:
+                        self.show_main_menu()  
                     return
 
             self.timer_label.setText(f'틀렸습니다. 정답은 {self.answer_data[self.current_index]} 입니다.')
-
-
 
     def show_end_message(self):
         QMessageBox.information(self, '종료', f'게임 종료! 총 점수: {self.total_score}', QMessageBox.Ok)
