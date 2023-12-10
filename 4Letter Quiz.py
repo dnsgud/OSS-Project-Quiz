@@ -95,6 +95,7 @@ class FourletterQuizGame(QWidget):
 
         if self.remaining_time == 0:
             self.timer.stop()
+            self.check_answer(timeout=True)
 
     def check_answer(self, timeout=False):
         if timeout:
