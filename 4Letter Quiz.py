@@ -24,14 +24,24 @@ class FourletterQuizGame(QWidget):
         # 시간 표시용
         self.timer_label = QLabel("", self)
         self.layout.addWidget(self.timer_label, alignment=Qt.AlignmentFlag.AlignRight)
+
+        self.layout.addSpacing(20)
+
         # 점수를 표시
         self.score_label = QLabel("", self)
         self.layout.addWidget(self.score_label, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        self.layout.addSpacing(20)
+
         self.quiz_label = QLabel(self)
         self.layout.addWidget(self.quiz_label, alignment=Qt.AlignmentFlag.AlignCenter)
+
         self.answer_input = QLineEdit(self)
         self.answer_input.returnPressed.connect(self.check_answer)
         self.layout.addWidget(self.answer_input, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        self.layout.addSpacing(20)
+
         # 메인 화면으로 돌아가는 버튼 추가
         self.retry_button = QPushButton("다시하기", self)
         self.retry_button.clicked.connect(self.show_main_menu)
@@ -72,6 +82,7 @@ class FourletterQuizGame(QWidget):
         self.total_score = 0
         self.score_label.setText(f'현재 점수: {self.total_score}')
         self.show_question()
+
     def check_answer(self, timeout=False):
         if timeout:
             user_input = "timeout"
