@@ -46,6 +46,12 @@ class FourletterQuizGame(QWidget):
         self.retry_button = QPushButton("다시하기", self)
         self.retry_button.clicked.connect(self.show_main_menu)
         self.layout.addWidget(self.retry_button, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        self.layout.addSpacing(20)
+
+        self.main_button = QPushButton("메인화면", self)
+        self.main_button.clicked.connect(self.show_question)
+        self.layout.addWidget(self.main_button, alignment=Qt.AlignmentFlag.AlignCenter)
         self.show_question()
         self.show()
     def load_quiz_data(self):
@@ -82,6 +88,13 @@ class FourletterQuizGame(QWidget):
         self.total_score = 0
         self.score_label.setText(f'현재 점수: {self.total_score}')
         self.show_question()
+
+    def handle_timeout(self):
+        self.remaining_time -= 1
+        self.timer_label.setText(f'남은 시간: {self.remaining_time}초')
+
+        if self.remaining_time == 0:
+            self.timer.stop()
 
     def check_answer(self, timeout=False):
         if timeout:
