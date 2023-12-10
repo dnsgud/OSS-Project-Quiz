@@ -98,7 +98,6 @@ class FourletterQuizGame(QWidget):
         if self.remaining_time == 0:
             self.timer.stop()
             self.check_answer(timeout=True)
-
     def check_answer(self, timeout=False):
         if timeout:
             user_input = "timeout"
@@ -112,6 +111,12 @@ class FourletterQuizGame(QWidget):
                 self.timer_label.setText('시간 초과! 오답으로 처리합니다.')
             else:
                 self.timer_label.setText(f'틀렸습니다. 정답은 {self.answer_data[self.current_index]} 입니다.')
+                self.total_score = 0  
+                self.timer.stop()  
+                self.answer_input.setEnabled(False)  # 입력창을 비활성화
+                self.retry_button.setEnabled(True)  
+                self.main_button.setEnabled(True) 
+
         else:
             for line in matching_lines:
                 if line[:2] == self.quiz_data[self.current_index][:2]:
@@ -123,6 +128,8 @@ class FourletterQuizGame(QWidget):
                     return
 
             self.timer_label.setText(f'틀렸습니다. 정답은 {self.answer_data[self.current_index]} 입니다.')
+
+
 
     def show_end_message(self):
         QMessageBox.information(self, '종료', f'게임 종료! 총 점수: {self.total_score}', QMessageBox.Ok)
