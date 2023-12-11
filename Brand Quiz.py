@@ -5,7 +5,6 @@ from PyQt5.QtCore import QTimer, Qt
 from PIL import Image
 import os
 import random
-
 class BrandLogoQuiz:
     def __init__(self, logo_directory):
         self.logo_directory = logo_directory
