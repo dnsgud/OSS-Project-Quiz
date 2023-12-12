@@ -36,6 +36,8 @@ class PersonQuiz(QMainWindow):
         self.main_button = QPushButton("메인화면", self)
         self.main_button.clicked.connect(self.show_main_menu)
 
+        self.init_ui()
+
         # 타이머 설정
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_timer)
