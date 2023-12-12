@@ -1,10 +1,10 @@
 import os
 import random
-from PIL import Image
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget, QPushButton, \
+    QStackedWidget, QHBoxLayout, QMessageBox
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, QTimer
-import threading
+from PIL import Image
 import sys
 
 
