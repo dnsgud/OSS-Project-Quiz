@@ -89,6 +89,7 @@ class PersonQuiz(QMainWindow):
 
         pixmap = QPixmap(image_path)
         self.image_label.setPixmap(pixmap.scaledToWidth(400))
+        self.correct_answers = [answer.lower() for answer in random_image_file.split(',')]
 
         # 정답 목록 설정
         self.correct_answers = [answer.lower() for answer in random_image_file.split(',')]
