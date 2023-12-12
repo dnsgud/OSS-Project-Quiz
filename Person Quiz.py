@@ -60,6 +60,15 @@ class PersonQuiz(QMainWindow):
         central_widget = QWidget(self)
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
+    
+    def retry_game(self):
+        self.timer.stop()
+        self.timer_label.setText("")
+        self.name_input.clear()
+        self.total_score = 0
+        self.score_label.setText(f'현재 점수: {self.total_score}')
+        self.best_score_label.setText(f'최고 점수: {self.best_score}')  # 최고 점수 초기화 추가
+        self.load_random_image()
 
     def load_random_image(self):
         # 디렉토리에서 확장자가 '.jpeg'인 이미지 파일을 무작위로 선택하고 화면에 표시
