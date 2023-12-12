@@ -42,6 +42,15 @@ class PersonQuiz(QMainWindow):
         self.timer.timeout.connect(self.update_timer)
         self.load_random_image()
 
+    def init_ui(self):
+        layout = QVBoxLayout()
+        layout.addWidget(self.score_label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.best_score_label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.image_label)
+        layout.addWidget(self.name_input)
+        layout.addWidget(self.timer_label, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(self.correctness_label)
+
     def load_random_image(self):
         # 디렉토리에서 확장자가 '.jpeg'인 이미지 파일을 무작위로 선택하고 화면에 표시
         file_list = os.listdir(self.directory_path)
