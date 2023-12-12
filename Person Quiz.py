@@ -7,7 +7,6 @@ from PyQt5.QtCore import Qt, QTimer
 from PIL import Image
 import sys
 
-
 class PersonQuiz(QMainWindow):
     def __init__(self, parent, directory_path, time_limit):
         super(PersonQuiz, self).__init__(parent)
@@ -23,13 +22,16 @@ class PersonQuiz(QMainWindow):
         self.image_label = QLabel(self)
         self.name_input = QLineEdit(self)
         self.name_input.returnPressed.connect(self.check_answer)
+
         self.timer_label = QLabel(f'남은 시간: {self.current_timer}초', self)
 
+        # 정답 여부와 현재 점수를 표시하는 레이블 추가
         self.correctness_label = QLabel("", self)
         self.score_label = QLabel("현재 점수: 0", self)
         self.best_score_label = QLabel("최고 점수: 0", self)
         self.best_score_label.setGeometry(10, 30, 150, 30)
 
+        # 다시하기 버튼과 메인화면 버튼 추가
         self.retry_button = QPushButton("다시하기", self)
         self.retry_button.clicked.connect(self.retry_game)
 
@@ -51,6 +53,7 @@ class PersonQuiz(QMainWindow):
         layout.addWidget(self.timer_label, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.correctness_label)
 
+        # 버튼들을 수평으로 정렬
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.retry_button)
         button_layout.addWidget(self.main_button)
@@ -60,8 +63,9 @@ class PersonQuiz(QMainWindow):
         central_widget = QWidget(self)
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
-    
+
     def retry_game(self):
+        # '다시하기' 버튼 클릭 시 퀴즈를 처음부터 다시 시작
         self.timer.stop()
         self.timer_label.setText("")
         self.name_input.clear()
