@@ -20,11 +20,9 @@ class PersonQuiz(QMainWindow):
         self.best_score = 0
         self.current_timer = self.time_limit
 
-        # GUI 초기화
         self.image_label = QLabel(self)
         self.name_input = QLineEdit(self)
-        self.name_input.returnPressed.connect(self.check_answer)  # 엔터키 입력 시 check_answer 호출
-
+        self.name_input.returnPressed.connect(self.check_answer)
         self.timer_label = QLabel(f'남은 시간: {self.current_timer}초', self)
 
         # 레이아웃 설정
