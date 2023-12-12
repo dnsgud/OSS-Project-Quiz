@@ -123,7 +123,12 @@ class PersonQuiz(QMainWindow):
             if any(entered_name == answer for answer in self.correct_answers):
                 correctness_text = "정답입니다."
                 self.correctness_label.setText(correctness_text)
-            self.show_result()
+                
+                self.total_score += 1
+                if self.total_score > self.best_score:
+                    self.best_score = self.total_score
+                    self.best_score_label.setText(f"최고 점수: {self.best_score}")
+
 
     def show_result(self):
         # 최종 점수 출력 및 게임 종료
