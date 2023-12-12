@@ -55,6 +55,12 @@ class PersonQuiz(QMainWindow):
         button_layout.addWidget(self.retry_button)
         button_layout.addWidget(self.main_button)
 
+        layout.addLayout(button_layout)
+
+        central_widget = QWidget(self)
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
+
     def load_random_image(self):
         # 디렉토리에서 확장자가 '.jpeg'인 이미지 파일을 무작위로 선택하고 화면에 표시
         file_list = os.listdir(self.directory_path)
