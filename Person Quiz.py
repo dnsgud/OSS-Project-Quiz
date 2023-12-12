@@ -199,6 +199,16 @@ class MainWindow(QMainWindow):
         self.four_letter_button.clicked.connect(self.start_four_letter_quiz_game)
         quiz_buttons_layout.addWidget(self.four_letter_button)
 
+        # '점수' 버튼 추가
+        self.score_button = QPushButton("점수", self.main_widget)
+        self.score_button.setFixedSize(200, 50)
+        self.score_button.move(1650, 770)
+
+        # '종료' 버튼 추가
+        self.quit_button = QPushButton("종료", self.main_widget)
+        self.quit_button.setFixedSize(200, 50)
+        self.quit_button.move(1650, 830)
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = MainWindow()
