@@ -81,11 +81,15 @@ class BrandLogoQuiz(QMainWindow):
         h_layout.addWidget(self.entry)
 
         v_layout = QVBoxLayout(central_widget)
-        # 최고 점수와 현재 점수 라벨을 사진 바로 위 왼쪽에 위치하도록 조절
-        v_layout.addWidget(self.highest_score_label, alignment=Qt.AlignTop | Qt.AlignLeft)
-        v_layout.addWidget(self.score_display_label, alignment=Qt.AlignTop | Qt.AlignLeft)
-        v_layout.addWidget(self.time_display_label, alignment=Qt.AlignCenter)
+
+       # 최고 점수와 시간 표시, 현재 점수 라벨 모두 가운데에 위치
+        v_layout.addWidget(self.highest_score_label, alignment=Qt.AlignTop | Qt.AlignHCenter)
+        v_layout.addWidget(self.score_display_label, alignment=Qt.AlignTop | Qt.AlignHCenter)
+        v_layout.addWidget(self.time_display_label, alignment=Qt.AlignTop | Qt.AlignHCenter)
+
+        # 로고 라벨을 가운데에 위치
         v_layout.addWidget(self.logo_label, alignment=Qt.AlignTop | Qt.AlignCenter)
+
         # 입력창을 사진 바로 아래로 위치하도록 조절
         v_layout.addWidget(self.entry, alignment=Qt.AlignTop | Qt.AlignHCenter)
 
@@ -93,12 +97,9 @@ class BrandLogoQuiz(QMainWindow):
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.retry_button)
         h_layout.addWidget(self.menu_button)
-
-    
         v_layout.addWidget(self.result_label, alignment=Qt.AlignCenter)
-        v_layout.addWidget(self.time_display_label, alignment=Qt.AlignTop | Qt.AlignRight)
-        h_layout.addWidget(self.time_display_label, alignment=Qt.AlignTop | Qt.AlignRight)
         v_layout.addLayout(h_layout)
+
 
         self.center_window()
         self.showMaximized()
@@ -174,6 +175,10 @@ class BrandLogoQuiz(QMainWindow):
 
         if user_input == correct_answer:
             result_text = "정답입니다!"
+            result_style = (
+                "font-size: 40px; color: #FF0000;" if self.countdown == 0 else "font-size: 40px; color: #FFA500;"
+            )
+            result_text = f"<span style='{result_style}'>{result_text}</span>"
             self.score += 1
             if self.score > self.highest_score:
                 self.highest_score = self.score
