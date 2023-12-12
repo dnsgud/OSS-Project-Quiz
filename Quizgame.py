@@ -1,11 +1,13 @@
+import json
 import os
 import random
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget, QPushButton, \
     QStackedWidget, QHBoxLayout, QMessageBox
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QFont, QImage
 from PyQt5.QtCore import Qt, QTimer
 from PIL import Image
 import sys
+import linecache
 
 class PersonQuiz(QMainWindow):
     def __init__(self, parent, directory_path, time_limit):
