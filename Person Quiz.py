@@ -29,10 +29,12 @@ class PersonQuiz(QMainWindow):
         self.score_label = QLabel("현재 점수: 0", self)
         self.best_score_label = QLabel("최고 점수: 0", self)
         self.best_score_label.setGeometry(10, 30, 150, 30)
-        
-        central_widget = QWidget(self)
-        central_widget.setLayout(layout)
-        self.setCentralWidget(central_widget)
+
+        self.retry_button = QPushButton("다시하기", self)
+        self.retry_button.clicked.connect(self.retry_game)
+
+        self.main_button = QPushButton("메인화면", self)
+        self.main_button.clicked.connect(self.show_main_menu)
 
         # 타이머 설정
         self.timer = QTimer(self)
