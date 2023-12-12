@@ -154,8 +154,7 @@ class PersonQuiz(QMainWindow):
 
 
 if __name__ == '__main__':
-    # 애플리케이션 실행
     app = QApplication(sys.argv)
-    game = QuizGame(r"인물 퀴즈\인물 사진", 7)
-    game.show()
+    window = MainWindow()
+    window.show()
     sys.exit(app.exec_())
