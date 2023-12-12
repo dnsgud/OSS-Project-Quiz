@@ -74,15 +74,11 @@ class BrandLogoQuiz(QMainWindow):
         h_layout.addWidget(self.entry)
 
         v_layout = QVBoxLayout(central_widget)
-        v_layout.addWidget(self.highest_score_label, alignment=Qt.AlignCenter)
-        v_layout.addWidget(self.score_display_label, alignment=Qt.AlignCenter)
-        v_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)
-
         # 최고 점수와 현재 점수 라벨을 사진 바로 위 왼쪽에 위치하도록 조절
         v_layout.addWidget(self.highest_score_label, alignment=Qt.AlignTop | Qt.AlignLeft)
         v_layout.addWidget(self.score_display_label, alignment=Qt.AlignTop | Qt.AlignLeft)
+        v_layout.addWidget(self.time_display_label, alignment=Qt.AlignCenter)
         v_layout.addWidget(self.logo_label, alignment=Qt.AlignTop | Qt.AlignCenter)
-
         # 입력창을 사진 바로 아래로 위치하도록 조절
         v_layout.addWidget(self.entry, alignment=Qt.AlignTop | Qt.AlignHCenter)
 
@@ -108,10 +104,10 @@ class BrandLogoQuiz(QMainWindow):
 
     def setup_styles(self):
         # QLabel
-        font_size = 80
+        font_size = 60
         label_style = (
-            f"font-size: {font_size}px; color: #2E86AB; background-color: #F9EBB2;"
-            " padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #2E86AB;"
+            f"font-size: {font_size}px; color: #2E86AB;"
+            " padding: 20px;"
         )
 
         self.score_display_label.setStyleSheet(label_style)
@@ -125,8 +121,6 @@ class BrandLogoQuiz(QMainWindow):
         )
         self.entry.setStyleSheet(entry_style)
         self.entry.setFixedWidth(500)
-        # QPushButton
-
 
     def center_window(self):
         window_width = 400
@@ -176,7 +170,7 @@ class BrandLogoQuiz(QMainWindow):
             self.countdown_timer.stop()
             self.entry.setDisabled(True)
         self.result_label.setText(result_text)
-        self.score_display_label.setText(f"score: {self.score}")
+        self.score_display_label.setText(f"현재 점수: {self.score}")
 
     def start_new_question(self):
         self.select_next_logo()
@@ -224,3 +218,4 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     quiz_app = BrandLogoQuiz(logo_directory, app)
     sys.exit(app.exec_())
+
