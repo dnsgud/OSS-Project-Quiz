@@ -117,18 +117,20 @@ class PersonQuiz(QMainWindow):
             print(correctness_text)
             self.correctness_label.setText(correctness_text)
             self.show_result()
+
         else:
             entered_name = self.name_input.text().strip().lower()
 
             if any(entered_name == answer for answer in self.correct_answers):
                 correctness_text = "정답입니다."
                 self.correctness_label.setText(correctness_text)
-                
+
                 self.total_score += 1
                 if self.total_score > self.best_score:
                     self.best_score = self.total_score
                     self.best_score_label.setText(f"최고 점수: {self.best_score}")
-                
+
+                # 정답 여부를 일정 시간 동안 표시하고 다음 문제로 이동
                 QTimer.singleShot(500, self.load_random_image)
             else:
                 correct_answers_str = ', '.join(self.correct_answers)
@@ -140,6 +142,7 @@ class PersonQuiz(QMainWindow):
 
                 self.total_score = 0
 
+                # 오답 시 버튼들을 보이도록 설정
                 self.retry_button.show()
                 self.main_button.show()
 
@@ -149,6 +152,7 @@ class PersonQuiz(QMainWindow):
             self.score_label.setText(f"현재 점수: {self.total_score}")
 
     def show_result(self):
+        # 시간초과일 때도 버튼들을 보이도록 설정
         self.retry_button.show()
         self.main_button.show()
 
