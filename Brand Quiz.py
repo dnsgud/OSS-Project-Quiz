@@ -234,7 +234,11 @@ class BrandLogoQuiz(QMainWindow):
             self.submit_button.setDisabled(True)
             self.restart_button.setDisabled(False)
             self.main_menu_button.setDisabled(False)
-            self.result_label.setStyleSheet("color: red;")
+            self.result_label.setStyleSheet(
+            "font-size: 50px; color: #2E86AB; background-color: #F9EBB2;"
+            " padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #2E86AB;"
+            "color: red;"
+        )
             self.check_answer()
     def reset_countdown(self):
         self.countdown = 5
