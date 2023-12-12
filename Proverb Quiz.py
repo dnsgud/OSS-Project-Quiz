@@ -59,7 +59,7 @@ class QuizApp(QMainWindow):
 
     def setup_styles(self):
         # QLabel
-        font_size = 100
+        font_size = 90
         self.score_label.setStyleSheet(
             f"font-size: {font_size}px; color: #2E86AB; font-weight: bold; margin-bottom: 10px;"
         )
