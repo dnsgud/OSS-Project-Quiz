@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QLabel, QLineEdit, QPushButton,
+    QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QFrame,
     QMessageBox, QDesktopWidget, QVBoxLayout, QWidget
 )
 from PyQt5.QtCore import QTimer, Qt
@@ -38,11 +38,26 @@ class QuizApp(QMainWindow):
 
         self.used_proverbs = set()
 
+        self.score_frame = QFrame(self)
+        self.best_score_frame = QFrame(self)
+        self.label_frame = QFrame(self)
+        self.time_frame = QFrame(self)
+
+        self.score_layout = QVBoxLayout(self.score_frame)
+        self.best_score_layout = QVBoxLayout(self.best_score_frame)
+        self.label_layout = QVBoxLayout(self.label_frame)
+        self.time_layout = QVBoxLayout(self.time_frame)
+
+        self.score_layout.addWidget(self.score_label, alignment=Qt.AlignCenter)
+        self.best_score_layout.addWidget(self.best_score_label, alignment=Qt.AlignCenter)
+        self.label_layout.addWidget(self.label, alignment=Qt.AlignCenter)
+        self.time_layout.addWidget(self.time_label, alignment=Qt.AlignCenter)
+
         layout = QVBoxLayout()
-        layout.addWidget(self.score_label, alignment=Qt.AlignCenter)
-        layout.addWidget(self.best_score_label, alignment=Qt.AlignCenter)
-        layout.addWidget(self.label, alignment=Qt.AlignCenter)
-        layout.addWidget(self.time_label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.score_frame)
+        layout.addWidget(self.best_score_frame)
+        layout.addWidget(self.label_frame)
+        layout.addWidget(self.time_frame)
         layout.addWidget(self.entry, alignment=Qt.AlignCenter)
         layout.addWidget(self.button, alignment=Qt.AlignCenter)
 
@@ -59,19 +74,16 @@ class QuizApp(QMainWindow):
 
     def setup_styles(self):
         # QLabel
-        font_size = 90
-        self.score_label.setStyleSheet(
-            f"font-size: {font_size}px; color: #2E86AB; font-weight: bold; margin-bottom: 10px;"
+        font_size = 50
+        label_style = (
+            f"font-size: {font_size}px; color: #2E86AB; background-color: #F9EBB2;"
+            " padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #2E86AB;"
         )
-        self.best_score_label.setStyleSheet(
-            f"font-size: {font_size}px; color: #2E86AB; font-weight: bold; margin-bottom: 10px;"
-        )
-        self.label.setStyleSheet(
-            f"font-size: {font_size}px; color: #2E86AB; background-color: #F9EBB2; padding: 20px; border-radius: 10px; margin-bottom: 20px;"
-        )
-        self.time_label.setStyleSheet(
-            f"font-size: {font_size}px; color: #2E86AB; margin-bottom: 20px;"
-        )
+
+        self.score_label.setStyleSheet(label_style)
+        self.best_score_label.setStyleSheet(label_style)
+        self.label.setStyleSheet(label_style)
+        self.time_label.setStyleSheet(label_style)
 
         # QLineEdit
         font_size = 70
@@ -82,7 +94,8 @@ class QuizApp(QMainWindow):
         # QPushButton
         font_size = 24
         self.button.setStyleSheet(
-            f"font-size: {font_size}px; padding: 10px; background-color: #FF595E; color: #FFF; border: 2px solid #FF595E; border-radius: 10px;"
+            f"font-size: {font_size}px; padding: 10px; background-color: #FF595E; color: #FFF; "
+            "border: 2px solid #FF595E; border-radius: 10px;"
         )
 
     def generate_quiz(self):
