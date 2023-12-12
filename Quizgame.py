@@ -237,18 +237,46 @@ class MainWindow(QMainWindow):
         self.stack.setCurrentIndex(1)
 
     def show_main_menu_person(self):
-        # '인물 퀴즈' 페이지를 스택에서 제거
+        # quizgame 페이지를 스택에서 제거
         self.stack.removeWidget(self.quiz_game)
         self.stack.setCurrentIndex(0)
 
     def start_brand_quiz_game(self):
-        pass
+        # '브랜드 퀴즈' 게임 시작
+        logo_directory = "image"  # 실제 디렉토리 경로로 대체해주세요
+        self.brand_quiz_game = BrandLogoQuiz(self, logo_directory, app)
+        self.stack.addWidget(self.brand_quiz_game)
+        self.stack.setCurrentIndex(1)
+
+    def show_main_menu_brand(self):
+        # '브랜드 퀴즈' 페이지를 스택에서 제거
+        self.stack.removeWidget(self.brand_quiz_game)
+        self.stack.setCurrentIndex(0)
 
     def start_proverb_quiz_game(self):
-        pass
+        # '속담 퀴즈' 게임 시작
+        self.proverb_quiz = ProverbQuiz(self, 8)
+        self.stack.addWidget(self.proverb_quiz)
+        self.stack.setCurrentIndex(1)
+
+    def show_main_menu_proverb(self):
+        # '속담 퀴즈' 페이지를 스택에서 제거
+        self.stack.removeWidget(self.proverb_quiz)
+        self.stack.setCurrentIndex(0)
 
     def start_four_letter_quiz_game(self):
-        pass
+        self.four_letter_game = FourletterQuizGame(self)
+        self.stack.addWidget(self.four_letter_game)
+        self.stack.setCurrentIndex(1)
+
+    def show_main_menu_four(self):
+        # FourletterQuizGame 페이지를 스택에서 제거
+        self.stack.removeWidget(self.four_letter_game)
+        self.stack.setCurrentIndex(0)
+
+    def close_application(self):
+        # 종료 버튼 클릭 시 프로그램 종료
+        QApplication.quit()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
