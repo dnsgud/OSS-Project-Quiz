@@ -179,7 +179,7 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.main_widget)
 
         # 다양한 퀴즈 카테고리를 위한 버튼들 추가
-        quiz_buttons_layout = QHBoxLayout()
+        quiz_buttons_layout = QHBoxLayout()  # QHBoxLayout으로 변경
 
         # '인물 퀴즈' 버튼 추가
         self.person_button = QPushButton("인물 퀴즈", self.main_widget)
