@@ -140,6 +140,14 @@ class PersonQuiz(QMainWindow):
 
                 self.total_score = 0
 
+                self.retry_button.show()
+                self.main_button.show()
+
+                # 퀴즈가 더 진행되지 않도록 타이머를 멈춤
+                self.timer.stop()
+
+            self.score_label.setText(f"현재 점수: {self.total_score}")
+
     def show_result(self):
         # 최종 점수 출력 및 게임 종료
         print("최종 점수: {}".format(self.score))
