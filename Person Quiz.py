@@ -38,7 +38,6 @@ class PersonQuiz(QMainWindow):
 
         self.init_ui()
 
-        # 타이머 설정
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_timer)
         self.load_random_image()
