@@ -96,6 +96,9 @@ class PersonQuiz(QMainWindow):
         self.retry_button.hide()
         self.main_button.hide()
 
+        self.current_timer = self.time_limit
+        self.timer.start(1000)
+
     def update_timer(self):
         # 타이머 갱신 및 시간 초과 체크
         self.current_timer -= 1
