@@ -219,6 +219,8 @@ class MainWindow(QMainWindow):
         self.quit_button.setFixedSize(200, 50)
         self.quit_button.move(1650, 830)
 
+        self.quit_button.clicked.connect(self.close_application)
+
         # 퀴즈 버튼들을 담을 컨테이너 위젯 생성
         quiz_buttons_container = QWidget(self.main_widget)
         quiz_buttons_container.setLayout(quiz_buttons_layout)
