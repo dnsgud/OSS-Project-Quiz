@@ -149,10 +149,8 @@ class PersonQuiz(QMainWindow):
             self.score_label.setText(f"현재 점수: {self.total_score}")
 
     def show_result(self):
-        # 최종 점수 출력 및 게임 종료
-        print("최종 점수: {}".format(self.score))
-        self.timer.stop()
-        sys.exit()
+        self.retry_button.show()
+        self.main_button.show()
 
 
 if __name__ == '__main__':
