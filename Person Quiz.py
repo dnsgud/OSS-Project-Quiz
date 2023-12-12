@@ -107,14 +107,13 @@ class PersonQuiz(QMainWindow):
             # 시간 초과 시 check_answer 메서드 호출
             self.check_answer(timeout=True)
 
-    def check_answer(self):
-        # 사용자 입력을 받아 정답과 비교 후 처리
-        entered_name = self.name_input.text().strip().lower()
-
-        if any(entered_name == answer for answer in self.correct_answers):
-            print("정답입니다.")
-            self.score += 1
-            self.load_random_image()
+    def check_answer(self, timeout=False):
+        if timeout:
+            # 시간 초과일 때 처리
+            correct_answers_str = ', '.join(self.correct_answers)
+            correctness_text = "시간이 초과되었습니다. 정답은 ( {})입니다.".format(
+                correct_answers_str.replace(".jpeg", "").replace(",", "")
+            )
         else:
             correct_answers_str = ', '.join(self.correct_answers)
             print("오답입니다. 정답은 ( {})입니다.".format(correct_answers_str.replace(".jpeg", "").replace(",", "")))
