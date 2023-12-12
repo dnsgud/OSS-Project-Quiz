@@ -118,9 +118,11 @@ class PersonQuiz(QMainWindow):
             self.correctness_label.setText(correctness_text)
             self.show_result()
         else:
-            correct_answers_str = ', '.join(self.correct_answers)
-            print("오답입니다. 정답은 ( {})입니다.".format(correct_answers_str.replace(".jpeg", "").replace(",", "")))
+            entered_name = self.name_input.text().strip().lower()
 
+            if any(entered_name == answer for answer in self.correct_answers):
+                correctness_text = "정답입니다."
+                self.correctness_label.setText(correctness_text)
             self.show_result()
 
     def show_result(self):
