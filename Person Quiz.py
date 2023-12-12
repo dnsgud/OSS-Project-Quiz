@@ -213,6 +213,11 @@ class MainWindow(QMainWindow):
         quiz_buttons_container = QWidget(self.main_widget)
         quiz_buttons_container.setLayout(quiz_buttons_layout)
 
+        # 메인 레이아웃에 퀴즈 버튼 컨테이너 추가
+        main_layout = QVBoxLayout(self.main_widget)
+        main_layout.addWidget(quiz_buttons_container)
+        main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = MainWindow()
