@@ -3,15 +3,29 @@ from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QLineEdi
 from PyQt5.QtGui import QPixmap, QImage, QFont
 from PyQt5.QtCore import QTimer, Qt
 from PIL import Image
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
+from PyQt5.QtCore import QUrl
 import os
 import random
+
 class BrandLogoQuiz:
-    def __init__(self, logo_directory):
+    def __init__(self, logo_directory, app):
         self.logo_directory = logo_directory
+        self.app = app
         self.logo_files = [f for f in os.listdir(self.logo_directory) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))]
         if not self.logo_files:
             print("No valid logo image files found in the directory.")
             sys.exit()
+
+        # BGM 초기화
+        self.bgm_player = QMediaPlayer()
+        bgm_path = "bgm.mp3"  # 실제 BGM 파일 경로로 대체
+        self.bgm_player.setMedia(QMediaContent(QUrl.fromLocalFile(bgm_path)))
+
+        # BGM 재생
+        self.bgm_player.play()
+
+        self.app.aboutToQuit.connect(self.bgm_player.stop)
 
         self.coordinates = (100, 50, 300, 250)
         self.current_logo_file = ""
@@ -157,4 +171,6 @@ class BrandLogoQuiz:
 
 if __name__ == "__main__":
     logo_directory = "image"  # 실제 디렉토리 경로로 대체
-    quiz_app = BrandLogoQuiz(logo_directory)
+    app = QApplication(sys.argv)
+    quiz_app = BrandLogoQuiz(logo_directory, app)
+    sys.exit(app.exec_())
