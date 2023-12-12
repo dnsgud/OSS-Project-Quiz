@@ -229,6 +229,14 @@ class MainWindow(QMainWindow):
         self.stack.removeWidget(self.quiz_game)
         self.stack.setCurrentIndex(0)
 
+    def start_brand_quiz_game(self):
+        pass
+
+    def start_proverb_quiz_game(self):
+        pass
+
+    def start_four_letter_quiz_game(self):
+        pass
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = MainWindow()
