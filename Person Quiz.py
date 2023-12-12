@@ -185,8 +185,13 @@ class MainWindow(QMainWindow):
         self.brand_button.clicked.connect(self.start_brand_quiz_game)
         quiz_buttons_layout.addWidget(self.brand_button)
 
+        # '속담 퀴즈' 버튼 추가
+        self.proverb_button = QPushButton("속담 퀴즈", self.main_widget)
+        self.proverb_button.setFixedSize(250, 100)
+        self.proverb_button.move(330, 10)
+        self.proverb_button.clicked.connect(self.start_proverb_quiz_game)
+        quiz_buttons_layout.addWidget(self.proverb_button)
 
-        
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = MainWindow()
