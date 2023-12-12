@@ -77,7 +77,6 @@ class PersonQuiz(QMainWindow):
         self.parent.show_main_menu_person()
 
     def load_random_image(self):
-        # 디렉토리에서 확장자가 '.jpeg'인 이미지 파일을 무작위로 선택하고 화면에 표시
         file_list = os.listdir(self.directory_path)
         image_files = [file for file in file_list if file.lower().endswith('.jpeg')]
 
