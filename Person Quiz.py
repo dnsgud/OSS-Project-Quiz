@@ -25,12 +25,11 @@ class PersonQuiz(QMainWindow):
         self.name_input.returnPressed.connect(self.check_answer)
         self.timer_label = QLabel(f'남은 시간: {self.current_timer}초', self)
 
-        # 레이아웃 설정
-        layout = QVBoxLayout()
-        layout.addWidget(self.image_label)
-        layout.addWidget(self.name_input)
-        layout.addWidget(self.timer_label, alignment=Qt.AlignmentFlag.AlignRight)
-
+        self.correctness_label = QLabel("", self)
+        self.score_label = QLabel("현재 점수: 0", self)
+        self.best_score_label = QLabel("최고 점수: 0", self)
+        self.best_score_label.setGeometry(10, 30, 150, 30)
+        
         central_widget = QWidget(self)
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
