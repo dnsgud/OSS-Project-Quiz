@@ -100,14 +100,12 @@ class PersonQuiz(QMainWindow):
         self.timer.start(1000)
 
     def update_timer(self):
-        # 타이머 갱신 및 시간 초과 체크
         self.current_timer -= 1
         self.timer_label.setText(f'남은 시간: {self.current_timer}초')
 
         if self.current_timer == 0:
-            correct_answers_str = ', '.join(self.correct_answers)
-            print("\n시간이 초과되었습니다. 정답은 ( {})입니다.".format(correct_answers_str.replace(".jpeg", "").replace(",", "")))
-            self.show_result()
+            # 시간 초과 시 check_answer 메서드 호출
+            self.check_answer(timeout=True)
 
     def check_answer(self):
         # 사용자 입력을 받아 정답과 비교 후 처리
