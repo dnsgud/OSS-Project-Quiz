@@ -1,15 +1,18 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QLabel, QVBoxLayout, QLineEdit,
+    QPushButton, QHBoxLayout, QDesktopWidget, QWidget
+)
 from PyQt5.QtGui import QPixmap, QImage, QFont
-from PyQt5.QtCore import QTimer, Qt
-from PIL import Image
+from PyQt5.QtCore import QTimer, Qt, QUrl
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
-from PyQt5.QtCore import QUrl
+from PIL import Image
 import os
 import random
 
-class BrandLogoQuiz:
+class BrandLogoQuiz(QMainWindow):
     def __init__(self, logo_directory, app):
+        super().__init__()
         self.logo_directory = logo_directory
         self.app = app
         self.logo_files = [f for f in os.listdir(self.logo_directory) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))]
@@ -22,9 +25,12 @@ class BrandLogoQuiz:
         bgm_path = "bgm.mp3"  # 실제 BGM 파일 경로로 대체
         self.bgm_player.setMedia(QMediaContent(QUrl.fromLocalFile(bgm_path)))
 
+        self.setStyleSheet(
+            "background-color: #F9F6F2;"
+        )
         # BGM 재생
         self.bgm_player.play()
-
+        self.setGeometry(100, 100, 700, 500)
         self.app.aboutToQuit.connect(self.bgm_player.stop)
 
         self.coordinates = (100, 50, 300, 250)
@@ -33,13 +39,12 @@ class BrandLogoQuiz:
         self.countdown = 5
         self.countdown_timer = QTimer()
 
-        self.app = QApplication(sys.argv)
-        self.root = QWidget()
-        self.root.setWindowTitle("Brand Logo Quiz")
-
         self.setup_ui()
 
     def setup_ui(self):
+        central_widget = QWidget(self)
+        self.setCentralWidget(central_widget)
+
         self.select_next_logo()
 
         self.logo_path = os.path.join(self.logo_directory, self.current_logo_file)
@@ -47,24 +52,23 @@ class BrandLogoQuiz:
         self.cropped_image = self.logo_image.crop(self.coordinates)
         self.q_pixmap = self.pil_to_pixmap(self.cropped_image)
 
-        self.logo_label = QLabel(self.root)
+        self.logo_label = QLabel(central_widget)
         self.logo_label.setPixmap(self.q_pixmap)
 
-        self.entry = QLineEdit(self.root)
+        self.entry = QLineEdit(central_widget)
         self.entry.returnPressed.connect(self.check_answer)
 
-        self.submit_button = QPushButton("제출", self.root)
+        self.submit_button = QPushButton("제출", central_widget)
         self.submit_button.clicked.connect(self.check_answer)
 
-        self.result_label = QLabel(self.root)
-        self.score_label = QLabel(f"점수: {self.score}", self.root)
-        self.countdown_label = QLabel("", self.root)
+        self.result_label = QLabel(central_widget)
+        self.score_label = QLabel(f"점수: {self.score}", central_widget)
+        self.countdown_label = QLabel("", central_widget)
 
         # 크기가 큰 폰트로 설정
         font = QFont()
-        font.setPointSize(13)  # 원하는 폰트 크기로 조절
+        font.setPointSize(100)  # 원하는 폰트 크기로 조절
 
-        self.result_label.setFont(font)
         self.score_label.setFont(font)
         self.countdown_label.setFont(font)
 
@@ -72,18 +76,15 @@ class BrandLogoQuiz:
         h_layout.addWidget(self.entry)
         h_layout.addWidget(self.submit_button)
 
-        v_layout = QVBoxLayout(self.root)
-        v_layout.addWidget(self.logo_label)
+        v_layout = QVBoxLayout(central_widget)
+        v_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)
         v_layout.addLayout(h_layout)
-        v_layout.addWidget(self.result_label)
-        v_layout.addWidget(self.score_label)
-        v_layout.addWidget(self.countdown_label)
-
-        self.root.setLayout(v_layout)
+        v_layout.addWidget(self.result_label, alignment=Qt.AlignCenter)
+        v_layout.addWidget(self.score_label, alignment=Qt.AlignCenter)
+        v_layout.addWidget(self.countdown_label, alignment=Qt.AlignCenter)
 
         self.center_window()
-        self.root.show()
-
+        self.showMaximized()  # 최대화
         self.countdown_timer.timeout.connect(self.update_countdown)
         self.countdown_timer.start(1000)
 
@@ -98,7 +99,7 @@ class BrandLogoQuiz:
         x_position = (screen_width - window_width) // 2
         y_position = (screen_height - window_height) // 2
 
-        self.root.setGeometry(x_position, y_position, window_width, window_height)
+        self.setGeometry(x_position, y_position, window_width, window_height)
 
     def select_next_logo(self):
         remaining_logos = [logo for logo in self.logo_files if logo != self.current_logo_file]
@@ -110,8 +111,8 @@ class BrandLogoQuiz:
 
     def pil_to_pixmap(self, image):
         # 이미지의 세로와 가로 길이를 변경
-        new_width = 400  # 원하는 가로 길이
-        new_height = 300  # 원하는 세로 길이
+        new_width = 1900  # 원하는 가로 길이
+        new_height = 400  # 원하는 세로 길이
         image = image.resize((new_width, new_height), Image.LANCZOS)
         image = image.convert("RGBA")
         width, height = image.size
@@ -164,6 +165,7 @@ class BrandLogoQuiz:
             self.entry.setDisabled(True)  # 입력 창 비활성화
             self.submit_button.setDisabled(True)  # 제출 버튼 비활성화
             self.result_label.setText("시간 초과!")
+
     def reset_countdown(self):
         self.countdown = 5
         self.countdown_label.setText(f"남은 시간: {self.countdown}초")
