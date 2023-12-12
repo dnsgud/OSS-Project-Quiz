@@ -20,7 +20,7 @@ class BrandLogoQuiz(QMainWindow):
         if not self.logo_files:
             print("No valid logo image files found in the directory.")
             sys.exit()
-
+        self.score_widget = QWidget(self)  # score_widget을 정의
         # BGM 초기화
         self.bgm_player = QMediaPlayer()
         bgm_path = "bgm.mp3"  # 실제 BGM 파일 경로로 대체
@@ -54,21 +54,13 @@ class BrandLogoQuiz(QMainWindow):
 
         self.logo_label = QLabel(central_widget)
         self.highest_score_label = QLabel(f"최고 점수: {self.highest_score}", central_widget)
-        self.score_display_label = QLabel(f"score: {self.score}", central_widget)
+        self.score_display_label = QLabel(f"현재 점수: {self.score}", central_widget)
         self.time_display_label = QLabel("", central_widget)
         self.result_label = QLabel(central_widget)
 
         self.entry = QLineEdit(central_widget)
         self.entry.returnPressed.connect(self.check_answer)
 
-        self.submit_button = QPushButton("제출", central_widget)
-        self.submit_button.clicked.connect(self.check_answer)
-
-        self.restart_button = QPushButton("다시하기", central_widget)
-        self.restart_button.clicked.connect(self.restart_quiz)
-
-        self.main_menu_button = QPushButton("메인 메뉴", central_widget)
-        self.main_menu_button.clicked.connect(self.return_to_main_menu)
 
         # 크기가 큰 폰트로 설정
         font = QFont()
@@ -80,22 +72,28 @@ class BrandLogoQuiz(QMainWindow):
 
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.entry)
-        h_layout.addWidget(self.submit_button)
 
         v_layout = QVBoxLayout(central_widget)
         v_layout.addWidget(self.highest_score_label, alignment=Qt.AlignCenter)
         v_layout.addWidget(self.score_display_label, alignment=Qt.AlignCenter)
         v_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)
+
+        # 최고 점수와 현재 점수 라벨을 사진 바로 위 왼쪽에 위치하도록 조절
+        v_layout.addWidget(self.highest_score_label, alignment=Qt.AlignTop | Qt.AlignLeft)
+        v_layout.addWidget(self.score_display_label, alignment=Qt.AlignTop | Qt.AlignLeft)
+        v_layout.addWidget(self.logo_label, alignment=Qt.AlignTop | Qt.AlignCenter)
+
+        # 입력창을 사진 바로 아래로 위치하도록 조절
+        v_layout.addWidget(self.entry, alignment=Qt.AlignTop | Qt.AlignHCenter)
+
+        # 나머지는 그대로 유지
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(self.entry)
+
         v_layout.addLayout(h_layout)
         v_layout.addWidget(self.result_label, alignment=Qt.AlignCenter)
         v_layout.addWidget(self.time_display_label, alignment=Qt.AlignTop | Qt.AlignRight)
 
-        # 추가된 버튼들을 수직 레이아웃에 추가
-        h_button_layout = QHBoxLayout()
-        h_button_layout.addWidget(self.restart_button, alignment=Qt.AlignCenter)
-        h_button_layout.addWidget(self.main_menu_button, alignment=Qt.AlignCenter)
-
-        v_layout.addLayout(h_button_layout)
 
         self.center_window()
         self.showMaximized()
@@ -110,7 +108,7 @@ class BrandLogoQuiz(QMainWindow):
 
     def setup_styles(self):
         # QLabel
-        font_size = 50
+        font_size = 80
         label_style = (
             f"font-size: {font_size}px; color: #2E86AB; background-color: #F9EBB2;"
             " padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #2E86AB;"
@@ -118,28 +116,17 @@ class BrandLogoQuiz(QMainWindow):
 
         self.score_display_label.setStyleSheet(label_style)
         self.highest_score_label.setStyleSheet(label_style)
-        self.result_label.setStyleSheet(label_style)
         self.time_display_label.setStyleSheet(label_style)
 
         # QLineEdit
         font_size = 50
-        self.entry.setStyleSheet(
+        entry_style = (
             f"font-size: {font_size}px; padding: 10px; border: 2px solid #2E86AB; border-radius: 10px; margin-bottom: 20px;"
         )
+        self.entry.setStyleSheet(entry_style)
+        self.entry.setFixedWidth(500)
         # QPushButton
-        font_size = 30
-        self.submit_button.setStyleSheet(
-            f"font-size: {font_size}px; padding: 10px; background-color: #FF595E; color: #FFF; "
-            "border: 2px solid #FF595E; border-radius: 10px;"
-        )
-        self.restart_button.setStyleSheet(
-            f"font-size: {font_size}px; padding: 10px; background-color: #FF595E; color: #FFF; "
-            "border: 2px solid #FF595E; border-radius: 10px;"
-        )
-        self.main_menu_button.setStyleSheet(
-            f"font-size: {font_size}px; padding: 10px; background-color: #FF595E; color: #FFF; "
-            "border: 2px solid #FF595E; border-radius: 10px;"
-        )
+
 
     def center_window(self):
         window_width = 400
@@ -188,10 +175,6 @@ class BrandLogoQuiz(QMainWindow):
             result_text = f"정답은 {correct_answer.capitalize()} 입니다."
             self.countdown_timer.stop()
             self.entry.setDisabled(True)
-            self.submit_button.setDisabled(True)
-            self.restart_button.setDisabled(False)
-            self.main_menu_button.setDisabled(False)
-
         self.result_label.setText(result_text)
         self.score_display_label.setText(f"score: {self.score}")
 
@@ -208,21 +191,7 @@ class BrandLogoQuiz(QMainWindow):
         self.entry.clear()
         self.reset_countdown()
         self.entry.setDisabled(False)
-        self.submit_button.setDisabled(False)
-        self.restart_button.setDisabled(True)
-        self.main_menu_button.setDisabled(True)
-
         self.countdown_timer.start()
-
-    def restart_quiz(self):
-        self.score = 0
-        self.result_label.clear()
-        self.restart_button.setDisabled(True)
-        self.main_menu_button.setDisabled(True)
-        self.start_new_question()
-
-    def return_to_main_menu(self):
-        self.close()
 
     def update_countdown(self):
         self.countdown -= 1
@@ -231,14 +200,6 @@ class BrandLogoQuiz(QMainWindow):
         if self.countdown == 0:
             self.countdown_timer.stop()
             self.entry.setDisabled(True)
-            self.submit_button.setDisabled(True)
-            self.restart_button.setDisabled(False)
-            self.main_menu_button.setDisabled(False)
-            self.result_label.setStyleSheet(
-            "font-size: 50px; color: #2E86AB; background-color: #F9EBB2;"
-            " padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #2E86AB;"
-            "color: red;"
-        )
             self.check_answer()
     def reset_countdown(self):
         self.countdown = 5
