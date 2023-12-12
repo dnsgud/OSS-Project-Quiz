@@ -128,7 +128,17 @@ class PersonQuiz(QMainWindow):
                 if self.total_score > self.best_score:
                     self.best_score = self.total_score
                     self.best_score_label.setText(f"최고 점수: {self.best_score}")
+                
+                QTimer.singleShot(500, self.load_random_image)
+            else:
+                correct_answers_str = ', '.join(self.correct_answers)
+                correctness_text = "오답입니다. 정답은 ( {})입니다.".format(
+                    correct_answers_str.replace(".jpeg", "").replace(",", "")
+                )
+                print(correctness_text)
+                self.correctness_label.setText(correctness_text)
 
+                self.total_score = 0
 
     def show_result(self):
         # 최종 점수 출력 및 게임 종료
