@@ -114,6 +114,9 @@ class PersonQuiz(QMainWindow):
             correctness_text = "시간이 초과되었습니다. 정답은 ( {})입니다.".format(
                 correct_answers_str.replace(".jpeg", "").replace(",", "")
             )
+            print(correctness_text)
+            self.correctness_label.setText(correctness_text)
+            self.show_result()
         else:
             correct_answers_str = ', '.join(self.correct_answers)
             print("오답입니다. 정답은 ( {})입니다.".format(correct_answers_str.replace(".jpeg", "").replace(",", "")))
