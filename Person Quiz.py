@@ -8,7 +8,7 @@ from PIL import Image
 import sys
 
 
-class QuizGame(QMainWindow):
+class PersonQuiz(QMainWindow):
     def __init__(self, directory_path, time_limit):
         super(QuizGame, self).__init__()
 
