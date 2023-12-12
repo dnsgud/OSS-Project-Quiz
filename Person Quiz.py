@@ -192,6 +192,13 @@ class MainWindow(QMainWindow):
         self.proverb_button.clicked.connect(self.start_proverb_quiz_game)
         quiz_buttons_layout.addWidget(self.proverb_button)
 
+        # '4글자 퀴즈' 버튼 추가
+        self.four_letter_button = QPushButton("4글자 퀴즈", self.main_widget)
+        self.four_letter_button.setFixedSize(250, 100)
+        self.four_letter_button.move(490, 10)
+        self.four_letter_button.clicked.connect(self.start_four_letter_quiz_game)
+        quiz_buttons_layout.addWidget(self.four_letter_button)
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = MainWindow()
