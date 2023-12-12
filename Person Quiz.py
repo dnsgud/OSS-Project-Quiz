@@ -224,6 +224,11 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.quiz_game)
         self.stack.setCurrentIndex(1)
 
+    def show_main_menu_person(self):
+        # '인물 퀴즈' 페이지를 스택에서 제거
+        self.stack.removeWidget(self.quiz_game)
+        self.stack.setCurrentIndex(0)
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = MainWindow()
