@@ -91,13 +91,10 @@ class PersonQuiz(QMainWindow):
         self.image_label.setPixmap(pixmap.scaledToWidth(400))
         self.correct_answers = [answer.lower() for answer in random_image_file.split(',')]
 
-        # 정답 목록 설정
-        self.correct_answers = [answer.lower() for answer in random_image_file.split(',')]
-
-        # 입력창, 타이머 초기화 및 타이머 시작
         self.name_input.clear()
-        self.current_timer = self.time_limit
-        self.timer.start(1000)  # 1초마다 타이머 이벤트 발생
+        self.correctness_label.clear()
+        self.retry_button.hide()
+        self.main_button.hide()
 
     def update_timer(self):
         # 타이머 갱신 및 시간 초과 체크
