@@ -9,13 +9,15 @@ import sys
 
 
 class PersonQuiz(QMainWindow):
-    def __init__(self, directory_path, time_limit):
-        super(QuizGame, self).__init__()
+    def __init__(self, parent, directory_path, time_limit):
+        super(PersonQuiz, self).__init__(parent)
 
-        # 초기화 작업
+        self.parent = parent
+
         self.directory_path = directory_path
         self.time_limit = time_limit
-        self.score = 0
+        self.total_score = 0
+        self.best_score = 0
         self.current_timer = self.time_limit
 
         # GUI 초기화
