@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QLabel, QLineEdit, QPushButton,
     QMessageBox, QDesktopWidget, QVBoxLayout, QWidget
 )
-from PyQt5.QtCore import QTimer, Qt, QSize
+from PyQt5.QtCore import QTimer, Qt
 import linecache
 import random
 
@@ -59,7 +59,7 @@ class QuizApp(QMainWindow):
 
     def setup_styles(self):
         # QLabel
-        font_size = 90
+        font_size = 100
         self.score_label.setStyleSheet(
             f"font-size: {font_size}px; color: #2E86AB; font-weight: bold; margin-bottom: 10px;"
         )
@@ -158,5 +158,5 @@ class QuizApp(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = QuizApp()
-    window.show()
+    window.showMaximized()  # 전체 화면으로 표시
     sys.exit(app.exec_())
