@@ -61,6 +61,13 @@ class BrandLogoQuiz(QMainWindow):
         self.entry = QLineEdit(central_widget)
         self.entry.returnPressed.connect(self.check_answer)
 
+        # 다시하기 버튼
+        self.retry_button = QPushButton("다시하기", central_widget)
+        self.retry_button.clicked.connect(self.retry_game)
+
+        # 메인 메뉴로 돌아가기 버튼
+        self.menu_button = QPushButton("메인 메뉴", central_widget)
+        self.menu_button.clicked.connect(self.return_to_menu)
 
         # 크기가 큰 폰트로 설정
         font = QFont()
@@ -84,12 +91,14 @@ class BrandLogoQuiz(QMainWindow):
 
         # 나머지는 그대로 유지
         h_layout = QHBoxLayout()
-        h_layout.addWidget(self.entry)
+        h_layout.addWidget(self.retry_button)
+        h_layout.addWidget(self.menu_button)
 
-        v_layout.addLayout(h_layout)
+    
         v_layout.addWidget(self.result_label, alignment=Qt.AlignCenter)
         v_layout.addWidget(self.time_display_label, alignment=Qt.AlignTop | Qt.AlignRight)
-
+        h_layout.addWidget(self.time_display_label, alignment=Qt.AlignTop | Qt.AlignRight)
+        v_layout.addLayout(h_layout)
 
         self.center_window()
         self.showMaximized()
@@ -121,6 +130,13 @@ class BrandLogoQuiz(QMainWindow):
         )
         self.entry.setStyleSheet(entry_style)
         self.entry.setFixedWidth(500)
+
+        # QPushButton
+        button_style = (
+            "font-size: 30px; padding: 10px; border: 2px solid #2E86AB; border-radius: 10px; margin: 10px;"
+        )
+        self.retry_button.setStyleSheet(button_style)
+        self.menu_button.setStyleSheet(button_style)
 
     def center_window(self):
         window_width = 400
@@ -169,10 +185,27 @@ class BrandLogoQuiz(QMainWindow):
             result_text = f"정답은 {correct_answer.capitalize()} 입니다."
             self.countdown_timer.stop()
             self.entry.setDisabled(True)
+            self.retry_button.show()
+            self.menu_button.show()
+            result_style = (
+                "font-size: 40px; color: #FF0000;" if self.countdown == 0 else "font-size: 40px; color: #FFA500;"
+            )
+            result_text = f"<span style='{result_style}'>{result_text}</span>"
         self.result_label.setText(result_text)
+        self.result_label.show() 
         self.score_display_label.setText(f"현재 점수: {self.score}")
 
+    def retry_game(self):
+        self.result_label.hide()  # result_label 숨기기
+        self.score = 0
+        self.highest_score_label.setText(f"최고 점수: {self.highest_score}")
+        self.score_display_label.setText(f"현재 점수: {self.score}")
+        self.start_new_question()
+
     def start_new_question(self):
+        self.retry_button.hide()
+        self.menu_button.hide()
+        self.result_label.hide() 
         self.select_next_logo()
 
         self.logo_path = os.path.join(self.logo_directory, self.current_logo_file)
@@ -195,6 +228,7 @@ class BrandLogoQuiz(QMainWindow):
             self.countdown_timer.stop()
             self.entry.setDisabled(True)
             self.check_answer()
+
     def reset_countdown(self):
         self.countdown = 5
         self.time_display_label.setText(f"{self.countdown}초")
@@ -207,15 +241,29 @@ class BrandLogoQuiz(QMainWindow):
                 return data.get("highest_score", 0)
         except (FileNotFoundError, json.JSONDecodeError):
             return 0
-
     def save_highest_score(self):
         data = {"highest_score": self.highest_score}
         with open("highest_score.json", "w") as file:
             json.dump(data, file)
+
+    def retry_game(self):
+        self.score = 0
+        self.highest_score_label.setText(f"최고 점수: {self.highest_score}")
+        self.score_display_label.setText(f"현재 점수: {self.score}")
+        self.start_new_question()
+
+    def return_to_menu(self):
+        self.score = 0
+        self.highest_score = self.load_highest_score()
+        self.highest_score_label.setText(f"최고 점수: {self.highest_score}")
+        self.score_display_label.setText(f"현재 점수: {self.score}")
+        self.retry_button.hide()
+        self.menu_button.hide()
+        self.start_new_question()
+
 
 if __name__ == "__main__":
     logo_directory = "image"  # 실제 디렉토리 경로로 대체
     app = QApplication(sys.argv)
     quiz_app = BrandLogoQuiz(logo_directory, app)
     sys.exit(app.exec_())
-
