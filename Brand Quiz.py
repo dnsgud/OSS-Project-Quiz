@@ -83,7 +83,7 @@ class BrandLogoQuiz(QMainWindow):
         h_layout.addWidget(self.submit_button)
 
         v_layout = QVBoxLayout(central_widget)
-        v_layout.addWidget(self.highest_score_label, alignment=Qt.AlignLeft | Qt.AlignTop)
+        v_layout.addWidget(self.highest_score_label, alignment=Qt.AlignCenter)
         v_layout.addWidget(self.score_display_label, alignment=Qt.AlignCenter)
         v_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)
         v_layout.addLayout(h_layout)
@@ -122,13 +122,12 @@ class BrandLogoQuiz(QMainWindow):
         self.time_display_label.setStyleSheet(label_style)
 
         # QLineEdit
-        font_size = 70
+        font_size = 50
         self.entry.setStyleSheet(
             f"font-size: {font_size}px; padding: 10px; border: 2px solid #2E86AB; border-radius: 10px; margin-bottom: 20px;"
         )
-
         # QPushButton
-        font_size = 24
+        font_size = 30
         self.submit_button.setStyleSheet(
             f"font-size: {font_size}px; padding: 10px; background-color: #FF595E; color: #FFF; "
             "border: 2px solid #FF595E; border-radius: 10px;"
@@ -163,8 +162,8 @@ class BrandLogoQuiz(QMainWindow):
 
     def pil_to_pixmap(self, image):
         # 이미지의 세로와 가로 길이를 변경
-        new_width = 1900  # 원하는 가로 길이
-        new_height = 400  # 원하는 세로 길이
+        new_width = 600  # 원하는 가로 길이
+        new_height = 200  # 원하는 세로 길이
         image = image.resize((new_width, new_height), Image.LANCZOS)
         image = image.convert("RGBA")
         width, height = image.size
@@ -184,8 +183,9 @@ class BrandLogoQuiz(QMainWindow):
                 self.highest_score_label.setText(f"best: {self.highest_score}")
                 self.save_highest_score()
             self.reset_countdown()
+            self.start_new_question()
         else:
-            result_text = f"틀렸습니다. 정답은 {correct_answer.capitalize()} 입니다."
+            result_text = f"정답은 {correct_answer.capitalize()} 입니다."
             self.countdown_timer.stop()
             self.entry.setDisabled(True)
             self.submit_button.setDisabled(True)
@@ -234,9 +234,8 @@ class BrandLogoQuiz(QMainWindow):
             self.submit_button.setDisabled(True)
             self.restart_button.setDisabled(False)
             self.main_menu_button.setDisabled(False)
-            self.result_label.setText("시간 초과!")
             self.result_label.setStyleSheet("color: red;")
-
+            self.check_answer()
     def reset_countdown(self):
         self.countdown = 5
         self.time_display_label.setText(f"{self.countdown}초")
