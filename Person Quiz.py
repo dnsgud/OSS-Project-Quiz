@@ -218,6 +218,12 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(quiz_buttons_container)
         main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
+    def start_quiz_game(self):
+        # '인물 퀴즈' 게임 시작
+        self.quiz_game = PersonQuiz(self, r"인물 퀴즈\인물 사진", 7)
+        self.stack.addWidget(self.quiz_game)
+        self.stack.setCurrentIndex(1)
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = MainWindow()
