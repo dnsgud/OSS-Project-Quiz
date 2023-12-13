@@ -207,54 +207,115 @@ class MainWindow(QMainWindow):
         self.main_widget = QWidget()
         self.stack.addWidget(self.main_widget)
 
+        # BGM 초기화
+        self.bgm_player = QMediaPlayer()
+        bgm_path = "bgm.mp3"  # 실제 BGM 파일 경로로 대체
+        self.bgm_player.setMedia(QMediaContent(QUrl.fromLocalFile(bgm_path)))
+
+        self.bgm_player.play()
         # 다양한 퀴즈 카테고리를 위한 버튼들 추가
-        quiz_buttons_layout = QHBoxLayout()
-        
+        quiz_buttons_layout = QHBoxLayout()  # QHBoxLayout으로 변경
+
+        button_style = (
+            "QPushButton {"
+            "   font-size: 30px;"
+            "   padding: 10px;"
+            "   border: 2px solid #2E86AB;"
+            "   border-radius: 10px;"
+            "   margin: 10px;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: #2E86AB;"
+            "   color: white;"
+            "}"
+        )
+
         # '인물 퀴즈' 버튼 추가
         self.person_button = QPushButton("인물 퀴즈", self.main_widget)
-        self.person_button.setFixedSize(250, 100)
+        self.person_button.setFixedSize(400, 200)
         self.person_button.move(10, 10)
         self.person_button.clicked.connect(self.start_quiz_game)
+        self.person_button.setStyleSheet(button_style)
         quiz_buttons_layout.addWidget(self.person_button)
 
         # '브랜드 퀴즈' 버튼 추가
         self.brand_button = QPushButton("브랜드 퀴즈", self.main_widget)
-        self.brand_button.setFixedSize(250, 100)
+        self.brand_button.setFixedSize(400, 200)
         self.brand_button.move(170, 10)
         self.brand_button.clicked.connect(self.start_brand_quiz_game)
+        self.brand_button.setStyleSheet(button_style)
         quiz_buttons_layout.addWidget(self.brand_button)
 
         # '속담 퀴즈' 버튼 추가
         self.proverb_button = QPushButton("속담 퀴즈", self.main_widget)
-        self.proverb_button.setFixedSize(250, 100)
+        self.proverb_button.setFixedSize(400, 200)
         self.proverb_button.move(330, 10)
         self.proverb_button.clicked.connect(self.start_proverb_quiz_game)
+        self.proverb_button.setStyleSheet(button_style)
         quiz_buttons_layout.addWidget(self.proverb_button)
 
         # '4글자 퀴즈' 버튼 추가
         self.four_letter_button = QPushButton("4글자 퀴즈", self.main_widget)
-        self.four_letter_button.setFixedSize(250, 100)
+        self.four_letter_button.setFixedSize(400, 200)
         self.four_letter_button.move(490, 10)
         self.four_letter_button.clicked.connect(self.start_four_letter_quiz_game)
+        self.four_letter_button.setStyleSheet(button_style)
         quiz_buttons_layout.addWidget(self.four_letter_button)
 
         # '점수' 버튼 추가
         self.score_button = QPushButton("점수", self.main_widget)
         self.score_button.setFixedSize(200, 50)
         self.score_button.move(1650, 770)
+        self.score_button.clicked.connect(self.show_score)
+        self.score_button.setStyleSheet(
+            "QPushButton {"
+            "   font-size: 20px;"
+            "   padding: 5px;"
+            "   background-color: #2E86AB;"
+            "   color: white;"
+            "   border: 2px solid #2E86AB;"
+            "   border-radius: 10px;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: #205170;"
+            "}"
+        )
 
         # '종료' 버튼 추가
         self.quit_button = QPushButton("종료", self.main_widget)
         self.quit_button.setFixedSize(200, 50)
         self.quit_button.move(1650, 830)
-
+        self.quit_button.clicked.connect(self.close_application)
+        self.quit_button.setStyleSheet(
+            "QPushButton {"
+            "   font-size: 20px;"
+            "   padding: 5px;"
+            "   background-color: #D32F2F;"
+            "   color: white;"
+            "   border: 2px solid #D32F2F;"
+            "   border-radius: 10px;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: #A52B2B;"
+            "}"
+        )
         # 퀴즈 버튼들을 담을 컨테이너 위젯 생성
         quiz_buttons_container = QWidget(self.main_widget)
         quiz_buttons_container.setLayout(quiz_buttons_layout)
 
-        # 메인 레이아웃에 퀴즈 버튼 컨테이너 추가
+        # 메인 레이아웃에 퀴즈 버튼 컨테이너와 "Quiz Hub" 라벨 추가
         main_layout = QVBoxLayout(self.main_widget)
+
+        # 배경색 추가
+        self.main_widget.setStyleSheet("background-color: #F9F6F2;")
+
+        # QLabel을 생성하여 "Quiz Hub"를 가운데에 배치
+        label = QLabel("QuizHub", self.main_widget)
+        label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        label.setStyleSheet("font-size: 300px; color: #2E86AB;")  # 원하는 스타일로 조절
+
         main_layout.addWidget(quiz_buttons_container)
+        main_layout.addWidget(label, alignment=Qt.AlignmentFlag.AlignHCenter)
         main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
     def start_quiz_game(self):
@@ -264,18 +325,94 @@ class MainWindow(QMainWindow):
         self.stack.setCurrentIndex(1)
 
     def show_main_menu_person(self):
-        # '인물 퀴즈' 페이지를 스택에서 제거
+        # quizgame 페이지를 스택에서 제거
         self.stack.removeWidget(self.quiz_game)
         self.stack.setCurrentIndex(0)
 
     def start_brand_quiz_game(self):
         pass
 
+    def show_main_menu_brand(self):
+        pass
+
     def start_proverb_quiz_game(self):
+        pass
+
+    def show_main_menu_proverb(self):
         pass
 
     def start_four_letter_quiz_game(self):
         pass
+
+    def show_main_menu_four(self):
+        pass
+
+    def show_score(self):
+        class CustomMessageBox(QDialog):
+            def __init__(self, title, message, parent=None):
+                super(CustomMessageBox, self).__init__(parent)
+                self.setWindowTitle(title)
+
+                layout = QVBoxLayout()
+
+                # 메시지를 나타내는 레이블 추가
+                label = QLabel(message)
+                label.setAlignment(Qt.AlignCenter)
+
+                # 레이블 디자인 설정
+                label.setStyleSheet("""
+                       QLabel {
+                           font-family: 'Arial';
+                           font-size: 80px;
+                           font-weight: bold;
+                           color: #0078d4;  /* 텍스트 색상 */
+                           background-color: #f0f0f0;  /* 배경색 */
+                           border: 2px solid #999;  /* 경계선 */
+                           border-radius: 5px;  /* 테두리 모서리 둥글게 */
+                           padding: 10px;  /* 안쪽 여백 */
+                       }
+                   """)
+
+                layout.addWidget(label)
+
+                # 확인 버튼 추가
+                ok_button = QPushButton("확인")
+                ok_button.clicked.connect(self.accept)
+                layout.addWidget(ok_button)
+
+                self.setLayout(layout)
+
+                # 다이얼로그의 크기 설정
+                self.setMinimumWidth(800)
+                self.setMinimumHeight(400)
+
+        try:
+            score_message = "최고 점수:\n"
+            for quiz_number in range(1, 5):  # 1부터 4까지의 퀴즈 번호를 고려
+                file_name = f"highest_score{quiz_number}.json"
+                with open(file_name, "r") as file:
+                    data = json.load(file)
+                    highest_score = data.get("highest_score", 0)
+
+                    if highest_score == 0:
+                        score_message += f"{quiz_number}번 퀴즈: 기록 없음.\n"
+                    else:
+                        score_message += f"{quiz_number}번 퀴즈: {highest_score}\n"
+
+            if score_message == "최고 점수:\n":
+                custom_box = CustomMessageBox("점수", "기록 없음.")
+            else:
+                custom_box = CustomMessageBox("점수", score_message)
+
+            custom_box.exec_()
+        except Exception as e:
+            custom_box = CustomMessageBox("에러", f"점수를 불러오는 중 오류가 발생했습니다: {str(e)}")
+            custom_box.exec_()
+
+    def close_application(self):
+        # 종료 버튼 클릭 시 프로그램 종료
+        QApplication.quit()
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = MainWindow()
