@@ -92,6 +92,10 @@ class ProverbQuiz(QMainWindow):
         user_input = self.entry.text().strip()
         self.timer.stop()
 
+    def save_highest_score(self):
+        data = {"highest_score": self.best_score}
+        with open("highest_score3.json", "w") as file:
+            json.dump(data, file)
     def load_highest_score(self):
         try:
             with open("highest_score3.json", "r") as file:
