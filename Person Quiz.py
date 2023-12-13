@@ -93,7 +93,7 @@ class PersonQuiz(QMainWindow):
     def show_main_menu(self):
         self.total_score = 0
         self.score_label.setText(f'현재 점수: {self.total_score}')
-        self.score_label.setText(f'최고 점수: {self.best_score}')
+        self.score_label.setText(f'최고 점수: {self.high_score}')
         self.parent.show_main_menu_person()
 
     def load_random_image(self):
