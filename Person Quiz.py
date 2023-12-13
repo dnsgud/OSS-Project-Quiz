@@ -16,27 +16,8 @@ class PersonQuiz(QMainWindow):
         self.directory_path = directory_path
         self.time_limit = time_limit
         self.total_score = 0
-        self.best_score = 0
+        self.high_score = self.load_highest_score()
         self.current_timer = self.time_limit
-
-        self.image_label = QLabel(self)
-        self.name_input = QLineEdit(self)
-        self.name_input.returnPressed.connect(self.check_answer)
-
-        self.timer_label = QLabel(f'남은 시간: {self.current_timer}초', self)
-
-        # 정답 여부와 현재 점수를 표시하는 레이블 추가
-        self.correctness_label = QLabel("", self)
-        self.score_label = QLabel("현재 점수: 0", self)
-        self.best_score_label = QLabel("최고 점수: 0", self)
-        self.best_score_label.setGeometry(10, 30, 150, 30)
-
-        # 다시하기 버튼과 메인화면 버튼 추가
-        self.retry_button = QPushButton("다시하기", self)
-        self.retry_button.clicked.connect(self.retry_game)
-
-        self.main_button = QPushButton("메인화면", self)
-        self.main_button.clicked.connect(self.show_main_menu)
 
         self.init_ui()
 
