@@ -101,7 +101,14 @@ class ProverbQuiz(QMainWindow):
                 self.save_highest_score()
             self.result_label.setText("정답입니다!")
             QTimer.singleShot(2000, lambda: self.result_label.setText(""))
-            self.generate_quiz()
+                  else:
+            # 오답일 경우
+            self.result_label.setText(f"오답입니다. 정답은 '{self.answer}'입니다.")
+            QTimer.singleShot(2000, lambda: self.result_label.setText(""))  # 2초 후 메시지 지움
+            self.show_buttons()  # 오답 시 버튼 보이도록 추가
+
+        self.total_score_label.setText(f"현재 점수: {self.total_score}")
+  self.generate_quiz()
         else:
             # 오답일 경우
             self.result_label.setText(f"오답입니다. 정답은 '{self.answer}'입니다.")
