@@ -78,15 +78,22 @@ class ProverbQuiz(QMainWindow):
         screen = QDesktopWidget().screenGeometry()
         size = self.geometry()
         self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
+ def setup_styles(self):
+        # UI 스타일 설정
 
-    def setup_styles(self):
         # QLabel
-        font_size = 50
-        label_style = (
-            f"font-size: {font_size}px; color: #2E86AB; background-color: #F9EBB2;"
-            " padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #2E86AB;"
+        font_size = 30
+        self.total_score_label.setStyleSheet(
+            f"font-size: {font_size}px; color: #2E86AB; font-weight: bold; margin-bottom: 10px;"
         )
-
+        self.best_score_label.setStyleSheet(
+            f"font-size: {font_size}px; color: #2E86AB; font-weight: bold; margin-bottom: 10px;"
+        )
+        self.label.setStyleSheet(
+            f"font-size: {font_size}px; color: #2E86AB; background-color: #F9EBB2; padding: 20px; border-radius: 10px; margin-bottom: 20px;"
+        )
+        self.time_label.setStyleSheet(
+            f"font-size: {font_size}px; color: #2E86AB; margin-bottom: 20px;"
         self.score_label.setStyleSheet(label_style)
         self.best_score_label.setStyleSheet(label_style)
         self.label.setStyleSheet(label_style)
