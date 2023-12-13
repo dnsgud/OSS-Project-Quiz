@@ -98,7 +98,6 @@ class ProverbQuiz(QMainWindow):
         self.best_score_label.setStyleSheet(label_style)
         self.label.setStyleSheet(label_style)
         self.time_label.setStyleSheet(label_style)
-
         # QLineEdit
         font_size = 70
         self.entry.setStyleSheet(
