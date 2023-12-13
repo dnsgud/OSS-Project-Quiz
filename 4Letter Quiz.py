@@ -307,10 +307,17 @@ class MainWindow(QMainWindow):
 
         # 메인 레이아웃에 퀴즈 버튼 컨테이너와 "Quiz Hub" 라벨 추가
         main_layout = QVBoxLayout(self.main_widget)
+        # 배경색 추가
+        self.main_widget.setStyleSheet("background-color: #F9F6F2;")
 
+        # QLabel을 생성하여 "Quiz Hub"를 가운데에 배치
+        label = QLabel("QuizHub", self.main_widget)
+        label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        label.setStyleSheet("font-size: 300px; color: #2E86AB;") 
         # FourletterQuizGame 페이지를 스택에서 제거
         self.stack.removeWidget(self.four_letter_game)
         self.stack.setCurrentIndex(0)
+        
 
         )
 def show_score(self):
