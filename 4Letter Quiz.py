@@ -522,7 +522,13 @@ class ProverbQuiz(QMainWindow):
         self.button.setStyleSheet(
             f"font-size: {font_size}px; padding: 10px; background-color: #FF595E; color: #FFF; border: 2px solid #FF595E; border-radius: 10px;"
         )
-
+    def load_highest_score(self):
+        try:
+            with open("highest_score.json", "r") as file:
+                data = json.load(file)
+                return data.get("highest_score", 0)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return 0
     def generate_quiz(self):
         # 퀴즈 생성 및 타이머 시작
         self.remaining_time = self.time_limit
