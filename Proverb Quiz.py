@@ -104,6 +104,9 @@ class ProverbQuiz(QMainWindow):
         self.bgm_player = QMediaPlayer()
         bgm_path = "bgm.mp3"  # 실제 BGM 파일 경로로 대체
         self.bgm_player.setMedia(QMediaContent(QUrl.fromLocalFile(bgm_path)))
+                self.bgm_player.play()
+        # 다양한 퀴즈 카테고리를 위한 버튼들 추가
+        quiz_buttons_layout = QHBoxLayout()  # QHBoxLayout으로 변경
 
 
 
