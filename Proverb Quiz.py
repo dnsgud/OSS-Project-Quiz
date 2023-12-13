@@ -186,6 +186,9 @@ class ProverbQuiz(QMainWindow):
             def __init__(self, title, message, parent=None):
                 super(CustomMessageBox, self).__init__(parent)
                 self.setWindowTitle(title)
+                # 메시지를 나타내는 레이블 추가
+                label = QLabel(message)
+                label.setAlignment(Qt.AlignCenter)
 
                 layout = QVBoxLayout()
     def save_highest_score(self):
