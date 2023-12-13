@@ -253,6 +253,12 @@ class MainWindow(QMainWindow):
         self.four_letter_button = QPushButton("4글자 퀴즈", self.main_widget)
         self.four_letter_button.setFixedSize(400, 200)
         self.four_letter_button.move(490, 10)
+ # '점수' 버튼 추가
+        self.score_button = QPushButton("점수", self.main_widget)
+        self.score_button.setFixedSize(200, 50)
+        self.score_button.move(1650, 770)
+        self.score_button.clicked.connect(self.show_score)
+
 
 
 
