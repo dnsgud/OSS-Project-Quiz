@@ -234,6 +234,28 @@ class ProverbQuiz(QMainWindow):
             QTimer.singleShot(2000, lambda: self.result_label.setText(""))  # 2초 후 메시지 지움
             self.show_buttons()  # 시간 초과 시 버튼 보이도록 추가
             self.check_answer()
+ try:
+            score_message = "최고 점수:\n"
+            for quiz_number in range(1, 5):  # 1부터 4까지의 퀴즈 번호를 고려
+                file_name = f"highest_score{quiz_number}.json"
+                with open(file_name, "r") as file:
+                    data = json.load(file)
+                    highest_score = data.get("highest_score", 0)
+
+                    if highest_score == 0:
+                        score_message += f"{quiz_number}번 퀴즈: 기록 없음.\n"
+                    else:
+                        score_message += f"{quiz_number}번 퀴즈: {highest_score}\n"
+
+            if score_message == "최고 점수:\n":
+                custom_box = CustomMessageBox("점수", "기록 없음.")
+            else:
+                custom_box = CustomMessageBox("점수", score_message)
+
+            custom_box.exec_()
+        except Exception as e:
+            custom_box = CustomMessageBox("에러", f"점수를 불러오는 중 오류가 발생했습니다: {str(e)}")
+            custom_box.exec_()
 
     def center_on_screen(self):
         screen = QDesktopWidget().screenGeometry()
