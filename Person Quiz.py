@@ -178,6 +178,14 @@ class PersonQuiz(QMainWindow):
         self.retry_button.show()
         self.main_button.show()
 
+    def load_highest_score(self):
+        try:
+            with open("highest_score1.json", "r") as file:
+                data = json.load(file)
+                return data.get("highest_score", 0)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return 0
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
