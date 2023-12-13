@@ -474,17 +474,6 @@ class ProverbQuiz(QMainWindow):
 
         self.time_label = QLabel("", self)
         self.setup_styles()
-        # Retry 버튼
-        self.retry_button = QPushButton("다시 시도", self)
-        self.retry_button.setGeometry(10, 210, 120, 30)
-        self.retry_button.clicked.connect(self.retry_quiz)
-        self.retry_button.hide()
-
-        # Main Menu 버튼
-        self.main_menu_button = QPushButton("메인 메뉴로", self)
-        self.main_menu_button.setGeometry(140, 210, 120, 30)
-        self.main_menu_button.clicked.connect(parent.return_to_main_menu)
-        self.main_menu_button.hide()
 
         self.used_proverbs = set()
 
@@ -503,11 +492,7 @@ class ProverbQuiz(QMainWindow):
 
         # 퀴즈 생성
         self.generate_quiz()
-    def retry_quiz(self):
-        # 퀴즈를 다시 시도하는 로직
-        self.generate_quiz()
-        self.retry_button.hide()
-        self.main_menu_button.hide()
+
     def setup_styles(self):
         # UI 스타일 설정
 
@@ -539,23 +524,22 @@ class ProverbQuiz(QMainWindow):
         )
 
     def generate_quiz(self):
-    # 퀴즈 생성 및 타이머 시작
-    self.remaining_time = self.time_limit
-    while True:
-        proverb = self.get_random_proverb()
-        if proverb not in self.used_proverbs:
-            break
+        # 퀴즈 생성 및 타이머 시작
+        self.remaining_time = self.time_limit
 
-    self.used_proverbs.add(proverb)
+        while True:
+            proverb = self.get_random_proverb()
+            if proverb not in self.used_proverbs:
+                break
 
-    self.quiz, self.answer = self.create_quiz(proverb)
-    self.quiz = self.quiz.replace("'", "")
-    self.label.setText(f"속담을 완성하세요: {self.quiz}")
-    self.entry.clear()
+        self.used_proverbs.add(proverb)
 
-    self.timer.start(1000)
+        self.quiz, self.answer = self.create_quiz(proverb)
+        self.quiz = self.quiz.replace("'", "")
+        self.label.setText(f"속담을 완성하세요: {self.quiz}")
+        self.entry.clear()
 
-
+        self.timer.start(1000)
     def get_random_proverb(self):
         # 랜덤 속담 얻기
         no = random.randint(1, 100)
@@ -572,55 +556,46 @@ class ProverbQuiz(QMainWindow):
         return " ".join(words), f"{hidden_word1} {hidden_word2}"
 
     def check_answer(self):
-    # 사용자 답 확인 및 처리
-    user_input = self.entry.text().strip()
-    self.timer.stop()
-
-    if user_input == self.answer:
-        # 정답일 경우
-        self.total_score += 1
-        if self.total_score > self.best_score:
-            self.best_score = self.total_score
-            self.best_score_label.setText(f"최고 점수: {self.best_score}")
-        QMessageBox.information(self, "정답", "정답입니다!")
-        
-        # 정답이거나 다시 시도하는 경우에 시간 초기화
-        self.remaining_time = self.time_limit
-    else:
-        # 오답일 경우
-        retry = QMessageBox.question(self, "틀림", f"틀렸습니다. 정답은 '{self.answer}'입니다.\n다시 시도하시겠습니까?",
-                                     QMessageBox.Yes | QMessageBox.No)
-        if retry == QMessageBox.No:
-            self.parent().return_to_main_menu()
-            return
-        else:
-            self.total_score = 0
-
-    self.score_label.setText(f"현재 점수: {self.total_score}")
-    self.generate_quiz()
-
-
-   def update_timer2(self):
-    # 타이머 업데이트
-    if self.remaining_time > 0:
-        self.remaining_time -= 1
-        self.time_label.setText(f"남은 시간: {self.remaining_time}초")
-        self.label.setText(f"속담을 완성하세요: {self.quiz}")
-        if self.remaining_time == 0:
-            # 시간이 다 된 경우
-            self.timer.stop()
-            self.label.setText(f"시간이 초과되었습니다. 정답은 '{self.answer}'입니다.\n다시 시도하려면 제출 버튼을 클릭하세요.")
-            self.show_result_buttons()
-    else:
+        # 사용자 답 확인 및 처리
+        user_input = self.entry.text().strip()
         self.timer.stop()
-        # 시간 초과 시 텍스트를 직접 화면에 출력하고 결과 버튼들을 보이도록 설정
-        self.label.setText(f"시간이 초과되었습니다. 정답은 '{self.answer}'입니다.\n다시 시도하려면 제출 버튼을 클릭하세요.")
-        self.show_result_buttons()
 
-    # 남은 시간이 0일 때만 새 퀴즈 생성
-    if self.remaining_time == 0:
+        if user_input == self.answer:
+            # 정답일 경우
+            self.total_score += 1
+            self.remaining_time=8
+            if self.total_score > self.best_score:
+                self.best_score = self.total_score
+                self.best_score_label.setText(f"최고 점수: {self.best_score}")
+            QMessageBox.information(self, "정답", "정답입니다!")
+        else:
+            # 오답일 경우
+            retry = QMessageBox.question(self, "틀림", f"틀렸습니다. 정답은 '{self.answer}'입니다.\n다시 시도하시겠습니까?",
+                                         QMessageBox.Yes | QMessageBox.No)
+            if retry == QMessageBox.No:
+                self.parent().return_to_main_menu()
+                return
+            else:
+                self.total_score = 0
+        self.remaining_time = self.time_limit
+
+        self.score_label.setText(f"현재 점수: {self.total_score}")
         self.generate_quiz()
 
+    def update_timer2(self):
+        # 타이머 업데이트
+        if self.remaining_time > 0:
+            self.remaining_time -= 1
+            self.time_label.setText(f"남은 시간: {self.remaining_time}초")
+            self.label.setText(f"속담을 완성하세요: {self.quiz}")
+        elif self.remaining_time == 0:
+            # 시간이 0이 되어도 퀴즈 종료하지 않도록 변경
+            self.time_label.setText("남은 시간: 시간 초과")
+        else:
+            # 시간이 음수가 되면 종료 처리
+            self.timer.stop()
+            self.show_result_buttons()
+            self.label.setText(f"시간이 초과되었습니다. 정답은 '{self.answer}'입니다.\n다시 시도하려면 제출 버튼을 클릭하세요.")
 
     def show_result_buttons(self):
         # 시간 초과나 오답 시 버튼들을 보이도록 설정
