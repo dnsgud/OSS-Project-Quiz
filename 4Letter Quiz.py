@@ -64,10 +64,8 @@ class FourletterQuizGame(QWidget):
         self.main_button = QPushButton("메인화면", self)
         self.main_button.clicked.connect(self.show_main_menu)
         self.layout.addWidget(self.main_button, alignment=Qt.AlignCenter)
-
         self.setLayout(self.layout)
         self.show_question()
-
         self.high_score_label.setText(f'최고 점수: {self.high_score}')
 
     def load_highest_score(self):
@@ -360,7 +358,7 @@ class MainWindow(QMainWindow):
         self.stack.setCurrentIndex(1)
 
     def show_main_menu_four(self):
-        # FourletterQuizGame 페이지를 스택에서 제거
+        # FourletterQuiz 스택에서 제거
         self.stack.removeWidget(self.four_letter_game)
         self.stack.setCurrentIndex(0)
 
@@ -371,7 +369,6 @@ class MainWindow(QMainWindow):
                 self.setWindowTitle(title)
 
                 layout = QVBoxLayout()
-
                 # 메시지를 나타내는 레이블 추가
                 label = QLabel(message)
                 label.setAlignment(Qt.AlignCenter)
