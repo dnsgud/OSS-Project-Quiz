@@ -170,6 +170,10 @@ class ProverbQuiz(QMainWindow):
         self.retry_button.show()
         self.main_button.show()
 
+    def show_main_menu_proverb(self):
+        # '속담 퀴즈' 페이지를 스택에서 제거
+        self.stack.removeWidget(self.proverb_quiz)
+        self.stack.setCurrentIndex(0)
     def load_highest_score(self):
         try:
             with open("highest_score3.json", "r") as file:
