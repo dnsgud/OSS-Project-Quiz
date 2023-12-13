@@ -529,6 +529,10 @@ class ProverbQuiz(QMainWindow):
                 return data.get("highest_score", 0)
         except (FileNotFoundError, json.JSONDecodeError):
             return 0
+    def save_highest_score(self):
+        data = {"highest_score": self.highest_score}
+        with open("highest_score.json", "w") as file:
+            json.dump(data, file)
     def generate_quiz(self):
         # 퀴즈 생성 및 타이머 시작
         self.remaining_time = self.time_limit
