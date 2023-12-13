@@ -72,7 +72,21 @@ class ProverbQuiz(QMainWindow):
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
         
-        self.generate_quiz()
+        self.generate_quiz()    def check_answer(self):
+        # 사용자 답 확인 및 처리
+        user_input = self.entry.text().strip()
+        self.timer.stop()
+
+        if user_input == self.answer:
+            # 정답일 경우
+            self.total_score += 1
+            if self.total_score > self.best_score:
+                self.best_score = self.total_score
+                self.best_score_label.setText(f"최고 점수: {self.best_score}")
+                self.save_highest_score()
+            self.result_label.setText("정답입니다!")
+            QTimer.singleShot(2000, lambda: self.result_label.setText(""))
+            self.generate_quiz()
     def check_answer(self):
         # 사용자 답 확인 및 처리
         user_input = self.entry.text().strip()
