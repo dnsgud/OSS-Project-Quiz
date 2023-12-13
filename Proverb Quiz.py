@@ -103,12 +103,13 @@ class ProverbQuiz(QMainWindow):
         self.entry.setStyleSheet(
             f"font-size: {font_size}px; padding: 10px; border: 2px solid #2E86AB; border-radius: 10px; margin-bottom: 20px;"
         )
-
         # QPushButton
         font_size = 24
-        self.button.setStyleSheet(
-            f"font-size: {font_size}px; padding: 10px; background-color: #FF595E; color: #FFF; "
-            "border: 2px solid #FF595E; border-radius: 10px;"
+        self.retry_button.setStyleSheet(
+            f"font-size: {font_size}px; padding: 10px; background-color: #FF595E; color: #FFF; border: 2px solid #FF595E; border-radius: 10px;"
+        )
+        self.main_button.setStyleSheet(  # 수정된 부분
+            f"font-size: {font_size}px; padding: 10px; background-color: #2E86AB; color: #FFF; border: 2px solid #2E86AB; border-radius: 10px;"
         )
 
     def generate_quiz(self):
