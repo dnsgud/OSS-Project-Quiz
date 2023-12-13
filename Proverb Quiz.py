@@ -152,6 +152,15 @@ class ProverbQuiz(QMainWindow):
         self.total_score_label.setText(f'현재 점수: {self.total_score}')
         self.best_score_label.setText(f'최고 점수: {self.best_score}')
         self.parent.show_main_menu_proverb()
+    def create_quiz(self, saying):
+        # 속담을 퍼즐로 변환
+        words = saying.split()
+        index_to_hide = random.randint(0, len(words) - 2)
+        hidden_word1 = words[index_to_hide]
+        hidden_word2 = words[index_to_hide + 1]
+        words[index_to_hide] = '□' * len(hidden_word1)
+        words[index_to_hide + 1] = '□' * len(hidden_word2)
+        return " ".join(words), f"{hidden_word1} {hidden_word2}"
 
     def create_quiz(self, saying):
         words = saying.split()
