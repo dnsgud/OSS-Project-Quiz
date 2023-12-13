@@ -249,6 +249,31 @@ class MainWindow(QMainWindow):
             "   color: white;"
             "}"
         )
+# '인물 퀴즈' 버튼 추가
+        self.person_button = QPushButton("인물 퀴즈", self.main_widget)
+        self.person_button.setFixedSize(400, 200)
+        self.person_button.move(10, 10)
+        self.person_button.clicked.connect(self.start_quiz_game)
+        self.person_button.setStyleSheet(button_style)
+        quiz_buttons_layout.addWidget(self.person_button)
+
+        # '브랜드 퀴즈' 버튼 추가
+        self.brand_button = QPushButton("브랜드 퀴즈", self.main_widget)
+        self.brand_button.setFixedSize(400, 200)
+        self.brand_button.move(170, 10)
+        self.brand_button.clicked.connect(self.start_brand_quiz_game)
+        self.brand_button.setStyleSheet(button_style)
+        quiz_buttons_layout.addWidget(self.brand_button)
+
+        # '속담 퀴즈' 버튼 추가
+        self.proverb_button = QPushButton("속담 퀴즈", self.main_widget)
+        self.proverb_button.setFixedSize(400, 200)
+        self.proverb_button.move(330, 10)
+        self.proverb_button.clicked.connect(self.start_proverb_quiz_game)
+        self.proverb_button.setStyleSheet(button_style)
+        quiz_buttons_layout.addWidget(self.proverb_button)
+
+
  # '4글자 퀴즈' 버튼 추가
         self.four_letter_button = QPushButton("4글자 퀴즈", self.main_widget)
         self.four_letter_button.setFixedSize(400, 200)
