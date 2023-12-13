@@ -28,7 +28,7 @@ class PersonQuiz(QMainWindow):
         self.timer.timeout.connect(self.update_timer)
         self.load_random_image()
 
-        def init_ui(self):
+    def init_ui(self):
         central_widget = QWidget(self)
         self.setCentralWidget(central_widget)
 
@@ -87,7 +87,7 @@ class PersonQuiz(QMainWindow):
         self.name_input.clear()
         self.total_score = 0
         self.score_label.setText(f'현재 점수: {self.total_score}')
-        self.best_score_label.setText(f'최고 점수: {self.best_score}')  # 최고 점수 초기화 추가
+        self.high_score_label.setText(f'최고 점수: {self.high_score}')  # 최고 점수 초기화 추가
         self.load_random_image()
 
     def show_main_menu(self):
