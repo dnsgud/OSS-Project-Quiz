@@ -125,6 +125,7 @@ class PersonQuiz(QMainWindow):
 
         if self.current_timer == 0:
             # 시간 초과 시 check_answer 메서드 호출
+            self.timer.stop()
             self.check_answer(timeout=True)
 
     def check_answer(self, timeout=False):
