@@ -91,6 +91,11 @@ class ProverbQuiz(QMainWindow):
         # 사용자 답 확인 및 처리
         user_input = self.entry.text().strip()
         self.timer.stop()
+        
+        # 스택 위젯 생성
+        self.stack = QStackedWidget(self)
+        self.setCentralWidget(self.stack)
+
 
     def save_highest_score(self):
         data = {"highest_score": self.best_score}
