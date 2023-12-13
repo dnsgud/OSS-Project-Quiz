@@ -317,6 +317,11 @@ class MainWindow(QMainWindow):
         # FourletterQuizGame 페이지를 스택에서 제거
         self.stack.removeWidget(self.four_letter_game)
         self.stack.setCurrentIndex(0)
+        def start_quiz_game(self):
+        pass
+    def show_main_menu_person(self):
+        pass
+
         
 def close_application(self):
         # 종료 버튼 클릭 시 프로그램 종료
