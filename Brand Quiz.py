@@ -1,27 +1,31 @@
-from PyQt5.QtWidgets import (
-    QMainWindow, QWidget, QLabel, QLineEdit, QVBoxLayout, QHBoxLayout,
-    QPushButton, QFont, QTimer, QApplication
-)
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QImage
-import os
-import random
-from PIL import Image
 import sys
+import os
+import json
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QLabel, QVBoxLayout, QLineEdit,
+    QPushButton, QHBoxLayout, QWidget
+)
+from PyQt5.QtGui import QPixmap, QImage, QFont
+from PyQt5.QtCore import QTimer, Qt, QUrl
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
+from PIL import Image
+import random
 
-class QuizGame(QMainWindow):
-    def __init__(self, parent, directory_path, time_limit, app):
-        super(QuizGame, self).__init__(parent)
-
+class BrandLogoQuiz(QMainWindow):
+    def __init__(self, logo_directory, app):
+        super().__init__()
+        self.logo_directory = logo_directory
         self.app = app
-        self.directory_path = directory_path
-        self.time_limit = time_limit
-        self.retry_button = QPushButton("Retry", self)
-        self.main_menu_button = QPushButton("Main Menu", self)
-        self.total_score = 0
-        self.best_score = 0
-        self.current_timer = self.time_limit
-        self.setGeometry(100, 100, 700, 500)
+        self.logo_files = [f for f in os.listdir(self.logo_directory) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))]
+        if not self.logo_files:
+            print("No valid logo image files found in the directory.")
+            sys.exit()
+        self.score_widget = QWidget(self)  # score_widget을 정의
+        # BGM 초기화
+        self.bgm_player = QMediaPlayer()
+        bgm_path = "bgm.mp3"  # 실제 BGM 파일 경로로 대체
+        self.bgm_player.setMedia(QMediaContent(QUrl.fromLocalFile(bgm_path)))
+
         self.setStyleSheet(
             """
             QMainWindow {
@@ -29,18 +33,41 @@ class QuizGame(QMainWindow):
             }
             """
         )
+
+        # BGM 재생
+        self.bgm_player.play()
+        self.setGeometry(100, 100, 700, 500)
+        self.app.aboutToQuit.connect(self.bgm_player.stop)
+
+        self.coordinates = (100, 50, 300, 250)
+        self.current_logo_file = ""
+        self.score = 0
+        self.highest_score = self.load_highest_score()
+        self.countdown = 5
+        self.countdown_timer = QTimer()
+
         self.setup_ui()
 
     def setup_ui(self):
         central_widget = QWidget(self)
+        self.setCentralWidget(central_widget)
+
         self.logo_label = QLabel(central_widget)
-        self.highest_score_label = QLabel(f"최고 점수: {self.best_score}", central_widget)
-        self.score_display_label = QLabel(f"현재 점수: {self.total_score}", central_widget)
+        self.highest_score_label = QLabel(f"최고 점수: {self.highest_score}", central_widget)
+        self.score_display_label = QLabel(f"현재 점수: {self.score}", central_widget)
         self.time_display_label = QLabel("", central_widget)
         self.result_label = QLabel(central_widget)
 
         self.entry = QLineEdit(central_widget)
         self.entry.returnPressed.connect(self.check_answer)
+
+        # 다시하기 버튼
+        self.retry_button = QPushButton("다시하기", central_widget)
+        self.retry_button.clicked.connect(self.retry_game)
+
+        # 메인 메뉴로 돌아가기 버튼
+        self.menu_button = QPushButton("메인 메뉴", central_widget)
+        self.menu_button.clicked.connect(self.return_to_menu)
 
         # 크기가 큰 폰트로 설정
         font = QFont()
@@ -54,30 +81,31 @@ class QuizGame(QMainWindow):
         h_layout.addWidget(self.entry)
 
         v_layout = QVBoxLayout(central_widget)
-        # 최고 점수와 현재 점수 라벨을 사진 바로 위 왼쪽에 위치하도록 조절
-        v_layout.addWidget(self.highest_score_label, alignment=Qt.AlignTop | Qt.AlignLeft)
-        v_layout.addWidget(self.score_display_label, alignment=Qt.AlignTop | Qt.AlignLeft)
-        v_layout.addWidget(self.time_display_label, alignment=Qt.AlignCenter)
+
+       # 최고 점수와 시간 표시, 현재 점수 라벨 모두 가운데에 위치
+        v_layout.addWidget(self.highest_score_label, alignment=Qt.AlignTop | Qt.AlignHCenter)
+        v_layout.addWidget(self.score_display_label, alignment=Qt.AlignTop | Qt.AlignHCenter)
+        v_layout.addWidget(self.time_display_label, alignment=Qt.AlignTop | Qt.AlignHCenter)
+
+        # 로고 라벨을 가운데에 위치
         v_layout.addWidget(self.logo_label, alignment=Qt.AlignTop | Qt.AlignCenter)
+
         # 입력창을 사진 바로 아래로 위치하도록 조절
         v_layout.addWidget(self.entry, alignment=Qt.AlignTop | Qt.AlignHCenter)
 
         # 나머지는 그대로 유지
         h_layout = QHBoxLayout()
-        h_layout.addWidget(self.entry)
-
-        v_layout.addLayout(h_layout)
+        h_layout.addWidget(self.retry_button)
+        h_layout.addWidget(self.menu_button)
         v_layout.addWidget(self.result_label, alignment=Qt.AlignCenter)
-        v_layout.addWidget(self.time_display_label, alignment=Qt.AlignTop | Qt.AlignRight)
+        v_layout.addLayout(h_layout)
+
 
         self.center_window()
         self.showMaximized()
-        self.countdown_timer = QTimer(self)
         self.countdown_timer.timeout.connect(self.update_countdown)
         self.countdown_timer.start(1000)
-        self.retry_button.clicked.connect(self.retry)
-        
-        self.main_menu_button.clicked.connect(self.return_to_main_menu)
+
         self.start_new_question()
 
         self.setup_styles()  # 스타일 설정 함수 호출
@@ -91,8 +119,9 @@ class QuizGame(QMainWindow):
             f"font-size: {font_size}px; color: #2E86AB;"
             " padding: 20px;"
         )
-        self.highest_score_label.setStyleSheet(label_style)
+
         self.score_display_label.setStyleSheet(label_style)
+        self.highest_score_label.setStyleSheet(label_style)
         self.time_display_label.setStyleSheet(label_style)
 
         # QLineEdit
@@ -103,16 +132,31 @@ class QuizGame(QMainWindow):
         self.entry.setStyleSheet(entry_style)
         self.entry.setFixedWidth(500)
 
+        # QPushButton
+        button_style = (
+            "font-size: 30px; padding: 10px; border: 2px solid #2E86AB; border-radius: 10px; margin: 10px;"
+        )
+        self.retry_button.setStyleSheet(button_style)
+        self.menu_button.setStyleSheet(button_style)
+
     def center_window(self):
         window_width = 400
         window_height = 500
-        screen_width = self.parent().width()
-        screen_height = self.parent().height()
+        screen_width = self.app.primaryScreen().geometry().width()
+        screen_height = self.app.primaryScreen().geometry().height()
 
         x_position = (screen_width - window_width) // 2
         y_position = (screen_height - window_height) // 2
 
         self.setGeometry(x_position, y_position, window_width, window_height)
+
+    def select_next_logo(self):
+        remaining_logos = [logo for logo in self.logo_files if logo != self.current_logo_file]
+        if remaining_logos:
+            self.current_logo_file = random.choice(remaining_logos)
+        else:
+            print("All logos have been used. Restarting from the beginning.")
+            self.current_logo_file = random.choice(self.logo_files)
 
     def pil_to_pixmap(self, image):
         # 이미지의 세로와 가로 길이를 변경
@@ -125,84 +169,106 @@ class QuizGame(QMainWindow):
         pixmap = QPixmap.fromImage(q_image)
         return pixmap
 
-    def load_random_image(self):
-        file_list = os.listdir(self.directory_path)
-        image_files = [file for file in file_list if file.lower().endswith('.jpeg')]
+    def check_answer(self):
+        user_input = self.entry.text().strip().lower()
+        correct_answer = os.path.splitext(self.current_logo_file)[0].lower()
 
-        if not image_files:
-            print("디렉토리에 .jpeg 확장자를 가진 이미지 파일이 없습니다.")
-            sys.exit()
+        if user_input == correct_answer:
+            result_text = "정답입니다!"
+            result_style = (
+                "font-size: 40px; color: #FF0000;" if self.countdown == 0 else "font-size: 40px; color: #FFA500;"
+            )
+            result_text = f"<span style='{result_style}'>{result_text}</span>"
+            self.score += 1
+            if self.score > self.highest_score:
+                self.highest_score = self.score
+                self.highest_score_label.setText(f"best: {self.highest_score}")
+                self.save_highest_score()
+            self.reset_countdown()
+            self.start_new_question()
+        else:
+            result_text = f"정답은 {correct_answer.capitalize()} 입니다."
+            self.countdown_timer.stop()
+            self.entry.setDisabled(True)
+            self.retry_button.show()
+            self.menu_button.show()
+            result_style = (
+                "font-size: 40px; color: #FF0000;" if self.countdown == 0 else "font-size: 40px; color: #FFA500;"
+            )
+            result_text = f"<span style='{result_style}'>{result_text}</span>"
+        self.result_label.setText(result_text)
+        self.result_label.show() 
+        self.score_display_label.setText(f"현재 점수: {self.score}")
 
-        random_image_file = random.choice(image_files)
-        image_path = os.path.join(self.directory_path, random_image_file)
+    def retry_game(self):
+        self.result_label.hide()  # result_label 숨기기
+        self.score = 0
+        self.highest_score_label.setText(f"최고 점수: {self.highest_score}")
+        self.score_display_label.setText(f"현재 점수: {self.score}")
+        self.start_new_question()
 
-        pixmap = QPixmap(image_path)
-        self.logo_label.setPixmap(pixmap.scaledToWidth(400))
-        self.correct_answers = [answer.lower() for answer in random_image_file.split(',')]
+    def start_new_question(self):
+        self.retry_button.hide()
+        self.menu_button.hide()
+        self.result_label.hide() 
+        self.select_next_logo()
+
+        self.logo_path = os.path.join(self.logo_directory, self.current_logo_file)
+        self.logo_image = Image.open(self.logo_path)
+        self.cropped_image = self.logo_image.crop(self.coordinates)
+        self.q_pixmap = self.pil_to_pixmap(self.cropped_image)
+
+        self.logo_label.setPixmap(self.q_pixmap)
 
         self.entry.clear()
-        self.result_label.clear()
-        self.retry_button.hide()
-        self.main_menu_button.hide()
+        self.reset_countdown()
+        self.entry.setDisabled(False)
+        self.countdown_timer.start()
 
-        self.current_timer = self.time_limit
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.update_timer)
-        self.timer.start(1000)
+    def update_countdown(self):
+        self.countdown -= 1
+        self.time_display_label.setText(f"{self.countdown}초")
 
-    def update_timer(self):
-        self.current_timer -= 1
-        self.time_display_label.setText(f'남은 시간: {self.current_timer}초')
-
-        if self.current_timer == 0:
-            # 시간 초과 시 check_answer 메서드 호출
+        if self.countdown == 0:
+            self.countdown_timer.stop()
+            self.entry.setDisabled(True)
             self.check_answer()
 
-    def check_answer(self):
-        entered_name = self.entry.text().strip().lower()
+    def reset_countdown(self):
+        self.countdown = 5
+        self.time_display_label.setText(f"{self.countdown}초")
+        self.countdown_timer.start()
 
-        if any(entered_name == answer for answer in self.correct_answers):
-            correctness_text = "정답입니다."
-            self.result_label.setText(correctness_text)
+    def load_highest_score(self):
+        try:
+            with open("highest_score.json", "r") as file:
+                data = json.load(file)
+                return data.get("highest_score", 0)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return 0
+    def save_highest_score(self):
+        data = {"highest_score": self.highest_score}
+        with open("highest_score.json", "w") as file:
+            json.dump(data, file)
 
-            self.total_score += 1
-            if self.total_score > self.best_score:
-                self.best_score = self.total_score
-                self.highest_score_label.setText(f"최고 점수: {self.best_score}")
+    def retry_game(self):
+        self.score = 0
+        self.highest_score_label.setText(f"최고 점수: {self.highest_score}")
+        self.score_display_label.setText(f"현재 점수: {self.score}")
+        self.start_new_question()
 
-            # 정답 여부를 일정 시간 동안 표시하고 다음 문제로 이동
-            QTimer.singleShot(500, self.load_random_image)
-        else:
-            correctness_text = f"오답입니다. 정답은 ({', '.join(self.correct_answers)})입니다."
-            print(correctness_text)
-            self.result_label.setText(correctness_text)
+    def return_to_menu(self):
+        self.score = 0
+        self.highest_score = self.load_highest_score()
+        self.highest_score_label.setText(f"최고 점수: {self.highest_score}")
+        self.score_display_label.setText(f"현재 점수: {self.score}")
+        self.retry_button.hide()
+        self.menu_button.hide()
+        self.start_new_question()
 
-            self.total_score = 0
-
-            # 오답 시 버튼들을 보이도록 설정
-            self.retry_button.show()
-            self.main_menu_button.show()
-
-            # 퀴즈가 더 진행되지 않도록 타이머를 멈춤
-            self.timer.stop()
-
-        self.score_display_label.setText(f"현재 점수: {self.total_score}")
-
-    def show_result(self):
-        print("최종 점수: {}".format(self.total_score))
-
-    def return_to_main_menu(self):
-        # 현재 퀴즈 게임을 저장하고 제거
-        current_quiz_game = self
-        self.parent().stack.removeWidget(self)
-
-        # 메인 메뉴로 돌아가기
-        self.parent().stack.setCurrentIndex(0)
-
-        # 저장된 퀴즈 게임을 메모리에서 지우지 않도록 함
-        current_quiz_game.deleteLater()
 
 if __name__ == "__main__":
+    logo_directory = "image"  # 실제 디렉토리 경로로 대체
     app = QApplication(sys.argv)
-    main_window = QuizGame(None, "your_directory_path", 60, app)
+    quiz_app = BrandLogoQuiz(logo_directory, app)
     sys.exit(app.exec_())
