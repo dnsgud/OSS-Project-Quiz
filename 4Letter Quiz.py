@@ -276,6 +276,68 @@ class MainWindow(QMainWindow):
             "   background-color: #A52B2B;"
             "}"
         )
+def show_score(self):
+        class CustomMessageBox(QDialog):
+            def __init__(self, title, message, parent=None):
+                super(CustomMessageBox, self).__init__(parent)
+                self.setWindowTitle(title)
+
+                layout = QVBoxLayout()
+
+                # 메시지를 나타내는 레이블 추가
+                label = QLabel(message)
+                label.setAlignment(Qt.AlignCenter)
+
+                # 레이블 디자인 설정
+                label.setStyleSheet("""
+                       QLabel {
+                           font-family: 'Arial';
+                           font-size: 80px;
+                           font-weight: bold;
+                           color: #0078d4;  /* 텍스트 색상 */
+                           background-color: #f0f0f0;  /* 배경색 */
+                           border: 2px solid #999;  /* 경계선 */
+                           border-radius: 5px;  /* 테두리 모서리 둥글게 */
+                           padding: 10px;  /* 안쪽 여백 */
+                       }
+                   """)
+
+                layout.addWidget(label)
+
+                # 확인 버튼 추가
+                ok_button = QPushButton("확인")
+                ok_button.clicked.connect(self.accept)
+                layout.addWidget(ok_button)
+
+                self.setLayout(layout)
+
+                # 다이얼로그의 크기 설정
+                self.setMinimumWidth(800)
+                self.setMinimumHeight(400)
+
+        try:
+            score_message = "최고 점수:\n"
+            for quiz_number in range(1, 5):  # 1부터 4까지의 퀴즈 번호를 고려
+                file_name = f"highest_score{quiz_number}.json"
+                with open(file_name, "r") as file:
+                    data = json.load(file)
+                    highest_score = data.get("highest_score", 0)
+
+                    if highest_score == 0:
+                        score_message += f"{quiz_number}번 퀴즈: 기록 없음.\n"
+                    else:
+                        score_message += f"{quiz_number}번 퀴즈: {highest_score}\n"
+
+            if score_message == "최고 점수:\n":
+                custom_box = CustomMessageBox("점수", "기록 없음.")
+            else:
+                custom_box = CustomMessageBox("점수", score_message)
+
+            custom_box.exec_()
+        except Exception as e:
+            custom_box = CustomMessageBox("에러", f"점수를 불러오는 중 오류가 발생했습니다: {str(e)}")
+            custom_box.exec_()
+
  def close_application(self):
         # 종료 버튼 클릭 시 프로그램 종료
         QApplication.quit()
