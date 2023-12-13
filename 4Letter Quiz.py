@@ -319,8 +319,14 @@ class MainWindow(QMainWindow):
         self.stack.setCurrentIndex(0)
         def start_quiz_game(self):
         pass
-    def show_main_menu_person(self):
+        def show_main_menu_person(self):
         pass
+        def start_brand_quiz_game(self):
+        pass
+
+        def show_main_menu_brand(self):
+        pass
+
 
         
 def close_application(self):
