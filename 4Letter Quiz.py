@@ -318,7 +318,9 @@ class MainWindow(QMainWindow):
         self.stack.removeWidget(self.four_letter_game)
         self.stack.setCurrentIndex(0)
         
-
+def close_application(self):
+        # 종료 버튼 클릭 시 프로그램 종료
+        QApplication.quit()
         )
 def show_score(self):
         class CustomMessageBox(QDialog):
@@ -382,9 +384,7 @@ def show_score(self):
             custom_box = CustomMessageBox("에러", f"점수를 불러오는 중 오류가 발생했습니다: {str(e)}")
             custom_box.exec_()
 
- def close_application(self):
-        # 종료 버튼 클릭 시 프로그램 종료
-        QApplication.quit()
+ 
 
 
 
