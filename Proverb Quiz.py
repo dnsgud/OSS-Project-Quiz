@@ -169,7 +169,19 @@ class ProverbQuiz(QMainWindow):
         # 버튼을 보이도록 설정
         self.retry_button.show()
         self.main_button.show()
-
+       # 레이블 디자인 설정
+                label.setStyleSheet("""
+                       QLabel {
+                           font-family: 'Arial';
+                           font-size: 80px;
+                           font-weight: bold;
+                           color: #0078d4;  /* 텍스트 색상 */
+                           background-color: #f0f0f0;  /* 배경색 */
+                           border: 2px solid #999;  /* 경계선 */
+                           border-radius: 5px;  /* 테두리 모서리 둥글게 */
+                           padding: 10px;  /* 안쪽 여백 */
+                       }
+                   """)
     def show_main_menu_proverb(self):
         # '속담 퀴즈' 페이지를 스택에서 제거
         self.stack.removeWidget(self.proverb_quiz)
