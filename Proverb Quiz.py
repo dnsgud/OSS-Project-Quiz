@@ -73,6 +73,28 @@ class ProverbQuiz(QMainWindow):
         self.setCentralWidget(central_widget)
         
         self.generate_quiz()
+    def check_answer(self):
+        # 사용자 답 확인 및 처리
+        user_input = self.entry.text().strip()
+        self.timer.stop()
+
+        if user_input == self.answer:
+            # 정답일 경우
+            self.total_score += 1
+            if self.total_score > self.best_score:
+                self.best_score = self.total_score
+                self.best_score_label.setText(f"최고 점수: {self.best_score}")
+                self.save_highest_score()
+            self.result_label.setText("정답입니다!")
+            QTimer.singleShot(2000, lambda: self.result_label.setText(""))
+            self.generate_quiz()
+        else:
+            # 오답일 경우
+            self.result_label.setText(f"오답입니다. 정답은 '{self.answer}'입니다.")
+            QTimer.singleShot(2000, lambda: self.result_label.setText(""))  # 2초 후 메시지 지움
+            self.show_buttons()  # 오답 시 버튼 보이도록 추가
+
+        self.total_score_label.setText(f"현재 점수: {self.total_score}")
 
         def update_timer(self):
         if self.remaining_time > 0:
