@@ -185,6 +185,11 @@ class PersonQuiz(QMainWindow):
                 return data.get("highest_score", 0)
         except (FileNotFoundError, json.JSONDecodeError):
             return 0
+    def save_highest_score(self):
+        data = {"highest_score": self.high_score}
+        with open("highest_score1.json", "w") as file:
+            json.dump(data, file)
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
