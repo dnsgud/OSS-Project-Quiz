@@ -1,89 +1,72 @@
-import json
-import os
-import random
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget, QPushButton, \
-    QStackedWidget, QHBoxLayout, QMessageBox, QDialog
-from PyQt5.QtGui import QPixmap, QFont, QImage
-from PyQt5.QtCore import Qt, QTimer, QUrl
-from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
-from PIL import Image
 import sys
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QLabel, QLineEdit, QPushButton,
+    QMessageBox, QDesktopWidget, QVBoxLayout, QWidget
+)
+from PyQt5.QtCore import QTimer, Qt
 import linecache
+import random
 
-class ProverbQuiz(QMainWindow):
-    def __init__(self, parent, time_limit):
-        super(ProverbQuiz, self).__init__(parent)
-        self.parent = parent
 
-        # 초기화
+class QuizApp(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
         self.total_score = 0
-        self.best_score = self.load_highest_score()
-        self.time_limit = time_limit
+        self.best_score = 0
+        self.time_limit = 8
         self.timer = QTimer(self)
-        self.timer.timeout.connect(self.update_timer)
-        self.remaining_time = self.time_limit
-        # UI 요소 생성
-        self.label = QLabel("", self)
-        self.label.setGeometry(10, 70, 400, 50)
-        self.label.setAlignment(Qt.AlignTop)
+        self.timer.timeout.connect(self.update_time)
 
-        self.result_label = QLabel("", self)
-        self.result_label.setGeometry(10, 170, 400, 50)
-        self.result_label.setAlignment(Qt.AlignTop)
-        self.result_label.setStyleSheet(
-            f"font-size: 20px; color: #FF595E; margin-bottom: 10px;"
-        )
+        self.setGeometry(100, 100, 700, 500)
+        self.center_on_screen()
 
         self.setStyleSheet(
             "background-color: #F9F6F2;"
         )
 
+        self.score_label = QLabel("현재 점수: 0", self)
+        self.best_score_label = QLabel("최고 점수: 0", self)
+        self.label = QLabel("", self)
+        self.time_label = QLabel("", self)
         self.entry = QLineEdit(self)
-        self.entry.setGeometry(10, 130, 300, 30)
-        self.entry.returnPressed.connect(self.check_answer)
-
-        self.total_score_label = QLabel(f"현재 점수: {self.total_score}", self)
-        self.best_score_label = QLabel(f"최고 점수: {self.best_score}", self)
-
+        self.entry.returnPressed.connect(self.check_answer)  # 엔터 키로 제출
+        self.submit_button = QPushButton("제출", self)
+        self.submit_button.clicked.connect(self.check_answer)
         self.retry_button = QPushButton("다시하기", self)
-        self.retry_button.clicked.connect(self.retry_game)
-
-        self.main_button = QPushButton("메인화면", self)
-        self.main_button.clicked.connect(self.show_main_menu)
-
-        self.retry_button.hide()
-        self.main_button.hide()
-
-        self.time_label = QLabel(f'남은 시간: {self.remaining_time}초', self)
+        self.retry_button.clicked.connect(self.generate_quiz)
+        self.quit_button = QPushButton("종료", self)
+        self.quit_button.clicked.connect(self.close)
 
         self.setup_styles()
 
         self.used_proverbs = set()
 
-        # 레이아웃 구성
         layout = QVBoxLayout()
-        layout.addWidget(self.total_score_label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.score_label, alignment=Qt.AlignCenter)
         layout.addWidget(self.best_score_label, alignment=Qt.AlignCenter)
         layout.addWidget(self.label, alignment=Qt.AlignCenter)
         layout.addWidget(self.time_label, alignment=Qt.AlignCenter)
         layout.addWidget(self.entry, alignment=Qt.AlignCenter)
-        layout.addWidget(self.result_label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.submit_button, alignment=Qt.AlignCenter)
         layout.addWidget(self.retry_button, alignment=Qt.AlignCenter)
-        layout.addWidget(self.main_button, alignment=Qt.AlignCenter)
+        layout.addWidget(self.quit_button, alignment=Qt.AlignCenter)
 
         central_widget = QWidget()
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
 
-        # 퀴즈 생성
         self.generate_quiz()
 
-    def setup_styles(self):
-        # UI 스타일 설정
+    def center_on_screen(self):
+        screen = QDesktopWidget().screenGeometry()
+        size = self.geometry()
+        self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
 
+    def setup_styles(self):
         # QLabel
-        font_size = 30
-        self.total_score_label.setStyleSheet(
+        font_size = 90
+        self.score_label.setStyleSheet(
             f"font-size: {font_size}px; color: #2E86AB; font-weight: bold; margin-bottom: 10px;"
         )
         self.best_score_label.setStyleSheet(
@@ -104,46 +87,18 @@ class ProverbQuiz(QMainWindow):
 
         # QPushButton
         font_size = 24
-        self.retry_button.setStyleSheet(
+        self.submit_button.setStyleSheet(
             f"font-size: {font_size}px; padding: 10px; background-color: #FF595E; color: #FFF; border: 2px solid #FF595E; border-radius: 10px;"
         )
-        self.main_button.setStyleSheet(  # 수정된 부분
-            f"font-size: {font_size}px; padding: 10px; background-color: #2E86AB; color: #FFF; border: 2px solid #2E86AB; border-radius: 10px;"
+        self.retry_button.setStyleSheet(
+            f"font-size: {font_size}px; padding: 10px; background-color: #2E86AB; color: #FFF; border: 2px solid #2E86AB; border-radius: 10px; margin-top: 10px;"
+        )
+        self.quit_button.setStyleSheet(
+            f"font-size: {font_size}px; padding: 10px; background-color: #D1495B; color: #FFF; border: 2px solid #D1495B; border-radius: 10px; margin-top: 10px;"
         )
 
-    def retry_game(self):
-        # '다시하기' 버튼 클릭 시 퀴즈를 처음부터 다시 시작
-        self.timer.stop()
-        self.time_label.setText("")
-        self.entry.clear()
-        self.retry_button.hide()
-        self.main_button.hide()
-        self.total_score = 0
-        self.total_score_label.setText(f'현재 점수: {self.total_score}')
-        self.best_score_label.setText(f'최고 점수: {self.best_score}')  # 최고 점수 초기화 추가
-        self.generate_quiz()
-
-    def show_main_menu(self):
-        self.total_score = 0
-        self.total_score_label.setText(f'현재 점수: {self.total_score}')
-        self.best_score_label.setText(f'최고 점수: {self.best_score}')
-        self.parent.show_main_menu_proverb()
-
-    def update_timer(self):
-        if self.remaining_time > 0:
-            self.remaining_time -= 1
-            self.time_label.setText(f"남은 시간: {self.remaining_time}초")
-        else:
-            self.timer.stop()
-            self.result_label.setText(f"시간초과입니다. 정답은 '{self.answer}'입니다.")
-            QTimer.singleShot(2000, lambda: self.result_label.setText(""))  # 2초 후 메시지 지움
-            self.show_buttons()  # 시간 초과 시 버튼 보이도록 추가
-            self.check_answer()
-
     def generate_quiz(self):
-        # 퀴즈 생성 및 타이머 시작
         self.remaining_time = self.time_limit
-        self.timer.start(1000)
         while True:
             proverb = self.get_random_proverb()
             if proverb not in self.used_proverbs:
@@ -159,12 +114,10 @@ class ProverbQuiz(QMainWindow):
         self.timer.start(1000)
 
     def get_random_proverb(self):
-        # 랜덤 속담 얻기
         no = random.randint(1, 100)
-        return linecache.getline('proverb Quiz.txt', no).strip()
+        return linecache.getline('saying.txt', no).strip()
 
     def create_quiz(self, saying):
-        # 속담을 퍼즐로 변환
         words = saying.split()
         index_to_hide = random.randint(0, len(words) - 2)
         hidden_word1 = words[index_to_hide]
@@ -174,268 +127,48 @@ class ProverbQuiz(QMainWindow):
         return " ".join(words), f"{hidden_word1} {hidden_word2}"
 
     def check_answer(self):
-        # 사용자 답 확인 및 처리
         user_input = self.entry.text().strip()
         self.timer.stop()
 
         if user_input == self.answer:
-            # 정답일 경우
             self.total_score += 1
             if self.total_score > self.best_score:
                 self.best_score = self.total_score
                 self.best_score_label.setText(f"최고 점수: {self.best_score}")
-                self.save_highest_score()
-            self.result_label.setText("정답입니다!")
-            QTimer.singleShot(2000, lambda: self.result_label.setText(""))
-            self.generate_quiz()
+            QMessageBox.information(self, "정답", "정답입니다!")
         else:
-            # 오답일 경우
-            self.result_label.setText(f"오답입니다. 정답은 '{self.answer}'입니다.")
-            QTimer.singleShot(2000, lambda: self.result_label.setText(""))  # 2초 후 메시지 지움
-            self.show_buttons()  # 오답 시 버튼 보이도록 추가
-
-        self.total_score_label.setText(f"현재 점수: {self.total_score}")
-
-    def show_buttons(self):
-        # 버튼을 보이도록 설정
-        self.retry_button.show()
-        self.main_button.show()
-
-    def load_highest_score(self):
-        try:
-            with open("highest_score3.json", "r") as file:
-                data = json.load(file)
-                return data.get("highest_score", 0)
-        except (FileNotFoundError, json.JSONDecodeError):
-            return 0
-
-    def save_highest_score(self):
-        data = {"highest_score": self.best_score}
-        with open("highest_score3.json", "w") as file:
-            json.dump(data, file)
-
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super(MainWindow, self).__init__()
-
-        # 기본 창 설정
-        self.setGeometry(0, 0, 1900, 900)
-        self.setWindowTitle("MainWindow")
-
-        # 스택 위젯 생성
-        self.stack = QStackedWidget(self)
-        self.setCentralWidget(self.stack)
-
-        # 메인 화면
-        self.main_widget = QWidget()
-        self.stack.addWidget(self.main_widget)
-
-        # BGM 초기화
-        self.bgm_player = QMediaPlayer()
-        bgm_path = "bgm.mp3"  # 실제 BGM 파일 경로로 대체
-        self.bgm_player.setMedia(QMediaContent(QUrl.fromLocalFile(bgm_path)))
-
-        self.bgm_player.play()
-        # 다양한 퀴즈 카테고리를 위한 버튼들 추가
-        quiz_buttons_layout = QHBoxLayout()  # QHBoxLayout으로 변경
-
-        button_style = (
-            "QPushButton {"
-            "   font-size: 30px;"
-            "   padding: 10px;"
-            "   border: 2px solid #2E86AB;"
-            "   border-radius: 10px;"
-            "   margin: 10px;"
-            "}"
-            "QPushButton:hover {"
-            "   background-color: #2E86AB;"
-            "   color: white;"
-            "}"
-        )
-
-        # '인물 퀴즈' 버튼 추가
-        self.person_button = QPushButton("인물 퀴즈", self.main_widget)
-        self.person_button.setFixedSize(400, 200)
-        self.person_button.move(10, 10)
-        self.person_button.clicked.connect(self.start_quiz_game)
-        self.person_button.setStyleSheet(button_style)
-        quiz_buttons_layout.addWidget(self.person_button)
-
-        # '브랜드 퀴즈' 버튼 추가
-        self.brand_button = QPushButton("브랜드 퀴즈", self.main_widget)
-        self.brand_button.setFixedSize(400, 200)
-        self.brand_button.move(170, 10)
-        self.brand_button.clicked.connect(self.start_brand_quiz_game)
-        self.brand_button.setStyleSheet(button_style)
-        quiz_buttons_layout.addWidget(self.brand_button)
-
-        # '속담 퀴즈' 버튼 추가
-        self.proverb_button = QPushButton("속담 퀴즈", self.main_widget)
-        self.proverb_button.setFixedSize(400, 200)
-        self.proverb_button.move(330, 10)
-        self.proverb_button.clicked.connect(self.start_proverb_quiz_game)
-        self.proverb_button.setStyleSheet(button_style)
-        quiz_buttons_layout.addWidget(self.proverb_button)
-
-        # '4글자 퀴즈' 버튼 추가
-        self.four_letter_button = QPushButton("4글자 퀴즈", self.main_widget)
-        self.four_letter_button.setFixedSize(400, 200)
-        self.four_letter_button.move(490, 10)
-        self.four_letter_button.clicked.connect(self.start_four_letter_quiz_game)
-        self.four_letter_button.setStyleSheet(button_style)
-        quiz_buttons_layout.addWidget(self.four_letter_button)
-
-        # '점수' 버튼 추가
-        self.score_button = QPushButton("점수", self.main_widget)
-        self.score_button.setFixedSize(200, 50)
-        self.score_button.move(1650, 770)
-        self.score_button.clicked.connect(self.show_score)
-        self.score_button.setStyleSheet(
-            "QPushButton {"
-            "   font-size: 20px;"
-            "   padding: 5px;"
-            "   background-color: #2E86AB;"
-            "   color: white;"
-            "   border: 2px solid #2E86AB;"
-            "   border-radius: 10px;"
-            "}"
-            "QPushButton:hover {"
-            "   background-color: #205170;"
-            "}"
-        )
-
-        # '종료' 버튼 추가
-        self.quit_button = QPushButton("종료", self.main_widget)
-        self.quit_button.setFixedSize(200, 50)
-        self.quit_button.move(1650, 830)
-        self.quit_button.clicked.connect(self.close_application)
-        self.quit_button.setStyleSheet(
-            "QPushButton {"
-            "   font-size: 20px;"
-            "   padding: 5px;"
-            "   background-color: #D32F2F;"
-            "   color: white;"
-            "   border: 2px solid #D32F2F;"
-            "   border-radius: 10px;"
-            "}"
-            "QPushButton:hover {"
-            "   background-color: #A52B2B;"
-            "}"
-        )
-        # 퀴즈 버튼들을 담을 컨테이너 위젯 생성
-        quiz_buttons_container = QWidget(self.main_widget)
-        quiz_buttons_container.setLayout(quiz_buttons_layout)
-
-        # 메인 레이아웃에 퀴즈 버튼 컨테이너와 "Quiz Hub" 라벨 추가
-        main_layout = QVBoxLayout(self.main_widget)
-
-        # 배경색 추가
-        self.main_widget.setStyleSheet("background-color: #F9F6F2;")
-
-        # QLabel을 생성하여 "Quiz Hub"를 가운데에 배치
-        label = QLabel("QuizHub", self.main_widget)
-        label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        label.setStyleSheet("font-size: 300px; color: #2E86AB;")  # 원하는 스타일로 조절
-
-        main_layout.addWidget(quiz_buttons_container)
-        main_layout.addWidget(label, alignment=Qt.AlignmentFlag.AlignHCenter)
-        main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-
-    def start_quiz_game(self):
-        pass
-    def show_main_menu_person(self):
-        pass
-
-    def start_brand_quiz_game(self):
-        pass
-
-    def show_main_menu_brand(self):
-        pass
-
-    def start_proverb_quiz_game(self):
-        # '속담 퀴즈' 게임 시작
-        self.proverb_quiz = ProverbQuiz(self, 8)
-        self.stack.addWidget(self.proverb_quiz)
-        self.stack.setCurrentIndex(1)
-
-    def show_main_menu_proverb(self):
-        # '속담 퀴즈' 페이지를 스택에서 제거
-        self.stack.removeWidget(self.proverb_quiz)
-        self.stack.setCurrentIndex(0)
-
-    def start_four_letter_quiz_game(self):
-        pass
-
-    def show_main_menu_four(self):
-        pass
-    def show_score(self):
-        class CustomMessageBox(QDialog):
-            def __init__(self, title, message, parent=None):
-                super(CustomMessageBox, self).__init__(parent)
-                self.setWindowTitle(title)
-
-                layout = QVBoxLayout()
-
-                # 메시지를 나타내는 레이블 추가
-                label = QLabel(message)
-                label.setAlignment(Qt.AlignCenter)
-
-                # 레이블 디자인 설정
-                label.setStyleSheet("""
-                       QLabel {
-                           font-family: 'Arial';
-                           font-size: 80px;
-                           font-weight: bold;
-                           color: #0078d4;  /* 텍스트 색상 */
-                           background-color: #f0f0f0;  /* 배경색 */
-                           border: 2px solid #999;  /* 경계선 */
-                           border-radius: 5px;  /* 테두리 모서리 둥글게 */
-                           padding: 10px;  /* 안쪽 여백 */
-                       }
-                   """)
-
-                layout.addWidget(label)
-
-                # 확인 버튼 추가
-                ok_button = QPushButton("확인")
-                ok_button.clicked.connect(self.accept)
-                layout.addWidget(ok_button)
-
-                self.setLayout(layout)
-
-                # 다이얼로그의 크기 설정
-                self.setMinimumWidth(800)
-                self.setMinimumHeight(400)
-
-        try:
-            score_message = "최고 점수:\n"
-            for quiz_number in range(1, 5):  # 1부터 4까지의 퀴즈 번호를 고려
-                file_name = f"highest_score{quiz_number}.json"
-                with open(file_name, "r") as file:
-                    data = json.load(file)
-                    highest_score = data.get("highest_score", 0)
-
-                    if highest_score == 0:
-                        score_message += f"{quiz_number}번 퀴즈: 기록 없음.\n"
-                    else:
-                        score_message += f"{quiz_number}번 퀴즈: {highest_score}\n"
-
-            if score_message == "최고 점수:\n":
-                custom_box = CustomMessageBox("점수", "기록 없음.")
+            retry = QMessageBox.question(self, "틀림", f"틀렸습니다. 정답은 '{self.answer}'입니다.\n다시 시도하시겠습니까?",
+                                         QMessageBox.Yes | QMessageBox.No)
+            if retry == QMessageBox.No:
+                self.close()
             else:
-                custom_box = CustomMessageBox("점수", score_message)
+                self.total_score = 0
 
-            custom_box.exec_()
-        except Exception as e:
-            custom_box = CustomMessageBox("에러", f"점수를 불러오는 중 오류가 발생했습니다: {str(e)}")
-            custom_box.exec_()
+        self.score_label.setText(f"현재 점수: {self.total_score}")
+        self.generate_quiz()
 
-    def close_application(self):
-        # 종료 버튼 클릭 시 프로그램 종료
-        QApplication.quit()
+    def update_time(self):
+        if self.remaining_time > 0:
+            self.remaining_time -= 1
+            self.time_label.setText(f"남은 시간: {self.remaining_time}초")
+            self.label.setText(f"속담을 완성하세요: {self.quiz}")
+        elif self.remaining_time == 0:
+            self.remaining_time = -1
+            self.timer.stop()
 
-if __name__ == '__main__':
+            retry = QMessageBox.question(self, "시간 초과", "제한 시간이 초과되었습니다.\n다시 시도하시겠습니까?",
+                                         QMessageBox.Yes | QMessageBox.No)
+            if retry == QMessageBox.Yes:
+                self.total_score = 0
+                self.generate_quiz()
+            else:
+                self.close()
+        else:
+            self.generate_quiz()
+
+
+if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
+    window = QuizApp()
+    window.showMaximized()  # 전체 화면으로 표시
     sys.exit(app.exec_())
