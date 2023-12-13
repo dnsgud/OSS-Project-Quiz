@@ -306,58 +306,137 @@ class BrandLogoQuiz(QWidget):
         self.countdown_label.setText(f"남은 시간: {self.countdown}초")
         self.countdown_timer.start()
 class FourletterQuizGame(QWidget):
-    def __init__(self):
+    def __init__(self, parent=None):
         super().__init__()
 
+        self.parent = parent
         self.quiz_data, self.answer_data = self.load_quiz_data()
         self.quiz_data, self.answer_data = self.shuffle_quiz_data(self.quiz_data, self.answer_data)
 
         self.total_score = 0
         self.current_index = 0
+        self.high_score = self.load_highest_score()  # 최고점수 변수 추가
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.handle_timeout)
 
         self.init_ui()
+        self.setup_styles()  # 스타일 설정 추가
 
     def init_ui(self):
         self.layout = QVBoxLayout()
 
         # 시간 표시용
         self.timer_label = QLabel("", self)
-        self.layout.addWidget(self.timer_label, alignment=Qt.AlignmentFlag.AlignRight)
+        self.layout.addWidget(self.timer_label, alignment=Qt.AlignRight)
 
         self.layout.addSpacing(20)
 
         # 점수를 표시
         self.score_label = QLabel("", self)
-        self.layout.addWidget(self.score_label, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.layout.addWidget(self.score_label, alignment=Qt.AlignCenter)
+
+        self.layout.addSpacing(20)
+
+        # 최고점수를 표시
+        self.high_score_label = QLabel("", self)  # 라벨 초기화 부분 추가
+        self.layout.addWidget(self.high_score_label, alignment=Qt.AlignCenter)
 
         self.layout.addSpacing(20)
 
         self.quiz_label = QLabel(self)
-        self.layout.addWidget(self.quiz_label, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.layout.addWidget(self.quiz_label, alignment=Qt.AlignCenter)
 
         self.answer_input = QLineEdit(self)
         self.answer_input.returnPressed.connect(self.check_answer)
-        self.layout.addWidget(self.answer_input, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.layout.addWidget(self.answer_input, alignment=Qt.AlignCenter)
+
+        self.layout.addSpacing(20)
+
+        # 다시하기 버튼 추가
+        self.retry_button = QPushButton("다시하기", self)
+        self.retry_button.clicked.connect(self.retry_game)
+        self.layout.addWidget(self.retry_button, alignment=Qt.AlignCenter)
 
         self.layout.addSpacing(20)
 
         # 메인 화면으로 돌아가는 버튼 추가
-        self.retry_button = QPushButton("다시하기", self)
-        self.retry_button.clicked.connect(self.show_main_menu)
-        self.layout.addWidget(self.retry_button, alignment=Qt.AlignmentFlag.AlignCenter)
-
-        self.layout.addSpacing(20)
-
         self.main_button = QPushButton("메인화면", self)
-        self.main_button.clicked.connect(self.show_question)
-        self.layout.addWidget(self.main_button, alignment=Qt.AlignmentFlag.AlignCenter)
-        self.setLayout(self.layout)
+        self.main_button.clicked.connect(self.show_main_menu)
+        self.layout.addWidget(self.main_button, alignment=Qt.AlignCenter)
 
+        self.setLayout(self.layout)
         self.show_question()
-        self.show()
+
+        # 최고점수 초기값 설정
+        self.high_score = 0
+        self.high_score_label.setText(f'최고 점수: {self.high_score}')  # 초기값 표시 부분 추가
+
+    def load_highest_score(self):
+        try:
+            with open("highest_score.json", "r") as file:
+                data = json.load(file)
+                return data.get("highest_score", 0)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return 0
+
+    def save_highest_score(self):
+        data = {"highest_score": self.highest_score}
+        with open("highest_score.json", "w") as file:
+            json.dump(data, file)
+    def setup_styles(self):
+        # UI 스타일 설정
+
+        # QLabel
+        font_size = 30
+        self.score_label.setStyleSheet(
+            f"font-size: {font_size}px; color: #2E86AB; font-weight: bold; margin-bottom: 10px;"
+        )
+        self.timer_label.setStyleSheet(
+            f"font-size: {font_size}px; color: #2E86AB; margin-bottom: 20px;"
+        )
+        self.high_score_label.setStyleSheet(
+            f"font-size: {font_size}px; color: #2E86AB; font-weight: bold; margin-bottom: 10px;"
+        )
+
+        # QLineEdit
+        font_size = 70
+        self.answer_input.setStyleSheet(
+            f"font-size: {font_size}px; padding: 10px; border: 2px solid #2E86AB; border-radius: 10px; margin-bottom: 20px;"
+        )
+        font_size = 70
+        self.quiz_label.setStyleSheet(
+            f"font-size: {font_size}px; color: #2E86AB; background-color: #F9EBB2; padding: 20px; border-radius: 10px; margin-bottom: 20px;"
+        )
+
+        # QPushButton
+        font_size = 24
+        self.retry_button.setStyleSheet(
+            f"font-size: {font_size}px; padding: 10px; background-color: #FF595E; color: #FFF; border: 2px solid #FF595E; border-radius: 10px;"
+        )
+        self.main_button.setStyleSheet(
+            f"font-size: {font_size}px; padding: 10px; background-color: #2E86AB; color: #FFF; border: 2px solid #2E86AB; border-radius: 10px;"
+        )
+
+    def retry_game(self):
+        # '다시하기' 버튼 클릭 시 퀴즈를 처음부터 다시 시작
+        self.timer.stop()
+        self.timer_label.setText("")
+        self.answer_input.clear()
+        self.answer_input.setEnabled(True)
+        self.total_score = 0  # 이 부분을 주석 처리 또는 삭제
+        self.score_label.setText(f'현재 점수: {self.total_score}')
+        self.show_question()
+
+    def show_main_menu(self):
+        self.answer_input.setEnabled(True)
+        self.quiz_data, self.answer_data = self.shuffle_quiz_data(self.quiz_data, self.answer_data)
+        self.current_index = 0
+
+        # self.total_score 초기화를 제거
+        # self.total_score = 0
+
+        self.parent.show_main_menu_four()
 
     def load_quiz_data(self):
         with open(r"4letteranswer.txt", encoding="utf-8") as file:
@@ -384,16 +463,14 @@ class FourletterQuizGame(QWidget):
             self.remaining_time = 6
             self.timer.start(1000)
         else:
+            # 최고점수 업데이트
+            if self.total_score > self.high_score:
+                self.high_score = self.total_score
+                self.high_score_label.setText(f'최고 점수: {self.high_score}')  # 최고점수 업데이트 부분 추가
+
             self.show_main_menu()
 
-    def show_main_menu(self):
-        QMessageBox.information(self, '최종 점수', f'최종 점수: {self.total_score}', QMessageBox.Ok)
-        self.total_score = 0
-        self.score_label.setText(f'현재 점수: {self.total_score}')
-        self.answer_input.setEnabled(True)
-        self.quiz_data, self.answer_data = self.shuffle_quiz_data(self.quiz_data, self.answer_data)
-        self.current_index = 0
-        self.show_question()
+
 
     def handle_timeout(self):
         self.remaining_time -= 1
@@ -415,6 +492,10 @@ class FourletterQuizGame(QWidget):
         if not matching_lines:
             if timeout:
                 self.timer_label.setText(f'시간 초과! 오답으로 처리합니다. 정답은 {self.answer_data[self.current_index]} 입니다.')
+                self.timer.stop()
+                self.answer_input.setEnabled(False)
+                self.retry_button.setEnabled(True)
+                self.main_button.setEnabled(True)
             else:
                 self.timer_label.setText(f'틀렸습니다. 정답은 {self.answer_data[self.current_index]} 입니다.')
                 self.timer.stop()
@@ -428,17 +509,17 @@ class FourletterQuizGame(QWidget):
                     self.total_score += 1
                     self.timer_label.setText(f'정답입니다! 현재 점수: {self.total_score}')
                     self.score_label.setText(f'현재 점수: {self.total_score}')
+                    # 최고점수 업데이트
+                    if self.total_score > self.high_score:
+                        self.high_score = self.total_score
+                    # 최고점수 업데이트
+                    self.high_score_label.setText(f'최고 점수: {self.high_score}')
                     self.current_index += 1
                     if self.current_index < len(self.quiz_data):
                         self.show_question()
                     else:
-                        self.show_main_menu()
+                        self.show_main_menu_four()
                     return
-
-            self.timer_label.setText(f'틀렸습니다. 정답은 {self.answer_data[self.current_index]} 입니다.')
-    def show_end_message(self):
-        QMessageBox.information(self, '종료', f'게임 종료! 총 점수: {self.total_score}', QMessageBox.Ok)
-        self.close()
 
 class ProverbQuiz(QMainWindow):
     def __init__(self, parent, time_limit):
@@ -573,9 +654,7 @@ class ProverbQuiz(QMainWindow):
         if user_input == self.answer:
             # 정답일 경우
             self.total_score += 1
-            if self.total_score > self.best_score:
-                self.best_score = self.total_score
-                self.best_score_label.setText(f"최고 점수: {self.best_score}")
+            if self.
             QMessageBox.information(self, "정답", "정답입니다!")
         else:
             # 오답일 경우
