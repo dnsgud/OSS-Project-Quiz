@@ -8,7 +8,7 @@ class FourletterQuizGame(QWidget):
 
         self.total_score = 0
         self.current_index = 0
-        self.high_score = 0  # 최고점수 변수 추가
+        self.high_score = self.load_highest_score()  # 최고점수 변수 추가
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.handle_timeout)
@@ -65,6 +65,18 @@ class FourletterQuizGame(QWidget):
         self.high_score = 0
         self.high_score_label.setText(f'최고 점수: {self.high_score}')  # 초기값 표시 부분 추가
 
+    def load_highest_score(self):
+        try:
+            with open("highest_score.json", "r") as file:
+                data = json.load(file)
+                return data.get("highest_score", 0)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return 0
+
+    def save_highest_score(self):
+        data = {"highest_score": self.highest_score}
+        with open("highest_score.json", "w") as file:
+            json.dump(data, file)
     def setup_styles(self):
         # UI 스타일 설정
 
@@ -105,9 +117,19 @@ class FourletterQuizGame(QWidget):
         self.timer_label.setText("")
         self.answer_input.clear()
         self.answer_input.setEnabled(True)
-        self.total_score = 0
+        self.total_score = 0  # 이 부분을 주석 처리 또는 삭제
         self.score_label.setText(f'현재 점수: {self.total_score}')
         self.show_question()
+
+    def show_main_menu(self):
+        self.answer_input.setEnabled(True)
+        self.quiz_data, self.answer_data = self.shuffle_quiz_data(self.quiz_data, self.answer_data)
+        self.current_index = 0
+
+        # self.total_score 초기화를 제거
+        # self.total_score = 0
+
+        self.parent.show_main_menu_four()
 
     def load_quiz_data(self):
         with open(r"4letteranswer.txt", encoding="utf-8") as file:
@@ -134,21 +156,14 @@ class FourletterQuizGame(QWidget):
             self.remaining_time = 6
             self.timer.start(1000)
         else:
+            # 최고점수 업데이트
+            if self.total_score > self.high_score:
+                self.high_score = self.total_score
+                self.high_score_label.setText(f'최고 점수: {self.high_score}')  # 최고점수 업데이트 부분 추가
+
             self.show_main_menu()
 
-    def show_main_menu(self):
-        self.total_score = 0
-        self.score_label.setText(f'현재 점수: {self.total_score}')
-        self.answer_input.setEnabled(True)
-        self.quiz_data, self.answer_data = self.shuffle_quiz_data(self.quiz_data, self.answer_data)
-        self.current_index = 0
 
-        # 최고점수 업데이트
-        if self.total_score > self.high_score:
-            self.high_score = self.total_score
-            self.high_score_label.setText(f'최고 점수: {self.high_score}')  # 최고점수 업데이트 부분 추가
-
-        self.parent.show_main_menu_four()
 
     def handle_timeout(self):
         self.remaining_time -= 1
@@ -187,6 +202,11 @@ class FourletterQuizGame(QWidget):
                     self.total_score += 1
                     self.timer_label.setText(f'정답입니다! 현재 점수: {self.total_score}')
                     self.score_label.setText(f'현재 점수: {self.total_score}')
+                    # 최고점수 업데이트
+                    if self.total_score > self.high_score:
+                        self.high_score = self.total_score
+                    # 최고점수 업데이트
+                    self.high_score_label.setText(f'최고 점수: {self.high_score}')
                     self.current_index += 1
                     if self.current_index < len(self.quiz_data):
                         self.show_question()
