@@ -123,7 +123,11 @@ class ProverbQuiz(QMainWindow):
 
 
 
-
+    def start_proverb_quiz_game(self):
+        # '속담 퀴즈' 게임 시작
+        self.proverb_quiz = ProverbQuiz(self, 8)
+        self.stack.addWidget(self.proverb_quiz)
+        self.stack.setCurrentIndex(1)
 
     def save_highest_score(self):
         data = {"highest_score": self.best_score}
