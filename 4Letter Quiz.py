@@ -213,3 +213,74 @@ class FourletterQuizGame(QWidget):
                     else:
                         self.show_main_menu_four()
                     return
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super(MainWindow, self).__init__()
+
+        # 기본 창 설정
+        self.setGeometry(0, 0, 1900, 900)
+        self.setWindowTitle("MainWindow")
+
+        # 스택 위젯 생성
+        self.stack = QStackedWidget(self)
+        self.setCentralWidget(self.stack)
+
+        # 메인 화면
+        self.main_widget = QWidget()
+        self.stack.addWidget(self.main_widget)
+# BGM 초기화
+        self.bgm_player = QMediaPlayer()
+        bgm_path = "bgm.mp3"  # 실제 BGM 파일 경로로 대체
+        self.bgm_player.setMedia(QMediaContent(QUrl.fromLocalFile(bgm_path)))
+   self.bgm_player.play()
+        # 다양한 퀴즈 카테고리를 위한 버튼들 추가
+        quiz_buttons_layout = QHBoxLayout()  # QHBoxLayout으로 변경
+
+        button_style = (
+            "QPushButton {"
+            "   font-size: 30px;"
+            "   padding: 10px;"
+            "   border: 2px solid #2E86AB;"
+            "   border-radius: 10px;"
+            "   margin: 10px;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: #2E86AB;"
+            "   color: white;"
+            "}"
+        )
+ # '4글자 퀴즈' 버튼 추가
+        self.four_letter_button = QPushButton("4글자 퀴즈", self.main_widget)
+        self.four_letter_button.setFixedSize(400, 200)
+        self.four_letter_button.move(490, 10)
+ # '점수' 버튼 추가
+        self.score_button = QPushButton("점수", self.main_widget)
+        self.score_button.setFixedSize(200, 50)
+        self.score_button.move(1650, 770)
+        self.score_button.clicked.connect(self.show_score)
+# '종료' 버튼 추가
+        self.quit_button = QPushButton("종료", self.main_widget)
+        self.quit_button.setFixedSize(200, 50)
+        self.quit_button.move(1650, 830)
+        self.quit_button.clicked.connect(self.close_application)
+        self.quit_button.setStyleSheet(
+            "QPushButton {"
+            "   font-size: 20px;"
+            "   padding: 5px;"
+            "   background-color: #D32F2F;"
+            "   color: white;"
+            "   border: 2px solid #D32F2F;"
+            "   border-radius: 10px;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: #A52B2B;"
+            "}"
+        )
+ def close_application(self):
+        # 종료 버튼 클릭 시 프로그램 종료
+        QApplication.quit()
+
+
+
+
+
