@@ -58,6 +58,19 @@ class ProverbQuiz(QMainWindow):
         self.setup_styles()
 
         self.used_proverbs = set()
+                layout = QVBoxLayout()
+        layout.addWidget(self.total_score_label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.best_score_label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.time_label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.entry, alignment=Qt.AlignCenter)
+        layout.addWidget(self.result_label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.retry_button, alignment=Qt.AlignCenter)
+        layout.addWidget(self.main_button, alignment=Qt.AlignCenter)
+
+        central_widget = QWidget()
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
 
         self.generate_quiz()
 
