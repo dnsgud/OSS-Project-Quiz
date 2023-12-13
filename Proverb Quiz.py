@@ -10,9 +10,11 @@ import sys
 import linecache
 
 
-class QuizApp(QMainWindow):
-    def __init__(self):
-        super().__init__()
+
+class ProverbQuiz(QMainWindow):
+    def __init__(self, parent, time_limit):
+        super(ProverbQuiz, self).__init__(parent)
+        self.parent = parent
 
         self.total_score = 0
         self.best_score = 0
