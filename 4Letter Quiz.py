@@ -276,6 +276,10 @@ class MainWindow(QMainWindow):
             "   background-color: #A52B2B;"
             "}"
         )
+ def close_application(self):
+        # 종료 버튼 클릭 시 프로그램 종료
+        QApplication.quit()
+
 
 
 
