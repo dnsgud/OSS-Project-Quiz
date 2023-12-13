@@ -573,29 +573,33 @@ class ProverbQuiz(QMainWindow):
         return " ".join(words), f"{hidden_word1} {hidden_word2}"
 
     def check_answer(self):
-        # 사용자 답 확인 및 처리
-        user_input = self.entry.text().strip()
-        self.timer.stop()
+    # 사용자 답 확인 및 처리
+    user_input = self.entry.text().strip()
+    self.timer.stop()
 
-        if user_input == self.answer:
-            # 정답일 경우
-            self.total_score += 1
-            if self.total_score > self.best_score:
-                self.best_score = self.total_score
-                self.best_score_label.setText(f"최고 점수: {self.best_score}")
-            QMessageBox.information(self, "정답", "정답입니다!")
+    if user_input == self.answer:
+        # 정답일 경우
+        self.total_score += 1
+        if self.total_score > self.best_score:
+            self.best_score = self.total_score
+            self.best_score_label.setText(f"최고 점수: {self.best_score}")
+        QMessageBox.information(self, "정답", "정답입니다!")
+        
+        # 정답이거나 다시 시도하는 경우에 시간 초기화
+        self.remaining_time = self.time_limit
+    else:
+        # 오답일 경우
+        retry = QMessageBox.question(self, "틀림", f"틀렸습니다. 정답은 '{self.answer}'입니다.\n다시 시도하시겠습니까?",
+                                     QMessageBox.Yes | QMessageBox.No)
+        if retry == QMessageBox.No:
+            self.parent().return_to_main_menu()
+            return
         else:
-            # 오답일 경우
-            retry = QMessageBox.question(self, "틀림", f"틀렸습니다. 정답은 '{self.answer}'입니다.\n다시 시도하시겠습니까?",
-                                         QMessageBox.Yes | QMessageBox.No)
-            if retry == QMessageBox.No:
-                self.parent().return_to_main_menu()
-                return
-            else:
-                self.total_score = 0
+            self.total_score = 0
 
-        self.score_label.setText(f"현재 점수: {self.total_score}")
-        self.generate_quiz()
+    self.score_label.setText(f"현재 점수: {self.total_score}")
+    self.generate_quiz()
+
 
    def update_timer2(self):
     # 타이머 업데이트
