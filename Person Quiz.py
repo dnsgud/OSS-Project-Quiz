@@ -1,11 +1,14 @@
+import json
 import os
 import random
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget, QPushButton, \
-    QStackedWidget, QHBoxLayout, QMessageBox
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import Qt, QTimer
+    QStackedWidget, QHBoxLayout, QMessageBox, QDialog
+from PyQt5.QtGui import QPixmap, QFont, QImage
+from PyQt5.QtCore import Qt, QTimer, QUrl
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PIL import Image
 import sys
+import linecache
 
 class PersonQuiz(QMainWindow):
     def __init__(self, parent, directory_path, time_limit):
@@ -25,25 +28,57 @@ class PersonQuiz(QMainWindow):
         self.timer.timeout.connect(self.update_timer)
         self.load_random_image()
 
-    def init_ui(self):
+        def init_ui(self):
+        central_widget = QWidget(self)
+        self.setCentralWidget(central_widget)
+
+        self.image_label = QLabel(central_widget)
+        self.name_input = QLineEdit(central_widget)
+        self.name_input.returnPressed.connect(self.check_answer)
+        self.timer_label = QLabel(f'남은 시간: {self.current_timer}초', central_widget)
+        self.correctness_label = QLabel("", central_widget)
+        self.score_label = QLabel("현재 점수: 0", central_widget)
+        self.high_score_label = QLabel(f'최고 점수: {self.high_score}')
+        self.high_score_label.setGeometry(10, 30, 150, 30)
+        self.retry_button = QPushButton("다시하기", central_widget)
+        self.retry_button.clicked.connect(self.retry_game)
+        self.main_button = QPushButton("메인화면", central_widget)
+        self.main_button.clicked.connect(self.show_main_menu)
+
+        font_size = 30
+        label_style = f"font-size: {font_size}px; color: #2E86AB; padding: 20px;"
+        button_style = "font-size: 20px; padding: 10px; border: 2px solid #2E86AB; border-radius: 10px; margin: 10px;"
+
+        self.score_label.setStyleSheet(label_style)
+        self.high_score_label.setStyleSheet(label_style)
+        self.timer_label.setStyleSheet(label_style)
+        self.correctness_label.setStyleSheet(label_style)
+
+        self.name_input.setStyleSheet(
+            f"font-size: 20px; padding: 10px; border: 2px solid #2E86AB; border-radius: 10px; margin-bottom: 20px;")
+        self.retry_button.setStyleSheet(button_style)
+        self.main_button.setStyleSheet(button_style)
+
+        font_size = 30
+        self.name_input.setStyleSheet(
+            f"font-size: {font_size}px; padding: 10px; border: 2px solid #2E86AB; border-radius: 10px; margin-bottom: 10px;"
+        )
+
         layout = QVBoxLayout()
         layout.addWidget(self.score_label, alignment=Qt.AlignCenter)
-        layout.addWidget(self.best_score_label, alignment=Qt.AlignCenter)
-        layout.addWidget(self.image_label)
-        layout.addWidget(self.name_input)
-        layout.addWidget(self.timer_label, alignment=Qt.AlignmentFlag.AlignRight)
-        layout.addWidget(self.correctness_label)
+        layout.addWidget(self.high_score_label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.image_label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.name_input, alignment=Qt.AlignCenter)
+        layout.addWidget(self.timer_label, alignment=Qt.AlignRight)
+        layout.addWidget(self.correctness_label, alignment=Qt.AlignCenter)
 
-        # 버튼들을 수평으로 정렬
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.retry_button)
         button_layout.addWidget(self.main_button)
 
         layout.addLayout(button_layout)
 
-        central_widget = QWidget(self)
         central_widget.setLayout(layout)
-        self.setCentralWidget(central_widget)
 
     def retry_game(self):
         # '다시하기' 버튼 클릭 시 퀴즈를 처음부터 다시 시작
