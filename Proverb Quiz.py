@@ -167,6 +167,9 @@ class ProverbQuiz(QMainWindow):
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
+                # 기본 창 설정
+        self.setGeometry(0, 0, 1900, 900)
+        self.setWindowTitle("MainWindow")
  def setup_styles(self):
         # UI 스타일 설정
 
