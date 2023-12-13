@@ -598,24 +598,30 @@ class ProverbQuiz(QMainWindow):
         self.generate_quiz()
 
     def update_timer2(self):
-        # 타이머 업데이트
-        if self.remaining_time > 0:
-            self.remaining_time -= 1
-            self.time_label.setText(f"남은 시간: {self.remaining_time}초")
-            self.label.setText(f"속담을 완성하세요: {self.quiz}")
-        elif self.remaining_time == 0:
-            self.remaining_time = -1
-            self.timer.stop()
+    # 타이머 업데이트
+    if self.remaining_time > 0:
+        self.remaining_time -= 1
+        self.time_label.setText(f"남은 시간: {self.remaining_time}초")
+        self.label.setText(f"속담을 완성하세요: {self.quiz}")
+    elif self.remaining_time == 0:
+        self.remaining_time = -1
+        self.timer.stop()
 
-            # 시간 초과 시 텍스트를 직접 화면에 출력하고 결과 버튼들을 보이도록 설정
-            self.label.setText(f"시간이 초과되었습니다. 정답은 '{self.answer}'입니다.\n다시 시도하려면 제출 버튼을 클릭하세요.")
-            self.show_result_buttons()
-        else:
-            self.timer.stop()
+        # 시간 초과 시 텍스트를 직접 화면에 출력하고 결과 버튼들을 보이도록 설정
+        self.label.setText(f"시간이 초과되었습니다. 정답은 '{self.answer}'입니다.\n다시 시도하려면 제출 버튼을 클릭하세요.")
+        self.show_result_buttons()
+        
+        # 새 퀴즈 생성
+        self.generate_quiz()
+    else:
+        self.timer.stop()
 
-            # 시간 초과 시 텍스트를 직접 화면에 출력하고 결과 버튼들을 보이도록 설정
-            self.label.setText(f"시간이 초과되었습니다. 정답은 '{self.answer}'입니다.\n다시 시도하려면 제출 버튼을 클릭하세요.")
-            self.show_result_buttons()
+        # 시간 초과 시 텍스트를 직접 화면에 출력하고 결과 버튼들을 보이도록 설정
+        self.label.setText(f"시간이 초과되었습니다. 정답은 '{self.answer}'입니다.\n다시 시도하려면 제출 버튼을 클릭하세요.")
+        self.show_result_buttons()
+        
+        # 새 퀴즈 생성
+        self.generate_quiz()
 
     def show_result_buttons(self):
         # 시간 초과나 오답 시 버튼들을 보이도록 설정
