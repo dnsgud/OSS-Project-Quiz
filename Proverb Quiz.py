@@ -107,6 +107,20 @@ class ProverbQuiz(QMainWindow):
                 self.bgm_player.play()
         # 다양한 퀴즈 카테고리를 위한 버튼들 추가
         quiz_buttons_layout = QHBoxLayout()  # QHBoxLayout으로 변경
+                button_style = (
+            "QPushButton {"
+            "   font-size: 30px;"
+            "   padding: 10px;"
+            "   border: 2px solid #2E86AB;"
+            "   border-radius: 10px;"
+            "   margin: 10px;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: #2E86AB;"
+            "   color: white;"
+            "}"
+        )
+
 
 
 
