@@ -1,15 +1,3 @@
-import sys
-import os
-import json
-from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QLabel, QVBoxLayout, QLineEdit,
-    QPushButton, QHBoxLayout, QWidget
-)
-from PyQt5.QtGui import QPixmap, QImage, QFont
-from PyQt5.QtCore import QTimer, Qt, QUrl
-from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
-from PIL import Image
-import random
 
 class BrandLogoQuiz(QMainWindow):
     def __init__(self, logo_directory, app):
