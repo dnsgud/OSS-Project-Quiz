@@ -67,7 +67,20 @@ class ProverbQuiz(QMainWindow):
         layout.addWidget(self.result_label, alignment=Qt.AlignCenter)
         layout.addWidget(self.retry_button, alignment=Qt.AlignCenter)
         layout.addWidget(self.main_button, alignment=Qt.AlignCenter)
+                   """)
 
+                layout.addWidget(label)
+
+                # 확인 버튼 추가
+                ok_button = QPushButton("확인")
+                ok_button.clicked.connect(self.accept)
+                layout.addWidget(ok_button)
+
+                self.setLayout(layout)
+
+                # 다이얼로그의 크기 설정
+                self.setMinimumWidth(800)
+                self.setMinimumHeight(400)
         central_widget = QWidget()
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
