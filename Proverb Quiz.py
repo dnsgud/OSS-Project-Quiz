@@ -181,7 +181,13 @@ class ProverbQuiz(QMainWindow):
                 return data.get("highest_score", 0)
         except (FileNotFoundError, json.JSONDecodeError):
             return 0
+  def show_score(self):
+        class CustomMessageBox(QDialog):
+            def __init__(self, title, message, parent=None):
+                super(CustomMessageBox, self).__init__(parent)
+                self.setWindowTitle(title)
 
+                layout = QVBoxLayout()
     def save_highest_score(self):
         data = {"highest_score": self.best_score}
         with open("highest_score3.json", "w") as file:
