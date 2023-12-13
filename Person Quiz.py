@@ -147,9 +147,10 @@ class PersonQuiz(QMainWindow):
                 self.correctness_label.setText(correctness_text)
 
                 self.total_score += 1
-                if self.total_score > self.best_score:
-                    self.best_score = self.total_score
-                    self.best_score_label.setText(f"최고 점수: {self.best_score}")
+                if self.total_score > self.high_score:
+                    self.high_score = self.total_score
+                    self.high_score_label.setText(f"최고 점수: {self.high_score}")
+                    self.save_highest_score()
 
                 # 정답 여부를 일정 시간 동안 표시하고 다음 문제로 이동
                 QTimer.singleShot(500, self.load_random_image)
