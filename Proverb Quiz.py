@@ -1,13 +1,13 @@
 import json
 import os
-import sys
-from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QFrame,
-    QMessageBox, QDesktopWidget, QVBoxLayout, QWidget
-)
-from PyQt5.QtCore import QTimer, Qt
-import linecache
 import random
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget, QPushButton, \
+    QStackedWidget, QHBoxLayout, QMessageBox, QDialog
+from PyQt5.QtGui import QPixmap, QFont, QImage
+from PyQt5.QtCore import Qt, QTimer, QUrl
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
+import sys
+import linecache
 
 
 class QuizApp(QMainWindow):
