@@ -101,40 +101,39 @@ class PersonQuiz(QMainWindow):
             print(correctness_text)
             self.correctness_label.setText(correctness_text)
             self.show_result()
+        def check_answer(self):
+        user_input = self.answer_input.text()
+        matching_lines = [line for line in self.answer_data if line.endswith(user_input[-2:])]
 
-    def check_answer(self):
-        entered_name = self.name_input.text().strip().lower()
-
-        if any(entered_name == answer for answer in self.correct_answers):
-            correctness_text = "정답입니다."
-            self.correctness_label.setText(correctness_text)
-
-            self.total_score += 1
-            if self.total_score > self.best_score:
-                self.best_score = self.total_score
-                self.best_score_label.setText(f"최고 점수: {self.best_score}")
-
-            # 정답 여부를 일정 시간 동안 표시하고 다음 문제로 이동
-            QTimer.singleShot(500, self.load_random_image)
-        else:
-            correct_answers_str = ', '.join(self.correct_answers)
-            correctness_text = "오답입니다. 정답은 ( {})입니다.".format(
-                correct_answers_str.replace(".jpeg", "").replace(",", "")
-            )
-            print(correctness_text)
-            self.correctness_label.setText(correctness_text)
-
-            self.total_score = 0
-
-            # 오답 시 버튼들을 보이도록 설정
-            self.retry_button.show()
-            self.main_menu_button.show()
-
-            # 퀴즈가 더 진행되지 않도록 타이머를 멈춤
+        if not matching_lines:
             self.timer.stop()
+            self.total_score = 0
+            correct_answer = self.answer_data[self.current_index]
+            self.timer_label.setText(f'틀렸습니다. 정답은 {correct_answer} 입니다.')
+            self.show_result_buttons()
+        else:
+            for line in matching_lines:
+                if line[:2] == self.quiz_data[self.current_index][:2]:
+                    self.total_score += 1
+                    self.timer_label.setText(f'정답입니다! 현재 점수: {self.total_score}')
+                    self.score_label.setText(f'현재 점수: {self.total_score}')
+                    self.current_index += 1
+                    if self.current_index < len(self.quiz_data):
+                        self.show_question()
+                    else:
+                        self.show_main_menu()
+                    return
 
-        self.score_label.setText(f"현재 점수: {self.total_score}")
+            self.timer.stop()
+            self.total_score = 0
+            correct_answer = self.answer_data[self.current_index]
+            self.timer_label.setText(f'틀렸습니다. 정답은 {correct_answer} 입니다.')
+            self.show_result_buttons()
 
+    def show_result_buttons(self):
+        # 시간 초과나 오답 시 버튼들을 보이도록 설정
+        self.retry_button.show()
+        self.main_button.show()
     def show_result(self):
         print("최종 점수: {}".format(self.score))
 
@@ -142,7 +141,6 @@ class PersonQuiz(QMainWindow):
         # 현재 퀴즈 게임을 저장하고 제거
         current_quiz_game = self
         self.parent().stack.removeWidget(self)
-
         # 메인 메뉴로 돌아가기
         self.parent().stack.setCurrentIndex(0)
 
