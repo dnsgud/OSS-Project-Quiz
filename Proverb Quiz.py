@@ -133,9 +133,11 @@ class ProverbQuiz(QMainWindow):
 
         self.timer.start(1000)
 
-    def get_random_proverb(self):
-        no = random.randint(1, 100)
-        return linecache.getline('saying.txt', no).strip()
+        def show_main_menu(self):
+        self.total_score = 0
+        self.total_score_label.setText(f'현재 점수: {self.total_score}')
+        self.best_score_label.setText(f'최고 점수: {self.best_score}')
+        self.parent.show_main_menu_proverb()
 
     def create_quiz(self, saying):
         words = saying.split()
