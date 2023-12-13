@@ -258,6 +258,24 @@ class MainWindow(QMainWindow):
         self.score_button.setFixedSize(200, 50)
         self.score_button.move(1650, 770)
         self.score_button.clicked.connect(self.show_score)
+# '종료' 버튼 추가
+        self.quit_button = QPushButton("종료", self.main_widget)
+        self.quit_button.setFixedSize(200, 50)
+        self.quit_button.move(1650, 830)
+        self.quit_button.clicked.connect(self.close_application)
+        self.quit_button.setStyleSheet(
+            "QPushButton {"
+            "   font-size: 20px;"
+            "   padding: 5px;"
+            "   background-color: #D32F2F;"
+            "   color: white;"
+            "   border: 2px solid #D32F2F;"
+            "   border-radius: 10px;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: #A52B2B;"
+            "}"
+        )
 
 
 
