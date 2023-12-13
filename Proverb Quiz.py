@@ -122,7 +122,10 @@ class ProverbQuiz(QMainWindow):
         self.main_button.setStyleSheet(  # 수정된 부분
             f"font-size: {font_size}px; padding: 10px; background-color: #2E86AB; color: #FFF; border: 2px solid #2E86AB; border-radius: 10px;"
         )
-
+    def get_random_proverb(self):
+        # 랜덤 속담 얻기
+        no = random.randint(1, 100)
+        return linecache.getline('proverb Quiz.txt', no).strip()
     def retry_game(self):
         # '다시하기' 버튼 클릭 시 퀴즈를 처음부터 다시 시작
         self.timer.stop()
