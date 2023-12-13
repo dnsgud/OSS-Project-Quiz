@@ -34,6 +34,18 @@ class BrandLogoQuiz(QMainWindow):
             """
         )
 
+        # BGM 재생
+        self.bgm_player.play()
+        self.setGeometry(100, 100, 700, 500)
+        self.app.aboutToQuit.connect(self.bgm_player.stop)
+
+        self.coordinates = (100, 50, 300, 250)
+        self.current_logo_file = ""
+        self.score = 0
+        self.highest_score = self.load_highest_score()
+        self.countdown = 5
+        self.countdown_timer = QTimer()
+
         self.setup_ui()
 
     def setup_ui(self):
