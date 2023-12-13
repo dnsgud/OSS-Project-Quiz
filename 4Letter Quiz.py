@@ -539,21 +539,22 @@ class ProverbQuiz(QMainWindow):
         )
 
     def generate_quiz(self):
-        # 퀴즈 생성 및 타이머 시작
-        self.remaining_time = self.time_limit
-        while True:
-            proverb = self.get_random_proverb()
-            if proverb not in self.used_proverbs:
-                break
+    # 퀴즈 생성 및 타이머 시작
+    self.remaining_time = self.time_limit
+    while True:
+        proverb = self.get_random_proverb()
+        if proverb not in self.used_proverbs:
+            break
 
-        self.used_proverbs.add(proverb)
+    self.used_proverbs.add(proverb)
 
-        self.quiz, self.answer = self.create_quiz(proverb)
-        self.quiz = self.quiz.replace("'", "")
-        self.label.setText(f"속담을 완성하세요: {self.quiz}")
-        self.entry.clear()
+    self.quiz, self.answer = self.create_quiz(proverb)
+    self.quiz = self.quiz.replace("'", "")
+    self.label.setText(f"속담을 완성하세요: {self.quiz}")
+    self.entry.clear()
 
-        self.timer.start(1000)
+    self.timer.start(1000)
+
 
     def get_random_proverb(self):
         # 랜덤 속담 얻기
