@@ -112,12 +112,17 @@ class ProverbQuiz(QMainWindow):
             f"font-size: {font_size}px; padding: 10px; background-color: #2E86AB; color: #FFF; border: 2px solid #2E86AB; border-radius: 10px;"
         )
 
-    def generate_quiz(self):
-        self.remaining_time = self.time_limit
-        while True:
-            proverb = self.get_random_proverb()
-            if proverb not in self.used_proverbs:
-                break
+    def retry_game(self):
+        # '다시하기' 버튼 클릭 시 퀴즈를 처음부터 다시 시작
+        self.timer.stop()
+        self.time_label.setText("")
+        self.entry.clear()
+        self.retry_button.hide()
+        self.main_button.hide()
+        self.total_score = 0
+        self.total_score_label.setText(f'현재 점수: {self.total_score}')
+        self.best_score_label.setText(f'최고 점수: {self.best_score}')  # 최고 점수 초기화 추가
+        self.generate_quiz()
 
         self.used_proverbs.add(proverb)
 
