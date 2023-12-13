@@ -14,16 +14,24 @@ import linecache
 class ProverbQuiz(QMainWindow):
     def __init__(self, parent, time_limit):
         super(ProverbQuiz, self).__init__(parent)
-        self.parent = parent
-
+         # 초기화
         self.total_score = 0
-        self.best_score = 0
-        self.time_limit = 8
+        self.best_score = self.load_highest_score()
+        self.time_limit = time_limit
         self.timer = QTimer(self)
-        self.timer.timeout.connect(self.update_time)
+        self.timer.timeout.connect(self.update_timer)
+        self.remaining_time = self.time_limit
+        # UI 요소 생성
+        self.label = QLabel("", self)
+        self.label.setGeometry(10, 70, 400, 50)
+        self.label.setAlignment(Qt.AlignTop)
 
-        self.setGeometry(100, 100, 700, 500)
-        self.center_on_screen()
+        self.result_label = QLabel("", self)
+        self.result_label.setGeometry(10, 170, 400, 50)
+        self.result_label.setAlignment(Qt.AlignTop)
+        self.result_label.setStyleSheet(
+            f"font-size: 20px; color: #FF595E; margin-bottom: 10px;"
+        )
 
         self.setStyleSheet(
             "background-color: #F9F6F2;"
