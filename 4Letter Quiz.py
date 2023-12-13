@@ -31,6 +31,12 @@ class FourletterQuizGame(QWidget):
 
         self.layout.addSpacing(20)
 
+        # 최고점수를 표시
+        self.high_score_label = QLabel("", self)  # 라벨 초기화 부분 추가
+        self.layout.addWidget(self.high_score_label, alignment=Qt.AlignCenter)
+
+        self.layout.addSpacing(20)
+
         self.quiz_label = QLabel(self)
         self.layout.addWidget(self.quiz_label, alignment=Qt.AlignCenter)
 
@@ -54,6 +60,10 @@ class FourletterQuizGame(QWidget):
 
         self.setLayout(self.layout)
         self.show_question()
+
+        # 최고점수 초기값 설정
+        self.high_score = 0
+        self.high_score_label.setText(f'최고 점수: {self.high_score}')  # 초기값 표시 부분 추가
 
     def setup_styles(self):
         # UI 스타일 설정
