@@ -213,3 +213,20 @@ class FourletterQuizGame(QWidget):
                     else:
                         self.show_main_menu_four()
                     return
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super(MainWindow, self).__init__()
+
+        # 기본 창 설정
+        self.setGeometry(0, 0, 1900, 900)
+        self.setWindowTitle("MainWindow")
+
+        # 스택 위젯 생성
+        self.stack = QStackedWidget(self)
+        self.setCentralWidget(self.stack)
+
+        # 메인 화면
+        self.main_widget = QWidget()
+        self.stack.addWidget(self.main_widget)
+
+
