@@ -1,3 +1,38 @@
+import sys
+import os
+import json
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QLabel, QVBoxLayout, QLineEdit,
+    QPushButton, QHBoxLayout, QWidget
+)
+from PyQt5.QtGui import QPixmap, QImage, QFont
+from PyQt5.QtCore import QTimer, Qt, QUrl
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
+from PIL import Image
+import random
+
+class BrandLogoQuiz(QMainWindow):
+    def __init__(self, logo_directory, app):
+        super().__init__()
+        self.logo_directory = logo_directory
+        self.app = app
+        self.logo_files = [f for f in os.listdir(self.logo_directory) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))]
+        if not self.logo_files:
+            print("No valid logo image files found in the directory.")
+            sys.exit()
+        self.score_widget = QWidget(self)  # score_widget을 정의
+        # BGM 초기화
+        self.bgm_player = QMediaPlayer()
+        bgm_path = "bgm.mp3"  # 실제 BGM 파일 경로로 대체
+        self.bgm_player.setMedia(QMediaContent(QUrl.fromLocalFile(bgm_path)))
+
+        self.setStyleSheet(
+            """
+            QMainWindow {
+                background-color: #F9F6F2;
+            }
+            """
+        )
 
         # BGM 재생
         self.bgm_player.play()
