@@ -134,7 +134,10 @@ class ProverbQuiz(QMainWindow):
         data = {"highest_score": self.best_score}
         with open("highest_score3.json", "w") as file:
             json.dump(data, file)
-
+    def show_buttons(self):
+        # 버튼을 보이도록 설정
+        self.retry_button.show()
+        self.main_button.show()
         def update_timer(self):
         if self.remaining_time > 0:
             self.remaining_time -= 1
