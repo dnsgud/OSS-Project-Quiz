@@ -300,6 +300,10 @@ class MainWindow(QMainWindow):
         self.main_button.setStyleSheet(  # 수정된 부분
             f"font-size: {font_size}px; padding: 10px; background-color: #2E86AB; color: #FFF; border: 2px solid #2E86AB; border-radius: 10px;"
         )
+        
+    def close_application(self):
+        # 종료 버튼 클릭 시 프로그램 종료
+        QApplication.quit()
     def get_random_proverb(self):
         # 랜덤 속담 얻기
         no = random.randint(1, 100)
