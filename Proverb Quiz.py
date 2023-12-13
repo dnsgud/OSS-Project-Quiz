@@ -72,8 +72,6 @@ class ProverbQuiz(QMainWindow):
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
 
-        self.generate_quiz()
-
     def center_on_screen(self):
         screen = QDesktopWidget().screenGeometry()
         size = self.geometry()
