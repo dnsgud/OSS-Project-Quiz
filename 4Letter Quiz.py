@@ -249,5 +249,10 @@ class MainWindow(QMainWindow):
             "   color: white;"
             "}"
         )
+ # '4글자 퀴즈' 버튼 추가
+        self.four_letter_button = QPushButton("4글자 퀴즈", self.main_widget)
+        self.four_letter_button.setFixedSize(400, 200)
+        self.four_letter_button.move(490, 10)
+
 
 
