@@ -301,6 +301,13 @@ class MainWindow(QMainWindow):
             "   background-color: #A52B2B;"
             "}"
              def show_main_menu_four(self):
+        # 퀴즈 버튼들을 담을 컨테이너 위젯 생성
+        quiz_buttons_container = QWidget(self.main_widget)
+        quiz_buttons_container.setLayout(quiz_buttons_layout)
+
+        # 메인 레이아웃에 퀴즈 버튼 컨테이너와 "Quiz Hub" 라벨 추가
+        main_layout = QVBoxLayout(self.main_widget)
+
         # FourletterQuizGame 페이지를 스택에서 제거
         self.stack.removeWidget(self.four_letter_game)
         self.stack.setCurrentIndex(0)
