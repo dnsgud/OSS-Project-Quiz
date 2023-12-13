@@ -33,49 +33,31 @@ class ProverbQuiz(QMainWindow):
             f"font-size: 20px; color: #FF595E; margin-bottom: 10px;"
         )
 
-        self.setStyleSheet(
+          self.setStyleSheet(
             "background-color: #F9F6F2;"
         )
 
-        self.score_label = QLabel("현재 점수: 0", self)
-        self.best_score_label = QLabel("최고 점수: 0", self)
-        self.label = QLabel("", self)
-        self.time_label = QLabel("", self)
         self.entry = QLineEdit(self)
-        self.entry.returnPressed.connect(self.check_answer)  # 엔터 키로 제출
-        self.button = QPushButton("제출", self)
-        self.button.clicked.connect(self.check_answer)
+        self.entry.setGeometry(10, 130, 300, 30)
+        self.entry.returnPressed.connect(self.check_answer)
+
+        self.total_score_label = QLabel(f"현재 점수: {self.total_score}", self)
+        self.best_score_label = QLabel(f"최고 점수: {self.best_score}", self)
+
+        self.retry_button = QPushButton("다시하기", self)
+        self.retry_button.clicked.connect(self.retry_game)
+
+        self.main_button = QPushButton("메인화면", self)
+        self.main_button.clicked.connect(self.show_main_menu)
+
+        self.retry_button.hide()
+        self.main_button.hide()
+
+        self.time_label = QLabel(f'남은 시간: {self.remaining_time}초', self)
 
         self.setup_styles()
 
         self.used_proverbs = set()
-
-        self.score_frame = QFrame(self)
-        self.best_score_frame = QFrame(self)
-        self.label_frame = QFrame(self)
-        self.time_frame = QFrame(self)
-
-        self.score_layout = QVBoxLayout(self.score_frame)
-        self.best_score_layout = QVBoxLayout(self.best_score_frame)
-        self.label_layout = QVBoxLayout(self.label_frame)
-        self.time_layout = QVBoxLayout(self.time_frame)
-
-        self.score_layout.addWidget(self.score_label, alignment=Qt.AlignCenter)
-        self.best_score_layout.addWidget(self.best_score_label, alignment=Qt.AlignCenter)
-        self.label_layout.addWidget(self.label, alignment=Qt.AlignCenter)
-        self.time_layout.addWidget(self.time_label, alignment=Qt.AlignCenter)
-
-        layout = QVBoxLayout()
-        layout.addWidget(self.score_frame)
-        layout.addWidget(self.best_score_frame)
-        layout.addWidget(self.label_frame)
-        layout.addWidget(self.time_frame)
-        layout.addWidget(self.entry, alignment=Qt.AlignCenter)
-        layout.addWidget(self.button, alignment=Qt.AlignCenter)
-
-        central_widget = QWidget()
-        central_widget.setLayout(layout)
-        self.setCentralWidget(central_widget)
 
         self.generate_quiz()
 
