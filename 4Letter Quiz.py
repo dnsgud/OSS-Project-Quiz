@@ -275,6 +275,11 @@ class MainWindow(QMainWindow):
             "QPushButton:hover {"
             "   background-color: #A52B2B;"
             "}"
+             def show_main_menu_four(self):
+        # FourletterQuizGame 페이지를 스택에서 제거
+        self.stack.removeWidget(self.four_letter_game)
+        self.stack.setCurrentIndex(0)
+
         )
 def show_score(self):
         class CustomMessageBox(QDialog):
