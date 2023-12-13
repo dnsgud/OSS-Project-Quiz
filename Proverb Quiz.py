@@ -74,6 +74,17 @@ class ProverbQuiz(QMainWindow):
         
         self.generate_quiz()
 
+        def update_timer(self):
+        if self.remaining_time > 0:
+            self.remaining_time -= 1
+            self.time_label.setText(f"남은 시간: {self.remaining_time}초")
+        else:
+            self.timer.stop()
+            self.result_label.setText(f"시간초과입니다. 정답은 '{self.answer}'입니다.")
+            QTimer.singleShot(2000, lambda: self.result_label.setText(""))  # 2초 후 메시지 지움
+            self.show_buttons()  # 시간 초과 시 버튼 보이도록 추가
+            self.check_answer()
+
     def center_on_screen(self):
         screen = QDesktopWidget().screenGeometry()
         size = self.geometry()
