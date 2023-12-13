@@ -95,6 +95,13 @@ class ProverbQuiz(QMainWindow):
         # 스택 위젯 생성
         self.stack = QStackedWidget(self)
         self.setCentralWidget(self.stack)
+        
+
+        # 메인 화면
+        self.main_widget = QWidget()
+        self.stack.addWidget(self.main_widget)
+
+
 
 
     def save_highest_score(self):
