@@ -476,6 +476,17 @@ class ProverbQuiz(QMainWindow):
 
         self.time_label = QLabel("", self)
         self.setup_styles()
+        # Retry 버튼
+        self.retry_button = QPushButton("다시 시도", self)
+        self.retry_button.setGeometry(10, 210, 120, 30)
+        self.retry_button.clicked.connect(self.retry_quiz)
+        self.retry_button.hide()
+
+        # Main Menu 버튼
+        self.main_menu_button = QPushButton("메인 메뉴로", self)
+        self.main_menu_button.setGeometry(140, 210, 120, 30)
+        self.main_menu_button.clicked.connect(parent.return_to_main_menu)
+        self.main_menu_button.hide()
 
         self.used_proverbs = set()
 
@@ -494,7 +505,11 @@ class ProverbQuiz(QMainWindow):
 
         # 퀴즈 생성
         self.generate_quiz()
-
+    def retry_quiz(self):
+        # 퀴즈를 다시 시도하는 로직
+        self.generate_quiz()
+        self.retry_button.hide()
+        self.main_menu_button.hide()
     def setup_styles(self):
         # UI 스타일 설정
 
